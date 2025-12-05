@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.avkravchenko.wasig"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,10 +22,61 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.avkravchenko.wasig"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "assets/fonts/GolosText-Regular.ttf",
+            "assets/fonts/GolosText-Bold.ttf",
+            "assets/fonts/GolosText-Black.ttf",
+            "assets/fonts/GolosText-ExtraBold.ttf",
+            "assets/fonts/GolosText-Medium.ttf",
+            "assets/fonts/GolosText-SemiBold.ttf"
+          ],
+          "ios": {
+            "fontFamily": "GolosText",
+            "fontDefinitions": [
+              {
+                "path": "./assets/fonts/GolosText-Regular.ttf",
+                "fontWeight": "400",
+                "fontStyle": "normal"
+              },
+              {
+                "path": "./assets/fonts/GolosText-Medium.ttf",
+                "fontWeight": "500",
+                "fontStyle": "normal"
+              },
+              {
+                "path": "./assets/fonts/GolosText-SemiBold.ttf",
+                "fontWeight": "600",
+                "fontStyle": "normal"
+              },
+              {
+                "path": "./assets/fonts/GolosText-Bold.ttf",
+                "fontWeight": "700",
+                "fontStyle": "normal"
+              },
+              {
+                "path": "./assets/fonts/GolosText-ExtraBold.ttf",
+                "fontWeight": "800",
+                "fontStyle": "normal"
+              },
+              {
+                "path": "./assets/fonts/GolosText-Black.ttf",
+                "fontWeight": "900",
+                "fontStyle": "normal"
+              }
+            ]
+          }
+        }
+      ]
+    ]
   }
 }
