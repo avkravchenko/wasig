@@ -1,2 +1,2 @@
-import Navigation from "@/app/navigation/ui/Navigation";
+import Navigation from "@/app/navigation/Navigation";
 export { Navigation };

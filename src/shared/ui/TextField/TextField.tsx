@@ -1,29 +1,42 @@
-import { TextInput, View } from "react-native";
+import { TextInput, View, Text } from "react-native";
 import { styles } from "@/shared/ui/TextField/TextFieldStyle";
 
 type TextFieldPropsType = {
+  ref?: any;
+  value: string;
   type?: "primary" | "secondary";
   keyBoardType?: "default" | "numeric";
   placeholder?: string;
+  rules?: [() => boolean, string][];
   onChange: (text: string) => void;
-  value: string;
+  onPress?: () => void;
 };
 
 const TextField = ({
+  ref,
+  value,
   type = "primary",
   keyBoardType = "default",
   placeholder = "useless placeholder",
+  rules,
   onChange,
-  value,
+  onPress,
 }: TextFieldPropsType) => {
   return (
-    <TextInput
-      style={(styles.input, styles[type])}
-      onChangeText={onChange}
-      value={value}
-      placeholder={placeholder}
-      keyboardType={keyBoardType}
-    />
+    <>
+      <TextInput
+        ref={ref}
+        style={(styles.input, styles[type])}
+        value={value}
+        placeholder={placeholder}
+        keyboardType={keyBoardType}
+        onChangeText={onChange}
+        onPress={onPress}
+      />
+      {rules?.map((rule, index) => (
+        <Text key={index}>{rule[1]}</Text>
+      ))}
+    </>
   );
 };
 

@@ -1,8 +1,8 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { HomeScreen } from "@/screens/home/ui/HomeScreem/HomeScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import TopBar from "@/shared/ui/TopBar/TopBar";
-import LoginByPhoneNumber from "@/screens/auth/ui/LoginByPhoneNumber/LoginByPhoneNumber";
+import { AuthScreen } from "@/screens/auth";
+import ROUTER_NAME_SPACES from "@/shared/routes";
 
 const Stack = createNativeStackNavigator();
 
@@ -11,8 +11,8 @@ function Navigation() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="Home"
-          component={LoginByPhoneNumber}
+          name={ROUTER_NAME_SPACES.LOGIN_ENTRY_POINT.NAME}
+          component={AuthScreen}
           options={{
             headerTitle: () => <TopBar />,
             headerShadowVisible: false,
@@ -22,6 +22,18 @@ function Navigation() {
             },
           }}
         />
+        {/* <Stack.Screen
+          name={ROUTER_NAME_SPACES.SMS_STEP.NAME}
+          component={SmsStep}
+          options={{
+            headerTitle: () => <TopBar />,
+            headerShadowVisible: false,
+            contentStyle: {
+              backgroundColor: "white",
+              padding: 16,
+            },
+          }}
+        /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
