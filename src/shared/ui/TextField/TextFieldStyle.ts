@@ -2,15 +2,11 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   input: {
-    height: 40,
-    borderColor: "gray",
     borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 30,
     borderRadius: 100,
   },
   primary: {
-    borderColor: "blue",
+    borderColor: "#F3F5F7",
     backgroundColor: "#F3F5F7",
     height: 48,
     width: 319,
@@ -18,7 +14,34 @@ export const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 100,
   },
-  secondary: {
-    borderColor: "gray",
+  sm: {
+    maxWidth: 77,
+    height: 48,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 100,
+  },
+  lg: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 100,
+  },
+  center: {
+    textAlign: "center",
+  },
+  left: {
+    textAlign: "left",
+  },
+  invalid: {
+    backgroundColor: "#FBECEC",
+    borderColor: "#FBECEC",
+  },
+  valid: {
+    backgroundColor: "#F3F5F7",
+    borderColor: "#F3F5F7",
+  },
+  confirmed: {
+    backgroundColor: "#ECF4E0",
+    borderColor: "#ECF4E0",
   },
 });

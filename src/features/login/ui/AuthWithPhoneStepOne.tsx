@@ -10,16 +10,12 @@ import TextField from "@/shared/ui/TextField";
 import Button from "@/shared/ui/Button";
 import useDefinePhoneNumber from "../model/hooks/useDefinePhoneNumber";
 import useFocus from "@/shared/lib/useFocus";
-
-const VERTICAL_OFFSET = 110;
+import commonStyles from "@/shared/styles";
+import { VERTICAL_OFFSET, MARGIN_BOTTOM } from "@/shared/constants";
 
 const AuthWithPhoneStepOne = ({ nextStep }: { nextStep: () => void }) => {
-  const {
-    phoneNumber,
-    isPhoneNumberValid,
-    handlePhoneNumberChange,
-    handlePhoneNumberPress,
-  } = useDefinePhoneNumber();
+  const { phoneNumber, isPhoneNumberValid, handlePhoneNumberChange } =
+    useDefinePhoneNumber();
 
   const { inputRef } = useFocus();
 
@@ -34,16 +30,21 @@ const AuthWithPhoneStepOne = ({ nextStep }: { nextStep: () => void }) => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.inputContainer}>
-          <Text style={styles.title}>Вход по номеру телефона</Text>
+          <Text style={commonStyles.titleText}>Вход по номеру телефона</Text>
           <TextField
             ref={inputRef}
+            isValid={isPhoneNumberValid}
             placeholder="Номер телефона"
             keyBoardType="numeric"
             onChange={handlePhoneNumberChange}
             onPress={() => {}}
             value={phoneNumber}
           />
-          <Text>{isPhoneNumberValid ? "Valid" : "Invalid"}</Text>
+          {phoneNumber.length > 0 ? (
+            <Text style={styles.errorText}>
+              {isPhoneNumberValid ? "" : "Неправильно набран номер"}
+            </Text>
+          ) : null}
         </View>
         <View style={styles.buttonContainer}>
           <Text style={styles.text}>
@@ -51,10 +52,10 @@ const AuthWithPhoneStepOne = ({ nextStep }: { nextStep: () => void }) => {
             соглашение и политику конфиндециальности
           </Text>
           <Button
-            disabled={!isPhoneNumberValid || !phoneNumber}
+            disabled={!isPhoneNumberValid || phoneNumber.length < 11}
             title="Отправить код"
             size="lg"
-            onPress={handlePhoneNumberPress}
+            onPress={nextStep}
           />
         </View>
       </ScrollView>
@@ -82,9 +83,15 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 25,
+    marginBottom: MARGIN_BOTTOM,
   },
   text: {
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
     textAlign: "center",
     marginBottom: 16,
   },
