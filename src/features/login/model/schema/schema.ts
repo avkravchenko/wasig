@@ -5,7 +5,7 @@ const phoneSchema = yup
   .string()
   .phone("RU", "Please enter a valid phone number")
   .required()
-  .min(11)
-  .max(11);
+  .min(12)
+  .max(12);
 
 export default phoneSchema;

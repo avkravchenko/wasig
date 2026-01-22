@@ -5,21 +5,36 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
+  Modal,
+  TextInput,
+  ActivityIndicator,
 } from "react-native";
 import InputsChain from "@/shared/ui/InputsChain";
 import commonStyles from "@/shared/styles";
 import Button from "@/shared/ui/Button";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { VERTICAL_OFFSET, MARGIN_BOTTOM } from "@/shared/constants";
-import useCode from "../model/hooks/useCode";
 
-const AuthWithPhoneStepTwo = () => {
-  const { code, isCodeFilled, isCodeConfirmed, handleCodeChange } = useCode();
-  const [seconds, setSeconds] = useState(60);
+interface AuthWithPhoneStepTwoProps {
+  isCodeConfirmed: boolean;
+  isLoading: boolean;
+  seconds: number;
+  handleSecondsChange: (seconds: number) => void;
+  handleCodeSubmit: (text: string) => void;
+  handleResendCode: () => void;
+}
 
+const AuthWithPhoneStepTwo = ({
+  isCodeConfirmed,
+  isLoading,
+  seconds,
+  handleSecondsChange,
+  handleCodeSubmit,
+  handleResendCode,
+}: AuthWithPhoneStepTwoProps) => {
   useEffect(() => {
     const timer = setInterval(() => {
-      setSeconds((prevSeconds) => prevSeconds - 1);
+      handleSecondsChange(seconds - 1);
     }, 1000);
 
     if (seconds === 0) {
@@ -42,25 +57,29 @@ const AuthWithPhoneStepTwo = () => {
         <View style={styles.inputContainer}>
           <View>
             <Text style={commonStyles.titleText}>Введите код из SMS</Text>
+
             <InputsChain
-              value={code}
               isCodeConfirmed={isCodeConfirmed}
-              isCodeFilled={isCodeFilled}
               placeholder="-"
               placeholderPlacement="center"
-              keyBoardType="numeric"
-              onPress={() => {}}
-              onChange={handleCodeChange}
+              keyBoardType="number-pad"
+              onCodeFilled={handleCodeSubmit}
             />
           </View>
           <Button
-            disabled={seconds > 0 || !isCodeFilled}
+            disabled={seconds > 0}
             title={`Повторно отправить код ${seconds > 0 ? `через ${seconds}` : ""}`}
             size="lg"
-            onPress={() => {}}
+            onPress={handleResendCode}
           />
         </View>
       </ScrollView>
+      <Modal transparent presentationStyle="overFullScreen" visible={isLoading}>
+        <View style={styles.modalContainer}>
+          <ActivityIndicator size="small" color="#fff" />
+          <Text style={styles.loadingText}>Вспоминаем, кто вы такой..</Text>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
@@ -76,6 +95,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 16,
     marginBottom: MARGIN_BOTTOM,
+  },
+  modalContainer: {
+    backgroundColor: "#19191A99",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    color: "#fff",
+    marginTop: 16,
+  },
+  hiddenInput: {
+    height: 0,
+    opacity: 0, // Делаем невидимым
   },
 });
 

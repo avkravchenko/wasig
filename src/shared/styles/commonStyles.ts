@@ -8,6 +8,12 @@ const commonStyles = StyleSheet.create({
     marginVertical: 16,
     letterSpacing: 0.5,
   },
+  hintText: {
+    fontSize: 14,
+    textAlign: "center",
+    marginVertical: 8,
+    letterSpacing: 0.5,
+  },
 });
 
 export default commonStyles;

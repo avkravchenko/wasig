@@ -1,29 +1,33 @@
 import {
+  Text,
+  View,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  StyleSheet,
-  Text,
-  View,
 } from "react-native";
-import TextField from "@/shared/ui/TextField";
-import Button from "@/shared/ui/Button";
-import useFocus from "@/shared/lib/useFocus";
 import commonStyles from "@/shared/styles";
-import { VERTICAL_OFFSET, MARGIN_BOTTOM } from "@/shared/constants";
+import { VERTICAL_OFFSET } from "@/shared/constants";
+import TextField from "@/shared/ui/TextField/TextField";
+import Button from "@/shared/ui/Button";
+import { MARGIN_BOTTOM } from "@/shared/constants";
+import { useState } from "react";
+import useFocus from "@/shared/lib/useFocus";
+import { StyleSheet } from "react-native";
+import { sharedMasks } from "@/shared/masks";
 
-const AuthWithPhoneStepOne = ({
-  phoneNumber,
-  isPhoneNumberValid,
-  handlePhoneNumberChange,
-  postPhoneNumber,
+const UserBirthDay = ({
+  onNextStep,
+  onPrevStep,
 }: {
-  phoneNumber: string;
-  isPhoneNumberValid: boolean;
-  handlePhoneNumberChange: (text: string) => void;
-  postPhoneNumber: () => void;
+  onNextStep: () => void;
+  onPrevStep: () => void;
 }) => {
+  const [date, setDate] = useState("");
   const { inputRef } = useFocus();
+
+  const handleDateChange = (text: string) => {
+    setDate(text);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -36,30 +40,29 @@ const AuthWithPhoneStepOne = ({
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.inputContainer}>
-          <Text style={commonStyles.titleText}>Вход по номеру телефона</Text>
+          <Text numberOfLines={2} style={commonStyles.titleText}>
+            Укажи дату рождения
+          </Text>
+          <Text style={styles.hintText}>
+            Для некоторых пользователей это может быть значимо
+          </Text>
           <TextField
-            value={phoneNumber}
             ref={inputRef}
-            placeholder="Номер телефона"
-            keyBoardType="phone-pad"
-            onChange={handlePhoneNumberChange}
+            mask={sharedMasks.date}
+            placeholder="дд.мм.гггг"
+            keyBoardType="numeric"
+            onChange={handleDateChange}
+            onPress={() => {}}
+            value={date}
           />
-          {phoneNumber.length > 0 ? (
-            <Text style={styles.errorText}>
-              {isPhoneNumberValid ? "" : "Неправильно набран номер"}
-            </Text>
-          ) : null}
         </View>
         <View style={styles.buttonContainer}>
-          <Text style={styles.text}>
-            Нажимая кнопку “Отправить код”, вы принимаете пользовательское
-            соглашение и политику конфиндециальности
-          </Text>
+          {/* TODO add validation */}
           <Button
-            disabled={!isPhoneNumberValid || phoneNumber.length < 11}
-            title="Отправить код"
+            disabled={date.length < 2}
+            title="Далее"
             size="lg"
-            onPress={postPhoneNumber}
+            onPress={onNextStep}
           />
         </View>
       </ScrollView>
@@ -73,6 +76,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  titleWidth: {
+    width: "70%",
+  },
   title: {
     fontSize: 18,
     fontWeight: "bold",
@@ -82,6 +88,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     alignItems: "center",
     justifyContent: "center",
+    maxWidth: 300,
     marginTop: 16,
   },
   buttonContainer: {
@@ -89,9 +96,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: MARGIN_BOTTOM,
   },
-  text: {
+  hintText: {
     textAlign: "center",
     marginBottom: 16,
+    fontWeight: "thin",
+    fontSize: 14,
   },
   errorText: {
     color: "red",
@@ -101,4 +110,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AuthWithPhoneStepOne;
+export default UserBirthDay;

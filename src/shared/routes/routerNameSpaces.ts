@@ -7,4 +7,8 @@ export const ROUTER_NAME_SPACES = {
     NAME: "login-entry-point",
     SCREEN: "login-entry-point",
   },
+  USER_PROFILE: {
+    NAME: "user-profile",
+    SCREEN: "user-profile",
+  },
 };
