@@ -10,30 +10,11 @@ import { VERTICAL_OFFSET } from "@/shared/constants";
 import TextField from "@/shared/ui/TextField/TextField";
 import Button from "@/shared/ui/Button";
 import { MARGIN_BOTTOM } from "@/shared/constants";
-import { useEffect, useState } from "react";
-import useFocus from "@/shared/lib/useFocus";
 import { StyleSheet } from "react-native";
-import useAccessToken from "@/shared/lib/useAccessToken";
+import useName from "../model/hooks/useName";
 
 const UserName = ({ onNextStep }: { onNextStep: () => void }) => {
-  const [name, setName] = useState("");
-  const { inputRef } = useFocus();
-
-  const handleNameChange = (text: string) => {
-    setName(text);
-  };
-
-  const { handleGetAccessToken } = useAccessToken();
-
-  const heh = async () => {
-    const accessToken = await handleGetAccessToken();
-    console.log(accessToken);
-    console.log("sdfsdf");
-  };
-
-  useEffect(() => {
-    heh();
-  }, [name]);
+  const { inputRef, name, setName, submitName } = useName(onNextStep);
 
   return (
     <KeyboardAvoidingView
@@ -51,10 +32,9 @@ const UserName = ({ onNextStep }: { onNextStep: () => void }) => {
           </Text>
           <TextField
             ref={inputRef}
-            isValid={true}
             placeholder="Твое имя"
             keyBoardType="default"
-            onChange={handleNameChange}
+            onChange={setName}
             onPress={() => {}}
             value={name}
           />
@@ -64,7 +44,7 @@ const UserName = ({ onNextStep }: { onNextStep: () => void }) => {
             disabled={name.length < 2}
             title="Далее"
             size="lg"
-            onPress={onNextStep}
+            onPress={submitName}
           />
         </View>
       </ScrollView>

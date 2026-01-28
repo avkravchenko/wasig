@@ -1,10 +1,10 @@
-import { View, Text } from "react-native";
 import { useState } from "react";
 import UserName from "@/features/userProfile/ui/UserName";
 import UserBirthDay from "@/features/userProfile/ui/UserBirthDay";
 import UserHomeTown from "@/features/userProfile/ui/UserHomeTown";
 import UserSex from "@/features/userProfile/ui/UserSex";
-import ErrorComponent from "@/shared/ui/ErrorComponent/ErrorComponent";
+import UserHobbies from "@/features/userProfile/ui/UserHobbies";
+import ErrorComponent from "@/shared/ui/ErrorComponent";
 
 const UserProfileStepper = () => {
   const [step, setStep] = useState(1);
@@ -13,29 +13,21 @@ const UserProfileStepper = () => {
     setStep(step + 1);
   };
 
-  const handlePrevStep = () => {
-    setStep(step - 1);
-  };
-
   switch (step) {
     case 1: {
       return <UserName onNextStep={handleNextStep} />;
-      break;
     }
     case 2: {
-      return (
-        <UserBirthDay onNextStep={handleNextStep} onPrevStep={handlePrevStep} />
-      );
+      return <UserBirthDay onNextStep={handleNextStep} />;
     }
     case 3: {
-      return (
-        <UserHomeTown onNextStep={handleNextStep} onPrevStep={handlePrevStep} />
-      );
+      return <UserSex onNextStep={handleNextStep} />;
     }
     case 4: {
-      return (
-        <UserSex onNextStep={handleNextStep} onPrevStep={handlePrevStep} />
-      );
+      return <UserHomeTown onNextStep={handleNextStep} />;
+    }
+    case 5: {
+      return <UserHobbies onNextStep={handleNextStep} />;
     }
     default: {
       return <ErrorComponent />;

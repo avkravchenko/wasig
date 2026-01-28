@@ -1,72 +1,51 @@
 import {
   Text,
   View,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
 } from "react-native";
 import commonStyles from "@/shared/styles";
-import { VERTICAL_OFFSET } from "@/shared/constants";
-import TextField from "@/shared/ui/TextField/TextField";
 import Button from "@/shared/ui/Button";
 import { MARGIN_BOTTOM } from "@/shared/constants";
-import { useState } from "react";
-import useFocus from "@/shared/lib/useFocus";
 import { StyleSheet } from "react-native";
+import RadioItem from "@/shared/ui/RadioItem";
+import useGender from "../model/hooks/useGender";
 
-const UserSex = ({
-  onNextStep,
-  onPrevStep,
-}: {
-  onNextStep: () => void;
-  onPrevStep: () => void;
-}) => {
-  const [sex, setSex] = useState("");
-  const { inputRef } = useFocus();
-
-  const handleSexChange = (text: string) => {
-    setSex(text);
-  };
+const UserSex = ({ onNextStep }: { onNextStep: () => void }) => {
+  const { genders, handleGenderSelect, submitGender } = useGender(onNextStep);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-      keyboardVerticalOffset={Platform.OS === "ios" ? VERTICAL_OFFSET : 0}
+    <View
+      style={{ flex: 1, alignItems: "center", justifyContent: "space-between" }}
     >
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.inputContainer}>
-          <Text numberOfLines={2} style={commonStyles.titleText}>
-            Укажи дату рождения
-          </Text>
-          <Text style={styles.hintText}>
-            Для некоторых пользователей это может быть значимо
-          </Text>
-          {/* TODO radio buttons */}
-          {/* <TextField
-            ref={inputRef}
-            isValid={true}
-            placeholder="дд.мм.гггг"
-            keyBoardType="default"
-            onChange={handleDateChange}
-            onPress={() => {}}
-            value={date}
-          /> */}
-        </View>
-        <View style={styles.buttonContainer}>
-          {/* TODO add validation */}
-          <Button
-            disabled={sex.length < 2}
-            title="Далее"
-            size="lg"
-            onPress={onNextStep}
-          />
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      <View style={styles.inputContainer}>
+        <Text numberOfLines={2} style={commonStyles.titleText}>
+          Укажи свой пол
+        </Text>
+        <Text style={styles.hintText}>
+          Для некоторых пользователей это может быть значимо
+        </Text>
+
+        <RadioItem
+          key={`gender-${genders[0].sex}`}
+          label={genders[0].label}
+          selected={genders[0].selected}
+          onPress={() => handleGenderSelect(genders[0].sex)}
+        />
+        <RadioItem
+          key={`gender-${genders[1].sex}`}
+          label={genders[1].label}
+          selected={genders[1].selected}
+          onPress={() => handleGenderSelect(genders[1].sex)}
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button
+          disabled={!genders.some((item) => item.selected)}
+          title="Далее"
+          size="lg"
+          onPress={submitGender}
+        />
+      </View>
+    </View>
   );
 };
 
@@ -93,7 +72,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     alignItems: "center",
-    justifyContent: "center",
     marginBottom: MARGIN_BOTTOM,
   },
   hintText: {

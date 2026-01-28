@@ -1,17 +1,16 @@
 import { useEffect, useState, useCallback } from "react";
 import { postCode } from "@/features/login/api";
-import useAccessToken from "@/shared/lib/useAccessToken";
 import useRefreshToken from "@/shared/lib/useRefreshToken";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import ROUTER_NAME_SPACES from "@/shared/routes";
+import { setAccessToken } from "@/shared/lib/auth";
 
 type RootStackParamList = {
   [ROUTER_NAME_SPACES.USER_PROFILE.NAME]: undefined;
 };
 
 const useCode = (phoneNumber: string) => {
-  const { handleSetAccessToken } = useAccessToken();
   const { handleSetRefreshToken } = useRefreshToken();
   const [isCodeLoading, setIsCodeLoading] = useState(false);
   const [code, setCode] = useState("");
@@ -38,7 +37,7 @@ const useCode = (phoneNumber: string) => {
       if (response.status == 200) {
         setIsCodeConfirmed(true);
 
-        await handleSetAccessToken(response.data.accessToken);
+        await setAccessToken(response.data.accessToken);
         await handleSetRefreshToken(response.data.refreshToken);
         navigation.navigate(ROUTER_NAME_SPACES.USER_PROFILE.NAME);
       }
@@ -47,7 +46,6 @@ const useCode = (phoneNumber: string) => {
       console.log(error);
 
       setIsCodeConfirmed(false);
-      console.log(isCodeConfirmed);
     } finally {
       setIsCodeLoading(false);
     }

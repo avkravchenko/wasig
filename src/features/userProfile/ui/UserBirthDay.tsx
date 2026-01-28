@@ -10,24 +10,16 @@ import { VERTICAL_OFFSET } from "@/shared/constants";
 import TextField from "@/shared/ui/TextField/TextField";
 import Button from "@/shared/ui/Button";
 import { MARGIN_BOTTOM } from "@/shared/constants";
-import { useState } from "react";
-import useFocus from "@/shared/lib/useFocus";
 import { StyleSheet } from "react-native";
 import { sharedMasks } from "@/shared/masks";
+import useBirthDate from "../model/hooks/useBirthDate";
 
 const UserBirthDay = ({
   onNextStep,
-  onPrevStep,
 }: {
   onNextStep: () => void;
-  onPrevStep: () => void;
 }) => {
-  const [date, setDate] = useState("");
-  const { inputRef } = useFocus();
-
-  const handleDateChange = (text: string) => {
-    setDate(text);
-  };
+const { inputRef, date, handleDateChange, submitBirthDate } = useBirthDate(onNextStep);
 
   return (
     <KeyboardAvoidingView
@@ -59,10 +51,15 @@ const UserBirthDay = ({
         <View style={styles.buttonContainer}>
           {/* TODO add validation */}
           <Button
-            disabled={date.length < 2}
+            disabled={date.length < 10}
             title="Далее"
             size="lg"
-            onPress={onNextStep}
+            onPress={() => {
+              console.log('Next button pressed');
+              submitBirthDate().catch(error => {
+                console.error('Error in submitBirthDate:', error);
+              });
+            }}
           />
         </View>
       </ScrollView>

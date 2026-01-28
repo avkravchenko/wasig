@@ -1,3 +1,4 @@
 import getTowns from "./getTowns";
+import postUserName from "./postUserName";
 
-export { getTowns };
+export { getTowns, postUserName };

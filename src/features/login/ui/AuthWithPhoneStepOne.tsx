@@ -11,6 +11,7 @@ import Button from "@/shared/ui/Button";
 import useFocus from "@/shared/lib/useFocus";
 import commonStyles from "@/shared/styles";
 import { VERTICAL_OFFSET, MARGIN_BOTTOM } from "@/shared/constants";
+import { sharedMasks } from "@/shared/masks";
 
 const AuthWithPhoneStepOne = ({
   phoneNumber,
@@ -40,8 +41,9 @@ const AuthWithPhoneStepOne = ({
           <TextField
             value={phoneNumber}
             ref={inputRef}
+            mask={sharedMasks.phone}
             placeholder="Номер телефона"
-            keyBoardType="phone-pad"
+            keyBoardType="number-pad"
             onChange={handlePhoneNumberChange}
           />
           {phoneNumber.length > 0 ? (
