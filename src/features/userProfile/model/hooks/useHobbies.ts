@@ -9,20 +9,24 @@ const useHobbies = () => {
     const [searchedHobbies, setSearchedHobbies] = useState<Hobby[]>([]);
     const debouncedSearch = useDebounce(search, 500);
 
-    const [hobbiesAndCategories, setHobbiesAndCategories] = useState<CategoriesWithHobbies[]>([]);
-
-    const [selectedHobbies, setSelectedHobbies] = useState<string[]>([]);
-
-
     const [loading, setLoading] = useState<boolean>(false);
+    const [hobbiesAndCategories, setHobbiesAndCategories] = useState<CategoriesWithHobbies[]>([]);
+    const [selectedHobbies, setSelectedHobbies] = useState<Hobby[]>([]);
 
-    const handleSelectHobby = (hobby: string) => {
+    const [customHobbies, setCustomHobbies] = useState<Hobby[]>([]);
+
+    const addCustomHobby = (hobby: Hobby) => {
+        setCustomHobbies((prev) => [...prev, hobby]);
+    }
+
+    const handleSelectHobby = (hobby: Hobby) => {
         setSelectedHobbies((prev) => (prev.includes(hobby) ? prev.filter((item) => item !== hobby) : [...prev, hobby]));
     }
 
     const searchHobbies = async () => {
-        setLoading(true);
         try {
+            setLoading(true);
+
             const result = await getAllHobbies(debouncedSearch);
             setLoading(false);
             
@@ -34,6 +38,7 @@ const useHobbies = () => {
         } finally {
             setLoading(false);
         }
+
     }
 
     const getHobbiesAndCategories = async () => {
@@ -55,12 +60,15 @@ const useHobbies = () => {
     }, [])
 
     return {
+        loading,
         hobbiesAndCategories,
         searchedHobbies,
         search,
         selectedHobbies,
         setSearch,
         handleSelectHobby,
+        addCustomHobby,
+        customHobbies,
     }
 }
 

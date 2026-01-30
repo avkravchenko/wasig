@@ -6,15 +6,19 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Modal,
 } from "react-native";
 import TextField from "@/shared/ui/TextField";
 import Button from "@/shared/ui/Button";
 import { VERTICAL_OFFSET, MARGIN_BOTTOM } from "@/shared/constants";
 import useHobbies from "@/features/userProfile/model/hooks/useHobbies";
 import ChipsGroup from "@/shared/ui/ChipsGroup";
+import useModal from "@/shared/lib/useModal";
+import { Chip } from "@/shared/ui";
 
 const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
-  const { search, hobbiesAndCategories, searchedHobbies, selectedHobbies, setSearch, handleSelectHobby } = useHobbies() ;
+  const { search, hobbiesAndCategories, selectedHobbies, setSearch, handleSelectHobby, loading, addCustomHobby, customHobbies } = useHobbies() ;
+  const { visible, setVisible } = useModal();
 
   return (
     <KeyboardAvoidingView
@@ -39,19 +43,32 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
 
         <FlatList
           data={hobbiesAndCategories}
-          renderItem={({ item }) => (
-            <ChipsGroup 
-              groupTitle={item.category} 
-              selectedItems={selectedHobbies} 
-              handleSelect={handleSelectHobby} 
-              items={item.interests} 
-            />
-          )}
+          renderItem={({ item, index }) => {
+            return (
+              <View>
+                <ChipsGroup 
+                  value={selectedHobbies}
+                  items={item.interests}
+                  groupTitle={item.category} 
+                  handleSelect={handleSelectHobby} 
+                />
+                {/* TODO: finish custom hobbies */}
+                {index === hobbiesAndCategories.length - 1 && (<View>
+                  <ChipsGroup 
+                    value={customHobbies}
+                    items={customHobbies}
+                    groupTitle="Свои хобби" 
+                    handleSelect={handleSelectHobby} 
+                  />
+                </View>)}
+              </View>
+            )
+          }}
+
           keyExtractor={(item) => item.category}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 16, flex: 1, flexDirection: "row", flexWrap: "wrap" }}
-          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 16 }}
         />
 
         <View style={styles.buttonContainer}>
@@ -63,6 +80,17 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
           />
         </View>
       </View>
+      <Modal
+        visible={visible}
+        animationType="slide"
+        presentationStyle="pageSheet" // Нативный стиль iOS
+        onRequestClose={() => setVisible(false)}
+      >
+        <View style={{ padding: 20 }}>
+          <Text>Контент модального окна</Text>
+          <Button title="Закрыть" onPress={() => setVisible(false)} />
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 };

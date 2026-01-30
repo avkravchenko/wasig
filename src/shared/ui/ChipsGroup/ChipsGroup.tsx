@@ -1,44 +1,45 @@
-
 import { FlatList, Text, View } from "react-native";
 import Chip from "../Chip/Chip";
 
-interface Hobby {
-    id: number;
+
+interface BaseItem {
+    id: string | number;
     name: string;
-    category: string;
-    isCustom: boolean;
 }
 
-const ChipsGroup = ({
+interface ChipsGroupProps<T extends BaseItem> {
+    value: T[];
+    items: T[];
+    groupTitle: string;
+    handleSelect: (item: T) => void;
+}
+
+const ChipsGroup = <T extends BaseItem>({
     groupTitle,
-    selectedItems,
+    value,
     handleSelect,
     items,
-}: {
-    groupTitle: string;
-    selectedItems: {id: number, selected: boolean}[];
-    handleSelect: (item: {id: number, selected: boolean}) => void;
-    items: {id: number, name: string}[];
-}) => {
+}: ChipsGroupProps<T>) => {
+    if (!items.length || !groupTitle) return null;
 
     return (
-        <View>
+        <View style={{ marginVertical: 16, gap: 8 }}>
             <Text>{groupTitle}</Text>
             <FlatList
                 data={items}
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item) => String(item.id)}
                 renderItem={({ item }) => (
                     <Chip
                         title={item.name}
-                        selected={selectedItems.some((chip) => chip.id === item.id)}
-                        onPress={() => {
-                            handleSelect(item);
-                        }}  
+                        selected={value.some(v => v.id === item.id)}
+                        onPress={() => handleSelect(item)}
                     />
                 )}
-                keyExtractor={(item) => item.id.toString()}
+                style={{ flexDirection: "row", flexWrap: "wrap" }}
             />
         </View>
-    )
-}
+    );
+};
 
 export default ChipsGroup;
