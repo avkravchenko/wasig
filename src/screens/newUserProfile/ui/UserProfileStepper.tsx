@@ -7,7 +7,7 @@ import UserHobbies from "@/features/userProfile/ui/UserHobbies";
 import ErrorComponent from "@/shared/ui/ErrorComponent";
 
 const UserProfileStepper = () => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(5);
 
   const handleNextStep = () => {
     setStep(step + 1);

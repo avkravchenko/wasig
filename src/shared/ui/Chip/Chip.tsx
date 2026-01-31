@@ -14,7 +14,6 @@ const Chip = ({ title, selected, onPress }: ChipProps) => {
       onPress={onPress}
     >
       <Text style={[styles.text, selected && styles.selectedText]}>{title}</Text>
-
     </TouchableOpacity>
   );
 };

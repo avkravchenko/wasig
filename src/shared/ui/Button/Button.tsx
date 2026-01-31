@@ -34,7 +34,7 @@ const Button = ({
     >
       {children}
       {title ? (
-        <Text style={{ marginLeft: children ? 8 : 0 }}>{title}</Text>
+        <Text style={{ marginLeft: children ? 8 : 0, color: type === "primary" ? "#3B3D4B" : "#fff" }}>{title}</Text>
       ) : null}
     </TouchableOpacity>
   );

@@ -15,7 +15,8 @@ export const styles = StyleSheet.create({
     backgroundColor: "#E7EAEF",
   },
   secondary: {
-    backgroundColor: "gray",
+    color: "#fff",
+    backgroundColor: "#30323E",
   },
   sm: {
     width: 109,
