@@ -29,6 +29,7 @@ const LoginEntryPoint = ({
           <View style={styles.inputContainer}>
             <Text style={styles.title}>Вход по номеру телефона</Text>
             <TextField
+              size="lg"
               value={""}
               onChange={() => {}}
               onPress={() => selectAuthWay("phone")}
@@ -51,7 +52,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 16,
   },
   content: {
     flex: 1,

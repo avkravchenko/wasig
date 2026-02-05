@@ -140,10 +140,11 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    paddingHorizontal: 16,
+    alignItems: "center",
   },
 
   inputWrapper: {
+    alignItems: "center",
     marginTop: 16,
     width: "100%",
   },

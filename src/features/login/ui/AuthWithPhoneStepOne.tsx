@@ -41,6 +41,7 @@ const AuthWithPhoneStepOne = ({
           <TextField
             value={phoneNumber}
             ref={inputRef}
+            size="lg"
             mask={sharedMasks.phone}
             placeholder="Номер телефона"
             keyBoardType="number-pad"

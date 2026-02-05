@@ -10,7 +10,7 @@ const Stack = createNativeStackNavigator();
 function Navigation() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{ contentStyle: { paddingHorizontal: 0 } }}>
         <Stack.Screen
           name={ROUTER_NAME_SPACES.LOGIN_ENTRY_POINT.NAME}
           component={AuthScreen}

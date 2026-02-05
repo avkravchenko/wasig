@@ -4,24 +4,25 @@ export const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderRadius: 100,
+    width: "100%",
   },
   primary: {
     borderColor: "#F3F5F7",
     backgroundColor: "#F3F5F7",
     height: 48,
-    width: 319,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 100,
   },
   sm: {
-    maxWidth: 77,
+    maxWidth: 79,
     height: 48,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 100,
   },
   lg: {
+    minWidth: "100%",
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 100,

@@ -41,7 +41,33 @@ const useHobbies = (setVisible: (visible: boolean) => void) => {
             return;
         }
 
-        setSelectedHobbies((prev) => (prev.includes(hobby) ? prev.filter((item) => item !== hobby) : [...prev, hobby]));
+        setSelectedHobbies((prev) => (prev.some((item) => item.id === hobby.id) ? prev.filter((item) => item.id !== hobby.id) : [...prev, hobby]));
+    }
+
+    const normalizeHobbies = (hobbies: Hobby[]): CategoriesWithHobbies[] => {
+        const map: Record<string, Hobby[]> = {};
+        const result: CategoriesWithHobbies[] = [];
+        
+        if (hobbies.length === 0) {
+            return [];
+        }
+
+        hobbies.forEach((item) => {
+            if (map[item.category]) {
+                map[item.category].push(item);
+            } else {
+                map[item.category] = [item];
+            }
+        })
+
+        for (const key in map) {
+            result.push({
+                category: key,
+                interests: map[key],
+            })
+        }
+
+        return result;
     }
 
     const searchHobbies = async () => {
@@ -49,10 +75,12 @@ const useHobbies = (setVisible: (visible: boolean) => void) => {
             setLoading(true);
 
             const result = await getAllHobbies(debouncedSearch);
-            setLoading(false);
+
+            console.log(result.data);
+            
             
             if (result.status === 200) {
-            setSearchedHobbies(result.data);
+                setHobbiesAndCategories(normalizeHobbies(result.data));
             }
         } catch (error) {
             console.log(error);
@@ -73,7 +101,12 @@ const useHobbies = (setVisible: (visible: boolean) => void) => {
     useEffect(() => {
         if (search) {
             searchHobbies();
+        } else {
+            getHobbiesAndCategories();
         }
+
+        console.log(JSON.stringify(hobbiesAndCategories));
+        
     }, [debouncedSearch]);
 
     useEffect(() => {
