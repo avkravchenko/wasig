@@ -1,6 +1,9 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  disabled: {
+    opacity: 0.5,
+  },
   button: {
     borderRadius: 100,
     flexDirection: "row",
@@ -12,7 +15,8 @@ export const styles = StyleSheet.create({
     backgroundColor: "#E7EAEF",
   },
   secondary: {
-    backgroundColor: "gray",
+    color: "#fff",
+    backgroundColor: "#30323E",
   },
   sm: {
     width: 109,

@@ -1,8 +1,8 @@
-import { Text, TouchableOpacity } from "react-native";
-import { Image } from "expo-image";
+import { Text, TouchableOpacity, StyleSheet } from "react-native";
 import { styles } from "@/shared/ui/Button/ButtonStyles";
 
 type ButtonPropsType = {
+  disabled?: boolean;
   title?: string;
   type?: "primary" | "secondary";
   size?: "sm" | "lg";
@@ -12,6 +12,7 @@ type ButtonPropsType = {
 };
 
 const Button = ({
+  disabled = false,
   title = "",
   type = "primary",
   size = "sm",
@@ -22,7 +23,9 @@ const Button = ({
   return (
     <TouchableOpacity
       onPress={onPress}
+      disabled={disabled}
       style={[
+        disabled && styles.disabled,
         styles[type],
         styles[size],
         styles.button,
@@ -31,7 +34,7 @@ const Button = ({
     >
       {children}
       {title ? (
-        <Text style={{ marginLeft: children ? 8 : 0 }}>{title}</Text>
+        <Text style={{ marginLeft: children ? 8 : 0, color: type === "primary" ? "#3B3D4B" : "#fff" }}>{title}</Text>
       ) : null}
     </TouchableOpacity>
   );
