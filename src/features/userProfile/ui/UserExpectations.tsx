@@ -5,7 +5,12 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } fr
 import useExpectations from "../model/hooks/useExpectations";
 
 const UserExpectations = ({ onNextStep }: { onNextStep: () => void }) => {
-    const { expectations, inputRef, handleExpectationsChange } = useExpectations();
+    const { 
+      expectations,
+      inputRef,
+      handleExpectationsChange,
+      submitExpectations 
+    } = useExpectations({ onNextStep });
 
    return (
     <KeyboardAvoidingView
@@ -39,7 +44,7 @@ const UserExpectations = ({ onNextStep }: { onNextStep: () => void }) => {
             disabled={!expectations}
             title="Далее"
             size="lg"
-            onPress={onNextStep}
+            onPress={submitExpectations}
           />
         </View>
       </ScrollView>

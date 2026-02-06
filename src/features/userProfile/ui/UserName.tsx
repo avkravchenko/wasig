@@ -28,7 +28,7 @@ const UserName = ({ onNextStep }: { onNextStep: () => void }) => {
       >
         <View style={styles.inputContainer}>
           <Text numberOfLines={2} style={commonStyles.titleText}>
-            Привет, давай немного познакомимся
+            Привет, давай немного {'\n'} познакомимся
           </Text>
           <TextField
             ref={inputRef}
@@ -70,7 +70,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     alignItems: "center",
     justifyContent: "center",
-    maxWidth: 300,
     marginTop: 16,
   },
   buttonContainer: {

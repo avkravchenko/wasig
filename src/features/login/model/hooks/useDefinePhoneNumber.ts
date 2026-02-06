@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import phoneSchema from "../schema/schema";
-import postPhone from "@/features/login/api/postPhone/postPhone";
+import { postPhone } from "@/features/login/api/postPhone/postPhone";
 
 const useDefinePhoneNumber = (nextStep: () => void, step: number) => {
   const [phoneNumber, setPhoneNumber] = useState("");

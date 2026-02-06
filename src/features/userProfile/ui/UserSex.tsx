@@ -67,7 +67,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     alignItems: "center",
     justifyContent: "center",
-    maxWidth: 300,
     marginTop: 16,
   },
   buttonContainer: {

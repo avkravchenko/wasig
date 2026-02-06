@@ -14,25 +14,30 @@ import { VERTICAL_OFFSET, MARGIN_BOTTOM } from "@/shared/constants";
 import useHobbies from "@/features/userProfile/model/hooks/useHobbies";
 import ChipsGroup from "@/shared/ui/ChipsGroup";
 import useModal from "@/shared/lib/useModal";
+import { Chip } from "@/shared/ui";
 
 const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
   const { visible, setVisible } = useModal();
   const {
-    search,
+    loading,
     hobbiesAndCategories,
+    search,
     selectedHobbies,
-    customHobbies,
-    customHobby,
-    setCustomHobby,
-    setSearch,
-    handleSelectHobby,
+    selectedCustomHobbies,
+    customHobbyInput,
+    customHobbyToDisplay,
     addCustomHobby,
-  } = useHobbies(setVisible);
+    selectCustomHobby,
+    setSearch,
+    setSelectedHobbies,
+    setSelectedCustomHobbies,
+    setCustomHobbyInput,
+    submitInterests,
+  } = useHobbies(setVisible, onNextStep);
 
 
   return (
     <>
-      {/* ОСНОВНОЙ ЭКРАН */}
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -41,7 +46,6 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
         <View style={styles.screen}>
           <Text style={commonStyles.titleText}>Чем ты интересуешься?</Text>
           <Text style={commonStyles.hintText}>Не более 3х</Text>
-
           <View style={styles.inputWrapper}>
             <TextField
               value={search}
@@ -56,41 +60,61 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{ paddingBottom: 16 }}
-            renderItem={({ item, index }) => (
-              <View>
-                <ChipsGroup
-                  value={selectedHobbies}
-                  items={item.interests}
-                  groupTitle={item.category}
-                  handleSelect={handleSelectHobby}
-                />
-
-                {index === hobbiesAndCategories.length - 1 && (
-                  <View>
+            ListEmptyComponent={<Text>No hobbies found</Text>}
+            renderItem={({ item, index }) => {
+                return (
+                  <>
                     <ChipsGroup
-                      value={customHobbies}
-                      items={customHobbies}
-                      groupTitle="Свои интересы"
-                      handleSelect={handleSelectHobby}
+                      value={selectedHobbies}
+                      items={item.interests}
+                      groupTitle={item.category}
+                      getId={(item) => item.id}
+                      getLabel={(item) => item.name}
+                      onChange={setSelectedHobbies}
                     />
-                  </View>
-                )}
-              </View>
-            )}
+
+                    {index === hobbiesAndCategories.length - 1 &&  
+                      <View> 
+                        <Text>Свои интересы</Text>
+                        <View style={styles.addCustomWrapper}>
+                          <FlatList 
+                          data={customHobbyToDisplay}
+                          renderItem={({ item }) => 
+                            (
+                              <Chip 
+                                title={item.name} 
+                                selected={selectedCustomHobbies.has(item.id)}
+                                onPress={() => selectCustomHobby(item)}
+                              />
+                            ) 
+                          }
+                          keyExtractor={(item) => String(item.id)}
+                          style={{ flexDirection: "row", flexWrap: "wrap" }}
+                        />
+                        <Chip
+                          title="Добавить свой интерес"
+                          selected={false}
+                          onPress={() => setVisible(true)}
+                        />
+                        </View>
+                      </View>
+                    }
+                  </>
+                )
+            }}
           />
 
           <View style={styles.buttonContainer}>
             <Button
-              disabled={selectedHobbies.length === 0}
+              disabled={selectedHobbies.size === 0 && selectedCustomHobbies.size === 0}
               title="Далее"
               size="lg"
-              onPress={onNextStep}
+              onPress={submitInterests}
             />
-          </View>
+          </View> 
         </View>
       </KeyboardAvoidingView>
 
-      {/* МОДАЛКА */}
       <Modal
         isVisible={visible}
         swipeDirection="down"
@@ -102,7 +126,6 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
         propagateSwipe
       >
           <View style={styles.modalContent}>
-            {/* Индикатор свайпа */}
             <View style={styles.swipeIndicator} />
 
             <Text style={[commonStyles.titleText, { textAlign: "center" }]}>
@@ -111,8 +134,8 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
 
             <View style={styles.modalForm}>
               <TextField
-                value={customHobby}
-                onChange={setCustomHobby}
+                value={customHobbyInput}
+                onChange={setCustomHobbyInput}
                 placeholder="Интерес"
               />
 
@@ -120,15 +143,7 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
                 title="Добавить"
                 size="lg"
                 type="secondary"
-                onPress={() => {
-                  addCustomHobby({
-                    id: Date.now(),
-                    name: customHobby,
-                    category: "Свои хобби",
-                    isCustom: true,
-                  });
-                  setVisible(false);
-                }}
+                onPress={addCustomHobby}
               />
             </View>
           </View>
@@ -158,6 +173,8 @@ const styles = StyleSheet.create({
   addCustomWrapper: {
     marginTop: 8,
     gap: 8,
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
 
   modal: {
@@ -169,7 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 16,
     padding: 16,
-    paddingBottom: 32, // 👈 чтобы кнопка не упиралась в клавиатуру
+    paddingBottom: 32,
     minHeight: 250,
   },
 
@@ -184,6 +201,7 @@ const styles = StyleSheet.create({
 
   modalForm: {
     marginTop: 20,
+    alignItems: "center",
     gap: 16,
   },
 });

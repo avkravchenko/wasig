@@ -1,39 +1,41 @@
 import { FlatList, Text, View } from "react-native";
 import Chip from "../Chip/Chip";
 
-
-interface BaseItem {
-    id: string | number;
-    name: string;
+type ChipListProps<T> = {
+  items: T[]
+  value: Set<number>
+  groupTitle?: string
+  getId: (item: T) => number
+  getLabel: (item: T) => string
+  onChange: (value: Set<number>) => void
 }
 
-interface ChipsGroupProps<T extends BaseItem> {
-    value: T[];
-    items: T[];
-    groupTitle: string;
-    handleSelect: (item: T) => void;
-}
-
-const ChipsGroup = <T extends BaseItem>({
-    groupTitle,
-    value,
-    handleSelect,
-    items,
-}: ChipsGroupProps<T>) => {
-    if (!items.length || !groupTitle) return null;
+export function ChipGroup<T>({
+  items,
+  value,
+  groupTitle,
+  getId,
+  getLabel,
+  onChange,
+}: ChipListProps<T>) {
+    const toggle = (id: number) => {
+        const next = new Set(value)
+        next.has(id) ? next.delete(id) : next.add(id)
+        onChange(next)
+    }
 
     return (
-        <View style={{ marginVertical: 16, gap: 8 }}>
-            <Text>{groupTitle}</Text>
+        <View style={{ marginVertical: 16, gap: 8, minWidth: '100%'}}>
+            {groupTitle && <Text>{groupTitle}</Text>}
             <FlatList
                 data={items}
                 showsHorizontalScrollIndicator={false}
-                keyExtractor={(item) => String(item.id)}
+                keyExtractor={(item) => String(getId(item))}
                 renderItem={({ item }) => (
                     <Chip
-                        title={item.name}
-                        selected={value.some(v => v.id === item.id)}
-                        onPress={() => handleSelect(item)}
+                        title={getLabel(item)}
+                        selected={value.has(getId(item))}
+                        onPress={() => toggle(getId(item))}
                     />
                 )}
                 style={{ flexDirection: "row", flexWrap: "wrap" }}
@@ -42,4 +44,4 @@ const ChipsGroup = <T extends BaseItem>({
     );
 };
 
-export default ChipsGroup;
+export default ChipGroup;

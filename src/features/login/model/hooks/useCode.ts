@@ -33,15 +33,12 @@ const useCode = (phoneNumber: string) => {
       };
 
       const response = await postCode(requestBody);
+      setIsCodeConfirmed(true);
 
-      if (response.status == 200) {
-        setIsCodeConfirmed(true);
-
-        await setAccessToken(response.data.accessToken);
-        await handleSetRefreshToken(response.data.refreshToken);
-        navigation.navigate(ROUTER_NAME_SPACES.USER_PROFILE.NAME);
-      }
-      setIsCodeLoading(false);
+      await setAccessToken(response.data.accessToken);
+      await handleSetRefreshToken(response.data.refreshToken);
+      
+      navigation.navigate(ROUTER_NAME_SPACES.USER_PROFILE.NAME);
     } catch (error) {
       console.log(error);
 

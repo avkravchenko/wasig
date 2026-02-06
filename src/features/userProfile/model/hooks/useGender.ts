@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import postUserGender from '@/features/userProfile/api/postUserGender';
+import { useState } from "react";
+import { postUserGender } from "@/features/userProfile/api/postUserGender";
 
 const useGender = (onNextStep: () => void) => {
     const [gender, setGender] = useState<string>("");
@@ -19,10 +19,11 @@ const useGender = (onNextStep: () => void) => {
   };
 
   const submitGender = async () => {
-    const response = await postUserGender(gender.toUpperCase());
-    
-    if (response.status === 200) {
-        onNextStep();
+    try {
+      await postUserGender(gender.toUpperCase());
+      onNextStep();
+    } catch (error) {
+      console.log(error);
     }
   }
 

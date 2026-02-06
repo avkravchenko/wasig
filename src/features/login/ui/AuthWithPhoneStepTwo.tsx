@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   },
   hiddenInput: {
     height: 0,
-    opacity: 0, // Делаем невидимым
+    opacity: 0,
   },
 });
 

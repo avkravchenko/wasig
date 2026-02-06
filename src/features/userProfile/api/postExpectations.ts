@@ -1,8 +1,5 @@
 import { privateApi } from "@/shared/api/privateApi";
 
-const postExpectations = async (expectations: string) => {
-  const response = await privateApi.post("/user/expectations", { meetingGoal: expectations });
-  return response.data;
+export const postExpectations = async (expectations: string) => {
+  return await privateApi.post("/api/v1/onboarding/expectations", {expectations });
 };
-
-export default postExpectations;

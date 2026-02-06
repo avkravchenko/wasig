@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDebounce } from "@/shared/lib";
-import postUserTown from "../../api/postUserTown";
-import getTowns from "../../api/getTowns";
+import { postUserTown } from "../../api/postUserTown";
+import { getTowns } from "../../api/getTowns";
 import { Town } from "../types";
 
 const useTown = (onNextStep: () => void) => {
@@ -18,23 +18,24 @@ const useTown = (onNextStep: () => void) => {
   const submitUserHomeTown = async () => {
     if (!selectedTown?.id) return;
 
-   const response = await postUserTown(selectedTown?.id);
-
-   if (response.status === 200) {
-    console.log(response);
-    
-    onNextStep();
-   }
+    try {
+      await postUserTown(selectedTown?.id);
+      onNextStep();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  useEffect(() => {
-    const fetchTowns = async () => {
+  const fetchTowns = async () => {
+    try {
       const result = await getTowns(debouncedHomeTown);
-      if (result.status === 200) {
-        setTowns(result.data);
-      }
-    };
+      setTowns(result.data);
+    } catch (error) {
+      console.log(error);
+    }
+};
 
+  useEffect(() => {
     fetchTowns();
   }, [debouncedHomeTown]);
 

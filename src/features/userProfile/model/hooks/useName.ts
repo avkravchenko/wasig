@@ -1,5 +1,5 @@
 import { useState } from "react";
-import postUserName from "../../api/postUserName";
+import { postUserName } from "../../api/postUserName";
 import useFocus from "@/shared/lib/useFocus";
 
 const useName = (onNextStep: () => void) => {
@@ -9,10 +9,11 @@ const useName = (onNextStep: () => void) => {
     const submitName = async () => {
         if (name.length < 2) return;
 
-        const response = await postUserName(name);
-        
-        if (response.status === 200) {
+        try {
+            await postUserName(name);
             onNextStep();
+        } catch (error) {
+            console.log(error);
         }
     }
 

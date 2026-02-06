@@ -54,12 +54,7 @@ const { inputRef, date, handleDateChange, submitBirthDate } = useBirthDate(onNex
             disabled={date.length < 10}
             title="Далее"
             size="lg"
-            onPress={() => {
-              console.log('Next button pressed');
-              submitBirthDate().catch(error => {
-                console.error('Error in submitBirthDate:', error);
-              });
-            }}
+            onPress={submitBirthDate}
           />
         </View>
       </ScrollView>
@@ -85,7 +80,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     alignItems: "center",
     justifyContent: "center",
-    maxWidth: 300,
     marginTop: 16,
   },
   buttonContainer: {

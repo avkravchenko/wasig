@@ -74,12 +74,10 @@ const UserHomeTown = ({
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    paddingHorizontal: 16,
   },
 
   inputWrapper: {
     marginTop: 16,
-    width: "100%",
   },
 
   buttonContainer: {
