@@ -101,9 +101,15 @@ const useHobbies = (setVisible: (visible: boolean) => void, onNextStep: () => vo
     const submitInterests = async () => {
         setLoading(true);
         try {
+            const customHobbiesNames = customHobbyToDisplay.map((item) => item.name);
+            
             const request: PostUserInterestsRequest = {
-                interestIds: Array.from(selectedHobbies)
+                interestIds: Array.from(selectedHobbies),
             };
+            
+            if (customHobbiesNames.length > 0) {
+                request.customInterests = customHobbiesNames;
+            }
             
             await postUserInterests(request);
             onNextStep();
@@ -120,17 +126,13 @@ const useHobbies = (setVisible: (visible: boolean) => void, onNextStep: () => vo
         const fetchData = async () => {
             setLoading(true);
             try {
-                console.log('Fetching hobbies with search:', debouncedSearch);
                 if (debouncedSearch) {
                     const result = await getAllHobbies(debouncedSearch, controller.signal);
-                    console.log('Search result:', result);
                     
                     const normalizedHobbies = normalizeHobbies(result.data);
-                    console.log('Normalized hobbies:', normalizedHobbies);
                     setHobbiesAndCategories(normalizedHobbies);
                 } else {
                     const result = await getHobbiesByCategory(controller.signal);
-                    console.log('Categories result:', result);
                     setHobbiesAndCategories(result.data);
                 }
             } catch (error) {
@@ -158,7 +160,6 @@ const useHobbies = (setVisible: (visible: boolean) => void, onNextStep: () => vo
         selectCustomHobby,
         setSearch,
         setSelectedHobbies,
-        setSelectedCustomHobbies,
         setCustomHobbyInput,
         submitInterests,
     }

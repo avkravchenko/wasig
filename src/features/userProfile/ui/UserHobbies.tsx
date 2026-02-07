@@ -30,7 +30,6 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
     selectCustomHobby,
     setSearch,
     setSelectedHobbies,
-    setSelectedCustomHobbies,
     setCustomHobbyInput,
     submitInterests,
   } = useHobbies(setVisible, onNextStep);
@@ -60,7 +59,11 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{ paddingBottom: 16 }}
-            ListEmptyComponent={<Text>No hobbies found</Text>}
+            ListEmptyComponent={
+              <View style={styles.emptyComponent}>
+                <Text style={commonStyles.hintText}>Интерес не найден</Text>
+              </View>
+            }
             renderItem={({ item, index }) => {
                 return (
                   <>
@@ -106,7 +109,7 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
 
           <View style={styles.buttonContainer}>
             <Button
-              disabled={selectedHobbies.size === 0 && selectedCustomHobbies.size === 0}
+              disabled={selectedHobbies.size + selectedCustomHobbies.size > 3 || selectedHobbies.size + selectedCustomHobbies.size === 0}
               title="Далее"
               size="lg"
               onPress={submitInterests}
@@ -153,6 +156,11 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
 };
 
 const styles = StyleSheet.create({
+  emptyComponent: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 100,
+  },
   screen: {
     flex: 1,
     alignItems: "center",

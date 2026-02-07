@@ -38,3 +38,4 @@ const useDefinePhoneNumber = (nextStep: () => void, step: number) => {
 };
 
 export default useDefinePhoneNumber;
+

@@ -24,6 +24,8 @@ const useCode = (phoneNumber: string) => {
   }, []);
 
   const handleCodeVerify = async () => {
+    if (code.length < 4) return;
+    
     try {
       setIsCodeLoading(true);
 

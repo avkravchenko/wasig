@@ -14,8 +14,10 @@ const AuthWithPhone = () => {
     handlePhoneNumberChange,
     postPhoneNumber,
   } = useDefinePhoneNumber(nextStep, step);
+
   const { isCodeLoading, isCodeConfirmed, handleCodeSubmit } =
     useCode(phoneNumber);
+    
   const [seconds, setSeconds] = useState(60);
 
   const handleSecondsChange = useCallback((seconds: number) => {
