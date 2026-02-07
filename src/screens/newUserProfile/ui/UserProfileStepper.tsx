@@ -7,10 +7,11 @@ import UserHobbies from "@/features/userProfile/ui/UserHobbies";
 import UserMeetingGoal from "@/features/userProfile/ui/UserMeetingGoal";
 import UserCommunicationStyle from "@/features/userProfile/ui/UserCommunicationStyle";
 import UserExpectations from "@/features/userProfile/ui/UserExpectations";
+import UserPhotos from "@/features/userProfile/ui/UserPhotos";
 import ErrorComponent from "@/shared/ui/ErrorComponent";
 
 const UserProfileStepper = () => {
-  const [step, setStep] = useState(5);
+  const [step, setStep] = useState(9);
 
   const handleNextStep = () => {
     setStep(step + 1);
@@ -40,6 +41,9 @@ const UserProfileStepper = () => {
     }
     case 8: {
       return <UserExpectations onNextStep={handleNextStep} />;
+    }
+    case 9: {
+      return <UserPhotos onNextStep={handleNextStep} />;
     }
     default: {
       return <ErrorComponent />;
