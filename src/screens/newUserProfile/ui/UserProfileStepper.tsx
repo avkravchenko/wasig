@@ -11,7 +11,7 @@ import UserPhotos from "@/features/userProfile/ui/UserPhotos";
 import ErrorComponent from "@/shared/ui/ErrorComponent";
 
 const UserProfileStepper = () => {
-  const [step, setStep] = useState(9);
+  const [step, setStep] = useState(1);
 
   const handleNextStep = () => {
     setStep(step + 1);
