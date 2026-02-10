@@ -19,7 +19,6 @@ import { Chip } from "@/shared/ui";
 const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
   const { visible, setVisible } = useModal();
   const {
-    loading,
     hobbiesAndCategories,
     search,
     selectedHobbies,
@@ -30,7 +29,6 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
     selectCustomHobby,
     setSearch,
     setSelectedHobbies,
-    setSelectedCustomHobbies,
     setCustomHobbyInput,
     submitInterests,
   } = useHobbies(setVisible, onNextStep);
@@ -106,7 +104,10 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
 
           <View style={styles.buttonContainer}>
             <Button
-              disabled={selectedHobbies.size === 0 && selectedCustomHobbies.size === 0}
+              disabled={
+                (selectedHobbies.size === 0 && selectedCustomHobbies.size === 0) || 
+                (selectedHobbies.size + selectedCustomHobbies.size > 3)
+              }
               title="Далее"
               size="lg"
               onPress={submitInterests}

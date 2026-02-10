@@ -19,10 +19,17 @@ export function ChipGroup<T>({
   onChange,
 }: ChipListProps<T>) {
     const toggle = (id: number) => {
-        const next = new Set(value)
-        next.has(id) ? next.delete(id) : next.add(id)
-        onChange(next)
-    }
+        const next = new Set(value);
+        
+        if (next.has(id)) {
+            next.delete(id);
+        } else {
+            next.add(id);
+        }
+        
+        onChange(next);
+    };
+
 
     return (
         <View style={{ marginVertical: 16, gap: 8, minWidth: '100%'}}>

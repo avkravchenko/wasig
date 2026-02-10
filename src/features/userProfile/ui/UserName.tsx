@@ -4,13 +4,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
 } from "react-native";
 import commonStyles from "@/shared/styles";
-import { VERTICAL_OFFSET } from "@/shared/constants";
-import TextField from "@/shared/ui/TextField/TextField";
+import { VERTICAL_OFFSET, MARGIN_BOTTOM } from "@/shared/constants";
+import TextField from "@/shared/ui/TextField";
 import Button from "@/shared/ui/Button";
-import { MARGIN_BOTTOM } from "@/shared/constants";
-import { StyleSheet } from "react-native";
 import useName from "../model/hooks/useName";
 
 const UserName = ({ onNextStep }: { onNextStep: () => void }) => {

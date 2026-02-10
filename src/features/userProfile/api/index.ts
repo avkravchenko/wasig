@@ -1,4 +1,4 @@
-import getTowns from "./getTowns";
-import postUserName from "./postUserName";
+import { getTowns } from "./getTowns";
+import { postUserName } from "./postUserName";
 
 export { getTowns, postUserName };

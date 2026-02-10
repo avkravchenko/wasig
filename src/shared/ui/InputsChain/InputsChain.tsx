@@ -60,7 +60,7 @@ const InputsChain = ({
     if (hiddenInput.length === 4) {
       onCodeFilled(hiddenInput);
     }
-  }, [hiddenInput]);
+  }, [hiddenInput, onCodeFilled]);
 
   return (
     <View>

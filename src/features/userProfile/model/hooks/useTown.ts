@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useDebounce } from "@/shared/lib";
 import { postUserTown } from "../../api/postUserTown";
 import { getTowns } from "../../api/getTowns";
@@ -26,18 +26,18 @@ const useTown = (onNextStep: () => void) => {
     }
   }
 
-  const fetchTowns = async () => {
+  const fetchTowns = useCallback(async () => {
     try {
       const result = await getTowns(debouncedHomeTown);
       setTowns(result.data);
     } catch (error) {
       console.log(error);
     }
-};
+  }, [debouncedHomeTown]);
 
   useEffect(() => {
     fetchTowns();
-  }, [debouncedHomeTown]);
+  }, [fetchTowns]);
 
   return {
     searchHomeTown,

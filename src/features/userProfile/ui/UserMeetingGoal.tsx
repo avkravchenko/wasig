@@ -1,7 +1,6 @@
-import { Text, View } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import useMeetingGoals from "../model/hooks/useMeetingGoals";
 import { Button, RadioGroup } from "@/shared/ui";
-import { StyleSheet } from "react-native";
 import commonStyles from "@/shared/styles";
 import { MARGIN_BOTTOM } from "@/shared/constants";
 

@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 import { styles } from "@/shared/ui/Button/ButtonStyles";
 
 type ButtonPropsType = {

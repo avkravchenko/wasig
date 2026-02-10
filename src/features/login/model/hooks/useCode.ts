@@ -23,7 +23,7 @@ const useCode = (phoneNumber: string) => {
     setCode(text);
   }, []);
 
-  const handleCodeVerify = async () => {
+  const handleCodeVerify = useCallback(async () => {
     try {
       setIsCodeLoading(true);
 
@@ -46,11 +46,11 @@ const useCode = (phoneNumber: string) => {
     } finally {
       setIsCodeLoading(false);
     }
-  };
+  }, [code, phoneNumber, handleSetRefreshToken, navigation]); 
 
   useEffect(() => {
     handleCodeVerify();
-  }, [code]);
+  }, [handleCodeVerify]);
 
   return {
     code,

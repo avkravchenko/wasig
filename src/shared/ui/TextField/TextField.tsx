@@ -1,4 +1,3 @@
-import { TextInput, View, Text } from "react-native";
 import { styles } from "@/shared/ui/TextField/TextFieldStyle";
 import MaskInput, { Mask } from "react-native-mask-input";
 
