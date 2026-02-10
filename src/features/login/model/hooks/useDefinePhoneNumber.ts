@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import phoneSchema from "../schema/schema";
+import phoneSchema from "../schema/phoneSchema";
 import { postPhone } from "@/features/login/api/postPhone/postPhone";
 
 const useDefinePhoneNumber = (nextStep: () => void, step: number) => {
@@ -7,25 +7,22 @@ const useDefinePhoneNumber = (nextStep: () => void, step: number) => {
   const [isPhoneNumberValid, setIsPhoneNumberValid] = useState(true);
 
   useEffect(() => {
-    if (phoneNumber.length < 12) {
-      setIsPhoneNumberValid(true);
-      return;
-    }
-
-    setIsPhoneNumberValid(phoneSchema.isValidSync(phoneNumber));
+    const isValid = phoneSchema.isValidSync(phoneNumber);
+    setIsPhoneNumberValid(isValid);
   }, [phoneNumber]);
 
   const handlePhoneNumberChange = useCallback((text: string) => {
     setPhoneNumber(text);
   }, []);
 
-  async function postPhoneNumber() {
+  async function handleSubmitPhoneNumber() {
+    if (!isPhoneNumberValid || !phoneNumber) return;
+
     try {
       await postPhone(phoneNumber);
-
-      if (step == 1) nextStep();
+      if (step === 1) nextStep(); 
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -33,7 +30,7 @@ const useDefinePhoneNumber = (nextStep: () => void, step: number) => {
     phoneNumber,
     isPhoneNumberValid,
     handlePhoneNumberChange,
-    postPhoneNumber,
+    handleSubmitPhoneNumber,
   };
 };
 

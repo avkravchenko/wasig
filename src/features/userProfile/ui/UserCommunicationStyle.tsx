@@ -1,8 +1,6 @@
-import { View } from "react-native";
-import { Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import useCommunicationStyle from "../model/hooks/useCommunicationStyle";
 import { RadioGroup, Button } from "@/shared/ui";
-import { StyleSheet } from "react-native";
 import { MARGIN_BOTTOM } from "@/shared/constants";
 import commonStyles from "@/shared/styles";
 

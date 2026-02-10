@@ -17,12 +17,12 @@ const AuthWithPhoneStepOne = ({
   phoneNumber,
   isPhoneNumberValid,
   handlePhoneNumberChange,
-  postPhoneNumber,
+  onSubmit,
 }: {
   phoneNumber: string;
   isPhoneNumberValid: boolean;
   handlePhoneNumberChange: (text: string) => void;
-  postPhoneNumber: () => void;
+  onSubmit: () => void;
 }) => {
   const { inputRef } = useFocus();
 
@@ -62,7 +62,7 @@ const AuthWithPhoneStepOne = ({
             disabled={!isPhoneNumberValid || phoneNumber.length < 11}
             title="Отправить код"
             size="lg"
-            onPress={postPhoneNumber}
+            onPress={onSubmit}
           />
         </View>
       </ScrollView>

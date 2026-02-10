@@ -1,18 +1,18 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const useRefreshToken = () => {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
-  const handleSetRefreshToken = async (refreshToken: string) => {
-    await AsyncStorage.setItem("refreshToken", refreshToken);
-    setRefreshToken(refreshToken);
-  };
+  const handleSetRefreshToken = useCallback(async (token: string) => {
+    await AsyncStorage.setItem("refreshToken", token);
+    setRefreshToken(token);
+  }, []);
 
-  const handleRemoveRefreshToken = async () => {
+  const handleRemoveRefreshToken = useCallback(async () => {
     await AsyncStorage.removeItem("refreshToken");
     setRefreshToken(null);
-  };
+  }, []);
 
   return {
     refreshToken,

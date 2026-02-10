@@ -6,43 +6,28 @@ import {
   ScrollView,
   Platform,
   Modal,
-  TextInput,
   ActivityIndicator,
 } from "react-native";
 import InputsChain from "@/shared/ui/InputsChain";
 import commonStyles from "@/shared/styles";
 import Button from "@/shared/ui/Button";
-import { useEffect } from "react";
 import { VERTICAL_OFFSET, MARGIN_BOTTOM } from "@/shared/constants";
+import useCode from "../model/hooks/useCode";
+import useTimer from "@/shared/lib/useTimer";
 
 interface AuthWithPhoneStepTwoProps {
-  isCodeConfirmed: boolean;
-  isLoading: boolean;
-  seconds: number;
-  handleSecondsChange: (seconds: number) => void;
-  handleCodeSubmit: (text: string) => void;
-  handleResendCode: () => void;
+  phoneNumber: string;
+  onResendCode: () => void;
 }
 
-const AuthWithPhoneStepTwo = ({
-  isCodeConfirmed,
-  isLoading,
-  seconds,
-  handleSecondsChange,
-  handleCodeSubmit,
-  handleResendCode,
-}: AuthWithPhoneStepTwoProps) => {
-  useEffect(() => {
-    const timer = setInterval(() => {
-      handleSecondsChange(seconds - 1);
-    }, 1000);
+const AuthWithPhoneStepTwo = ({ phoneNumber, onResendCode }: AuthWithPhoneStepTwoProps) => {
+  const { seconds } = useTimer(60);
 
-    if (seconds === 0) {
-      clearInterval(timer);
-    }
-
-    return () => clearInterval(timer);
-  }, [seconds]);
+  const { 
+    isCodeLoading, 
+    isCodeConfirmed, 
+    handleCodeSubmit 
+  } = useCode(phoneNumber);
 
   return (
     <KeyboardAvoidingView
@@ -70,11 +55,11 @@ const AuthWithPhoneStepTwo = ({
             disabled={seconds > 0}
             title={`Повторно отправить код ${seconds > 0 ? `через ${seconds}` : ""}`}
             size="lg"
-            onPress={handleResendCode}
+            onPress={onResendCode}
           />
         </View>
       </ScrollView>
-      <Modal transparent presentationStyle="overFullScreen" visible={isLoading}>
+      <Modal transparent presentationStyle="overFullScreen" visible={isCodeLoading}>
         <View style={styles.modalContainer}>
           <ActivityIndicator size="small" color="#fff" />
           <Text style={styles.loadingText}>Вспоминаем, кто вы такой..</Text>
