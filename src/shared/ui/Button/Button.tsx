@@ -1,7 +1,8 @@
-import { Text, TouchableOpacity } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 import { styles } from "@/shared/ui/Button/ButtonStyles";
 
 type ButtonPropsType = {
+  loading?: boolean;
   disabled?: boolean;
   title?: string;
   type?: "primary" | "secondary";
@@ -12,6 +13,7 @@ type ButtonPropsType = {
 };
 
 const Button = ({
+  loading = false,
   disabled = false,
   title = "",
   type = "primary",
@@ -23,7 +25,7 @@ const Button = ({
   return (
     <TouchableOpacity
       onPress={onPress}
-      disabled={disabled}
+      disabled={disabled || loading}
       style={[
         disabled && styles.disabled,
         styles[type],
@@ -34,7 +36,20 @@ const Button = ({
     >
       {children}
       {title ? (
-        <Text style={{ marginLeft: children ? 8 : 0, color: type === "primary" ? "#3B3D4B" : "#fff" }}>{title}</Text>
+        <Text
+          style={{
+            marginLeft: children ? 8 : 0,
+            color: type === "primary" ? "#3B3D4B" : "#fff",
+          }}
+        >
+          {loading ? (
+            <>
+              <ActivityIndicator size="small" color={type === "primary" ? "#3B3D4B" : "#fff"} /> {title}
+            </>
+          ) : (
+            title
+          )}
+        </Text>
       ) : null}
     </TouchableOpacity>
   );

@@ -3,7 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import TopBar from "@/shared/ui/TopBar/TopBar";
 import { AuthScreen } from "@/screens/auth";
 import ROUTER_NAME_SPACES from "@/shared/routes";
-import UserProfileStepper from "@/screens/newUserProfile/ui/UserProfileStepper";
+import UserProfileStepper from "@/screens/newUserProfile";
 
 const Stack = createNativeStackNavigator();
 

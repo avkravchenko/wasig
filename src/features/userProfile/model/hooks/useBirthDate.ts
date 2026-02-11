@@ -1,38 +1,58 @@
-import { useState } from "react";
 import { postUserBirthdDate } from "../../api/postUserBirthdDate";
-import useFocus from "@/shared/lib/useFocus";
 import { format, parse } from "date-fns";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { birthdayStringSchema } from "../schema/birthDaySchema";
+import { useForm, Control, UseFormHandleSubmit } from "react-hook-form";
+import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
 
-const useBirthDate = (onNextStep: () => void) => {
-    const [date, setDate] = useState<string>("");
-    const inputRef = useFocus();
+const formSchema = z.object({ birthday: birthdayStringSchema });
+type FormData = z.infer<typeof formSchema>;
 
-    const handleDateChange = (text: string) => {
-        setDate(text);
-    };
+type UseBirthDateProps = {
+  onNextStep: () => void;
+};
 
-    const submitBirthDate = async () => {
-        if (!date) {
-            return;
-        }
+type UseBirthDateReturn = {
+  control: Control<FormData>;
+  isValid: boolean;
+  isLoading: boolean;
+  submitBirthDate: (data: FormData) => void;
+  handleSubmit: UseFormHandleSubmit<FormData>;
+};
 
-        try {
-            const parsedDate = parse(date, 'dd.MM.yyyy', new Date());
-            const requestDate = format(parsedDate, 'yyyy-MM-dd');
+const useBirthDate = ({ onNextStep }: UseBirthDateProps): UseBirthDateReturn => {
+  const { control, handleSubmit, formState: { isValid } } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    mode: "onChange", 
+    defaultValues: { birthday: "" }
+  });
 
-            await postUserBirthdDate(requestDate);
-            onNextStep();
-        } catch (error) {
-            console.log(error);
-        }
-    }
+  const { mutate: submitBirthDateMutation, isPending: isLoading } = useMutation({
+    mutationFn: async (data: FormData): Promise<void> => {
+      const requestDate = format(data.birthday, 'yyyy-MM-dd');
+      
+      await postUserBirthdDate(requestDate);
+    },
+    onSuccess: () => {
+      onNextStep();
+    },
+    onError: (error) => {
+      console.error('Failed to submit birth date:', error);
+    },
+  });
 
-    return {
-        inputRef,
-        date,
-        handleDateChange,
-        submitBirthDate,
-    }
-}
+  const submitBirthDate = (data: FormData): void => {
+    submitBirthDateMutation(data);
+  };
+
+  return {
+    control,
+    isValid,
+    isLoading,
+    submitBirthDate,
+    handleSubmit,
+  };
+};
 
 export default useBirthDate;
