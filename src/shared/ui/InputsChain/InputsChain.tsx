@@ -1,10 +1,12 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { View, TextInput } from "react-native";
 import TextField from "../TextField";
 import styles from "./InputsChainStyle";
 
 type TextFieldPropsType = {
+  value: string;
   isCodeConfirmed: boolean;
+  isCodeError: boolean;
   placeholder: string;
   keyBoardType: "numeric" | "number-pad";
   placeholderPlacement?: "center" | "left";
@@ -12,24 +14,31 @@ type TextFieldPropsType = {
 };
 
 const InputsChain = ({
+  value,
   isCodeConfirmed,
+  isCodeError,
   placeholder,
   keyBoardType = "numeric",
   placeholderPlacement = "center",
   onCodeFilled,
 }: TextFieldPropsType) => {
-  const [arrayBuffer, setArrayBuffer] = useState<string[]>([
-    "-",
-    "-",
-    "-",
-    "-",
-  ]);
-
-  const [hiddenInput, setHiddenInput] = useState("");
+  const [hiddenInput, setHiddenInput] = useState<string>("");
   const hiddenInputRef = useRef<TextInput>(null);
   const [backgroundColor, setBackgroundColor] = useState<
     "primary" | "confirmed" | "invalid"
   >("primary");
+
+  const arrayBuffer = useMemo(() => {
+    const buffer = [];
+    for (let i = 0; i < 4; i++) {
+      buffer.push(hiddenInput[i] || "-");
+    }
+    return buffer;
+  }, [hiddenInput]);
+
+  useEffect(() => {
+    setHiddenInput(value);
+  }, [value]);
 
   useEffect(() => {
     if (!hiddenInput.length) {
@@ -39,22 +48,13 @@ const InputsChain = ({
 
     if (isCodeConfirmed) {
       setBackgroundColor("confirmed");
-    } else {
+    } else if (isCodeError) {
       setBackgroundColor("invalid");
+    } else {
+      setBackgroundColor("primary");
     }
-  }, [isCodeConfirmed, hiddenInput]);
+  }, [isCodeConfirmed, isCodeError, hiddenInput]);
 
-  useEffect(() => {
-    setArrayBuffer((prev) => {
-      const newArray = [...prev];
-
-      for (let i = 0; i < newArray.length; i++) {
-        newArray[i] = hiddenInput[i] ?? "-";
-      }
-
-      return newArray;
-    });
-  }, [hiddenInput]);
 
   useEffect(() => {
     if (hiddenInput.length === 4) {
@@ -77,11 +77,11 @@ const InputsChain = ({
         }}
       />
       <View style={styles.container}>
-        {arrayBuffer.map((item, index) => (
+        {arrayBuffer.map((_, index) => (
           <TextField
             maxLength={1}
             key={index}
-            value={item}
+            value={arrayBuffer[index] || "-"}
             backgroundColor={backgroundColor}
             size="sm"
             readonly={true}
@@ -89,9 +89,6 @@ const InputsChain = ({
             keyBoardType={keyBoardType}
             placeholderPlacement={placeholderPlacement}
             onChange={() => {}}
-            onPress={() => {
-              hiddenInputRef.current?.focus();
-            }}
           />
         ))}
       </View>

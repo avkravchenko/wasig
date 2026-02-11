@@ -8,17 +8,23 @@ import {
 } from "react-native";
 import commonStyles from "@/shared/styles";
 import { VERTICAL_OFFSET, MARGIN_BOTTOM } from "@/shared/constants";
-import TextField from "@/shared/ui/TextField";
 import Button from "@/shared/ui/Button";
 import { sharedMasks } from "@/shared/masks";
 import useBirthDate from "../model/hooks/useBirthDate";
+import ControlledTextField from "@/shared/ui/ControlledTextField/ControlledTextField";
 
-const UserBirthDay = ({
-  onNextStep,
-}: {
+type UserBirthDayProps = {
   onNextStep: () => void;
-}) => {
-const { inputRef, date, handleDateChange, submitBirthDate } = useBirthDate(onNextStep);
+};
+
+const UserBirthDay = ({ onNextStep }: UserBirthDayProps) => {
+  const {
+    control,
+    isValid,
+    isLoading,
+    submitBirthDate,
+    handleSubmit,
+  } = useBirthDate({ onNextStep });
 
   return (
     <KeyboardAvoidingView
@@ -37,23 +43,22 @@ const { inputRef, date, handleDateChange, submitBirthDate } = useBirthDate(onNex
           <Text style={styles.hintText}>
             Для некоторых пользователей это может быть значимо
           </Text>
-          <TextField
-            ref={inputRef}
+          <ControlledTextField
+            control={control}
+            name="birthday"
             mask={sharedMasks.date}
             placeholder="дд.мм.гггг"
-            keyBoardType="numeric"
-            onChange={handleDateChange}
-            onPress={() => {}}
-            value={date}
+            keyboardType="numeric"
+            autoFocus
+            renderError={(msg) => <Text style={styles.customError}>⚠ {msg}</Text>}
           />
         </View>
         <View style={styles.buttonContainer}>
-          {/* TODO add validation */}
           <Button
-            disabled={date.length < 10}
-            title="Далее"
+            disabled={!isValid || isLoading}
+            title={isLoading ? "Сохранение..." : "Далее"}
             size="lg"
-            onPress={submitBirthDate}
+            onPress={handleSubmit(submitBirthDate)}
           />
         </View>
       </ScrollView>
@@ -66,15 +71,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
     alignItems: "center",
-  },
-  titleWidth: {
-    width: "70%",
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginVertical: 16,
   },
   inputContainer: {
     alignItems: "center",
@@ -92,7 +88,7 @@ const styles = StyleSheet.create({
     fontWeight: "thin",
     fontSize: 14,
   },
-  errorText: {
+  customError: {
     color: "red",
     fontSize: 12,
     textAlign: "center",

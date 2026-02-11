@@ -1,25 +1,28 @@
 import { useState } from "react";
 import { postUserName } from "../../api/postUserName";
-import useFocus from "@/shared/lib/useFocus";
+import { useMutation } from "@tanstack/react-query";
 
 const useName = (onNextStep: () => void) => {
     const [name, setName] = useState<string>("");
-    const { inputRef } = useFocus();
-
-    const submitName = async () => {
-        if (name.length < 2) return;
-
-        try {
-            await postUserName(name);
+    const { mutate: mutateName, isPending } = useMutation({
+        mutationFn: (name: string) => postUserName(name),
+        onSuccess: () => {
             onNextStep();
-        } catch (error) {
+        },
+        onError: (error) => {
             console.log(error);
-        }
+        },
+    });
+
+
+    const submitName = () => {
+        if (name.length < 2) return;
+        mutateName(name);
     }
 
     return {
-        inputRef,
         name,
+        isPending,
         setName,
         submitName,
     }

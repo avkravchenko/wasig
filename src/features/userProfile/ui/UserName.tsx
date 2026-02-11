@@ -13,7 +13,7 @@ import Button from "@/shared/ui/Button";
 import useName from "../model/hooks/useName";
 
 const UserName = ({ onNextStep }: { onNextStep: () => void }) => {
-  const { inputRef, name, setName, submitName } = useName(onNextStep);
+  const { name, setName, submitName, isPending } = useName(onNextStep);
 
   return (
     <KeyboardAvoidingView
@@ -30,20 +30,21 @@ const UserName = ({ onNextStep }: { onNextStep: () => void }) => {
             Привет, давай немного {'\n'} познакомимся
           </Text>
           <TextField
-            ref={inputRef}
+            value={name}
             placeholder="Твое имя"
             keyBoardType="default"
+            autoFocus={true}
             onChange={setName}
             onPress={() => {}}
-            value={name}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
-            disabled={name.length < 2}
+            disabled={name.length < 2 || isPending}
             title="Далее"
             size="lg"
             onPress={submitName}
+            loading={isPending}
           />
         </View>
       </ScrollView>

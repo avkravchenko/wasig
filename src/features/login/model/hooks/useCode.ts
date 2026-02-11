@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { postCode } from "@/features/login/api";
 import useRefreshToken from "@/shared/lib/useRefreshToken";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import ROUTER_NAME_SPACES from "@/shared/routes";
 import { setAccessToken } from "@/shared/lib/auth";
+import { useMutation } from "@tanstack/react-query";
 
 type RootStackParamList = {
   [ROUTER_NAME_SPACES.USER_PROFILE.NAME]: undefined;
@@ -12,52 +13,42 @@ type RootStackParamList = {
 
 const useCode = (phoneNumber: string) => {
   const { handleSetRefreshToken } = useRefreshToken();
-  const [isCodeLoading, setIsCodeLoading] = useState(false);
   const [code, setCode] = useState("");
-  const [isCodeConfirmed, setIsCodeConfirmed] = useState(false);
-
+  
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const handleCodeSubmit = useCallback((text: string) => {
-    setCode(text);
-  }, []);
-
-  const handleCodeVerify = useCallback(async () => {
-    try {
-      setIsCodeLoading(true);
-
-      const requestBody = {
-        phoneNumber: phoneNumber,
-        code: code,
-      };
-
-      const response = await postCode(requestBody);
-      setIsCodeConfirmed(true);
-
+  const { mutate, isPending, isSuccess, isError } = useMutation({
+    mutationFn: (variables: { phoneNumber: string; code: string }) => 
+      postCode(variables),
+    onSuccess: async (response) => {
       await setAccessToken(response.data.accessToken);
       await handleSetRefreshToken(response.data.refreshToken);
       
       navigation.navigate(ROUTER_NAME_SPACES.USER_PROFILE.NAME);
-    } catch (error) {
-      console.log(error);
+    },
+    onError: (error) => {
+      console.error("Verification failed:", error);
+    },
+  });
 
-      setIsCodeConfirmed(false);
-    } finally {
-      setIsCodeLoading(false);
+  const handleCodeSubmit = useCallback((text: string) => {
+    setCode(text);
+    
+    if (text.length === 4) {
+      mutate({
+        phoneNumber,
+        code: text,
+      });
     }
-  }, [code, phoneNumber, handleSetRefreshToken, navigation]); 
-
-  useEffect(() => {
-    handleCodeVerify();
-  }, [handleCodeVerify]);
+  }, [phoneNumber, mutate]);
 
   return {
     code,
-    isCodeLoading,
-    isCodeConfirmed,
+    isCodeLoading: isPending,    
+    isCodeConfirmed: isSuccess, 
+    isCodeError: isError,       
     handleCodeSubmit,
-    handleCodeVerify,
   };
 };
 

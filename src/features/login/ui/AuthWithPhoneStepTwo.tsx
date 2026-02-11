@@ -24,9 +24,11 @@ const AuthWithPhoneStepTwo = ({ phoneNumber, onResendCode }: AuthWithPhoneStepTw
   const { seconds } = useTimer(60);
 
   const { 
-    isCodeLoading, 
+    code,
+    isCodeLoading,    
     isCodeConfirmed, 
-    handleCodeSubmit 
+    isCodeError,       
+    handleCodeSubmit,
   } = useCode(phoneNumber);
 
   return (
@@ -44,7 +46,9 @@ const AuthWithPhoneStepTwo = ({ phoneNumber, onResendCode }: AuthWithPhoneStepTw
             <Text style={commonStyles.titleText}>Введите код из SMS</Text>
 
             <InputsChain
+              value={code}
               isCodeConfirmed={isCodeConfirmed}
+              isCodeError={isCodeError}
               placeholder="-"
               placeholderPlacement="center"
               keyBoardType="number-pad"

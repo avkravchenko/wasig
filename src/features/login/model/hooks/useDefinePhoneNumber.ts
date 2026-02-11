@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useMutation } from '@tanstack/react-query'
 import phoneSchema from "../schema/phoneSchema";
 import { postPhone } from "@/features/login/api/postPhone/postPhone";
 
@@ -15,15 +16,20 @@ const useDefinePhoneNumber = (nextStep: () => void, step: number) => {
     setPhoneNumber(text);
   }, []);
 
-  async function handleSubmitPhoneNumber() {
+  const { mutate: postPhoneMutation } = useMutation({
+    mutationFn: postPhone,
+    onSuccess: () => {
+      if (step === 1) nextStep(); 
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  function handleSubmitPhoneNumber() {
     if (!isPhoneNumberValid || !phoneNumber) return;
 
-    try {
-      await postPhone(phoneNumber);
-      if (step === 1) nextStep(); 
-    } catch (error) {
-      console.error(error);
-    }
+    postPhoneMutation(phoneNumber);
   }
 
   return {
