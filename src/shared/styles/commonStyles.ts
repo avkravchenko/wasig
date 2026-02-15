@@ -1,6 +1,11 @@
 import { StyleSheet } from "react-native";
 
 const commonStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   titleText: {
     fontSize: 18,
     fontWeight: "600",

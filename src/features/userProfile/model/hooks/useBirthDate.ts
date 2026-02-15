@@ -30,7 +30,10 @@ const useBirthDate = ({ onNextStep }: UseBirthDateProps): UseBirthDateReturn => 
 
   const { mutate: submitBirthDateMutation, isPending: isLoading } = useMutation({
     mutationFn: async (data: FormData): Promise<void> => {
-      const requestDate = format(data.birthday, 'yyyy-MM-dd');
+      const parsedDate = parse(data.birthday, 'dd.MM.yyyy', new Date());
+      const requestDate = format(parsedDate, 'yyyy-MM-dd');
+      console.log(requestDate);
+      
       
       await postUserBirthdDate(requestDate);
     },

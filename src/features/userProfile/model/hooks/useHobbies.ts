@@ -1,5 +1,6 @@
 import { useDebounce } from "@/shared/lib";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAllHobbies } from "../../api/getAllHobbies";
 import { getHobbiesByCategory } from "../../api/getHobbiesByCategory";
 import { CategoriesWithHobbies, Hobby } from "../types";
@@ -10,8 +11,6 @@ import { PostUserInterestsRequest } from "../../api/types";
 const useHobbies = (setVisible: (visible: boolean) => void, onNextStep: () => void) => {
     const [search, setSearch] = useState<string>("");
     const debouncedSearch = useDebounce(search, 500);
-
-    const [hobbiesAndCategories, setHobbiesAndCategories] = useState<CategoriesWithHobbies[]>([]);
 
     const [selectedHobbies, setSelectedHobbies] = useState<Set<number>>(new Set());
     const [selectedCustomHobbies, setSelectedCustomHobbies] = useState<Set<number>>(new Set());
@@ -79,51 +78,56 @@ const useHobbies = (setVisible: (visible: boolean) => void, onNextStep: () => vo
         return normalizedHobbies;
     }
 
-    const submitInterests = async () => {
-        try {
-            const request: PostUserInterestsRequest = {
-                interestIds: Array.from(selectedHobbies)
-            };
-            
-            await postUserInterests(request);
+    const submitInterestsMutation = useMutation({
+        mutationFn: (request: PostUserInterestsRequest) => postUserInterests(request),
+        onSuccess: () => {
             onNextStep();
-        } catch (error) {
-            console.log(error);
+        },
+        onError: (error) => {
+            console.error('Error submitting interests:', error);
         }
-    }
+    });
 
-    useEffect(() => {
-        const controller = new AbortController();
-
-        const fetchData = async () => {
-            try {
-                if (debouncedSearch) {
-                    const result = await getAllHobbies(debouncedSearch, controller.signal);
-                    
-                    const normalizedHobbies = normalizeHobbies(result.data);
-                    setHobbiesAndCategories(normalizedHobbies);
-                } else {
-                    const result = await getHobbiesByCategory(controller.signal);
-                    setHobbiesAndCategories(result.data);
-                }
-            } catch (error) {
-                console.error('Error fetching hobbies:', error);
-            }
+    const submitInterests = () => {
+        const request: PostUserInterestsRequest = {
+            interestIds: Array.from(selectedHobbies)
         };
 
-        fetchData();
+        if (selectedCustomHobbies.size > 0) {
+            const customHobbies = Array.from(selectedCustomHobbies);
+            request.customInterests = customHobbies;
+        }
 
-        return () => controller.abort();
-    }, [debouncedSearch]);
+        submitInterestsMutation.mutate(request);
+    }
+
+    const hobbiesQuery = useQuery({
+        queryKey: ["hobbies", debouncedSearch],
+        queryFn: async () => {
+            if (debouncedSearch) {
+                const result = await getAllHobbies(debouncedSearch);
+                return normalizeHobbies(result.data);
+            } else {
+                const result = await getHobbiesByCategory();
+                return result.data;
+            }
+        },
+        enabled: true,
+    });
 
 
     return {
-        hobbiesAndCategories,
         search,
         selectedHobbies,
         selectedCustomHobbies,
         customHobbyInput,
         customHobbyToDisplay,
+        hobbies: hobbiesQuery.data || [],  
+        isSubmitting: submitInterestsMutation.isPending,
+        submitError: submitInterestsMutation.error,
+        isLoading: hobbiesQuery.isLoading,
+        isError: hobbiesQuery.isError,
+        error: hobbiesQuery.error,
         addCustomHobby,
         selectCustomHobby,
         setSearch,

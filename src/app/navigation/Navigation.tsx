@@ -4,6 +4,7 @@ import TopBar from "@/shared/ui/TopBar/TopBar";
 import { AuthScreen } from "@/screens/auth";
 import ROUTER_NAME_SPACES from "@/shared/routes";
 import UserProfileStepper from "@/screens/newUserProfile";
+import { View, Text } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,20 @@ function Navigation() {
         <Stack.Screen
           name={ROUTER_NAME_SPACES.USER_PROFILE.NAME}
           component={UserProfileStepper}
+          options={{
+            headerTitle: () => <TopBar />,
+            headerShadowVisible: false,
+            headerBackVisible: false,
+            gestureEnabled: false,
+            contentStyle: {
+              backgroundColor: "white",
+              padding: 16,
+            },
+          }}
+        />
+        <Stack.Screen
+          name={ROUTER_NAME_SPACES.HOME.NAME}
+          component={() => <View><Text>Home</Text></View>}
           options={{
             headerTitle: () => <TopBar />,
             headerShadowVisible: false,

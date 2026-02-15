@@ -15,11 +15,12 @@ import useHobbies from "@/features/userProfile/model/hooks/useHobbies";
 import ChipsGroup from "@/shared/ui/ChipsGroup";
 import useModal from "@/shared/lib/useModal";
 import { Chip } from "@/shared/ui";
+import { Hobby, CategoriesWithHobbies } from "@/features/userProfile/model/types";
 
 const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
   const { visible, setVisible } = useModal();
   const {
-    hobbiesAndCategories,
+    hobbies,
     search,
     selectedHobbies,
     selectedCustomHobbies,
@@ -53,13 +54,13 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
           </View>
 
           <FlatList
-            data={hobbiesAndCategories}
+            data={hobbies}
             keyExtractor={(item) => item.category}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{ paddingBottom: 16 }}
             ListEmptyComponent={<Text>No hobbies found</Text>}
-            renderItem={({ item, index }) => {
+            renderItem={({ item, index }: { item: CategoriesWithHobbies, index: number }) => {
                 return (
                   <>
                     <ChipsGroup
@@ -71,13 +72,13 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
                       onChange={setSelectedHobbies}
                     />
 
-                    {index === hobbiesAndCategories.length - 1 &&  
+                    {index === (hobbies?.length || 0) - 1 &&  
                       <View> 
                         <Text>Свои интересы</Text>
                         <View style={styles.addCustomWrapper}>
                           <FlatList 
                           data={customHobbyToDisplay}
-                          renderItem={({ item }) => 
+                          renderItem={({ item }: { item: Hobby }) => 
                             (
                               <Chip 
                                 title={item.name} 

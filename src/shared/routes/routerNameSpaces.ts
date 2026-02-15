@@ -11,4 +11,8 @@ export const ROUTER_NAME_SPACES = {
     NAME: "user-profile",
     SCREEN: "user-profile",
   },
+  HOME: {
+    NAME: "home",
+    SCREEN: "home",
+  },
 };

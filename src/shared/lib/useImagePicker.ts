@@ -3,9 +3,13 @@ import * as ImagePicker from "expo-image-picker";
 
 const useImagePicker = (mediaTypes: ImagePicker.MediaType[]) => {
     const [image, setImage] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const pickImage = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
+        setLoading(true);
+        
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: mediaTypes,
             allowsEditing: true,
             aspect: [4, 3],
@@ -15,11 +19,22 @@ const useImagePicker = (mediaTypes: ImagePicker.MediaType[]) => {
         if (!result.canceled) {
             setImage(result.assets[0].uri);
         }
+        } catch (error) {
+            console.error('Error picking image:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const clearImage = () => {
+        setImage(null);
     }
 
     return {
         image,
+        loading,
         pickImage,
+        clearImage,
     }
 }
 
