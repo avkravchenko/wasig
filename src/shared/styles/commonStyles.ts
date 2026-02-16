@@ -19,6 +19,11 @@ const commonStyles = StyleSheet.create({
     marginVertical: 8,
     letterSpacing: 0.5,
   },
+  errorText: {
+    fontSize: 12,
+    color: "red",
+    textAlign: "center",
+  }
 });
 
 export default commonStyles;

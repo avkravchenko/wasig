@@ -15,7 +15,7 @@ import useHobbies from "@/features/userProfile/model/hooks/useHobbies";
 import ChipsGroup from "@/shared/ui/ChipsGroup";
 import useModal from "@/shared/lib/useModal";
 import { Chip } from "@/shared/ui";
-import { Hobby, CategoriesWithHobbies } from "@/features/userProfile/model/types";
+import { CategoriesWithHobbies, CustomHobby } from "@/features/userProfile/model/types";
 
 const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
   const { visible, setVisible } = useModal();
@@ -26,12 +26,14 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
     selectedCustomHobbies,
     customHobbyInput,
     customHobbyToDisplay,
+    isCustomHobbyUnique,
     addCustomHobby,
     selectCustomHobby,
     setSearch,
     setSelectedHobbies,
     setCustomHobbyInput,
     submitInterests,
+    resetModal,
   } = useHobbies(setVisible, onNextStep);
 
 
@@ -77,24 +79,24 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
                         <Text>Свои интересы</Text>
                         <View style={styles.addCustomWrapper}>
                           <FlatList 
-                          data={customHobbyToDisplay}
-                          renderItem={({ item }: { item: Hobby }) => 
-                            (
-                              <Chip 
-                                title={item.name} 
-                                selected={selectedCustomHobbies.has(item.id)}
-                                onPress={() => selectCustomHobby(item)}
-                              />
-                            ) 
-                          }
-                          keyExtractor={(item) => String(item.id)}
-                          style={{ flexDirection: "row", flexWrap: "wrap" }}
-                        />
-                        <Chip
-                          title="Добавить свой интерес"
-                          selected={false}
-                          onPress={() => setVisible(true)}
-                        />
+                            data={customHobbyToDisplay}
+                            renderItem={({ item }: { item: CustomHobby }) => 
+                              (
+                                <Chip 
+                                  title={item.name} 
+                                  selected={selectedCustomHobbies.has(item.id)}
+                                  onPress={() => selectCustomHobby(item)}
+                                />
+                              ) 
+                            }
+                            keyExtractor={(item) => String(item.id)}
+                            style={{ flexDirection: "row", flexWrap: "wrap" }}
+                          />
+                          <Chip
+                            title="Добавить свой интерес"
+                            selected={false}
+                            onPress={() => setVisible(true)}
+                          />
                         </View>
                       </View>
                     }
@@ -121,8 +123,8 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
         isVisible={visible}
         swipeDirection="down"
         swipeThreshold={100}
-        onSwipeComplete={() => setVisible(false)}
-        onBackdropPress={() => setVisible(false)}
+        onSwipeComplete={() => resetModal()}
+        onBackdropPress={() => resetModal()}
         style={styles.modal}
         avoidKeyboard={true}
         propagateSwipe
@@ -140,8 +142,10 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
                 onChange={setCustomHobbyInput}
                 placeholder="Интерес"
               />
-
+              {!isCustomHobbyUnique ? <Text style={commonStyles.errorText}>Интерес уже добавлен</Text> : null}
+            
               <Button
+                disabled={!isCustomHobbyUnique || !customHobbyInput.trim()}
                 title="Добавить"
                 size="lg"
                 type="secondary"

@@ -11,6 +11,11 @@ export interface Hobby {
   isCustom: boolean;
 }
 
+export interface CustomHobby {
+    id: string;
+    name: string;
+}
+
 export interface CategoriesWithHobbies {
   category: string;
   interests: Hobby[];
