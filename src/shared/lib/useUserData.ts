@@ -1,12 +1,6 @@
 import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-type User = {
-  id: string;
-  newUsername: boolean;
-  phoneNumber: string;
-  profileCompleted: boolean;
-};
+import { User } from "@/entities/user";
 
 const useUserData = () => {
   const [userData, setUserData] = useState<User | null>(null);

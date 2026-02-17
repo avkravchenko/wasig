@@ -15,10 +15,7 @@ import useHobbies from "@/features/userProfile/model/hooks/useHobbies";
 import ChipsGroup from "@/shared/ui/ChipsGroup";
 import useModal from "@/shared/lib/useModal";
 import { Chip } from "@/shared/ui";
-import {
-  CategoriesWithHobbies,
-  CustomHobby,
-} from "@/features/userProfile/model/types";
+import { CategoriesWithHobbies, CustomHobby } from "@/entities/hobby";
 
 const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
   const { visible, setVisible } = useModal();
