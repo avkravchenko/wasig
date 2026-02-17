@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useMutation } from '@tanstack/react-query'
+import { useMutation } from "@tanstack/react-query";
 import phoneSchema from "../schema/phoneSchema";
 import { postPhone } from "@/features/login/api/postPhone/postPhone";
 
@@ -19,7 +19,7 @@ const useDefinePhoneNumber = (nextStep: () => void, step: number) => {
   const { mutate: postPhoneMutation } = useMutation({
     mutationFn: postPhone,
     onSuccess: () => {
-      if (step === 1) nextStep(); 
+      if (step === 1) nextStep();
     },
     onError: (error) => {
       console.error(error);

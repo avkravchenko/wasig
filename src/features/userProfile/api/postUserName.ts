@@ -5,4 +5,3 @@ export const postUserName = async (name: string) => {
     name,
   });
 };
-  

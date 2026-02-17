@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 const Stack = createNativeStackNavigator();
 
 function Navigation() {
-
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,7 +27,7 @@ function Navigation() {
       setIsLoading(false);
     }
   };
-  
+
   useEffect(() => {
     checkUserAuth();
   }, []);
@@ -43,7 +42,9 @@ function Navigation() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ contentStyle: { paddingHorizontal: 0 } }}>
+      <Stack.Navigator
+        screenOptions={{ contentStyle: { paddingHorizontal: 0 } }}
+      >
         {token == null ? (
           <Stack.Screen
             name={ROUTER_NAME_SPACES.LOGIN_ENTRY_POINT.NAME}
@@ -58,7 +59,11 @@ function Navigation() {
           <>
             <Stack.Screen
               name={ROUTER_NAME_SPACES.HOME.NAME}
-              component={() => <View><Text>Home</Text></View>}
+              component={() => (
+                <View>
+                  <Text>Home</Text>
+                </View>
+              )}
               options={{
                 headerTitle: () => <TopBar />,
                 headerShadowVisible: false,

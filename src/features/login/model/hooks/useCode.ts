@@ -14,17 +14,17 @@ type RootStackParamList = {
 const useCode = (phoneNumber: string) => {
   const { handleSetRefreshToken } = useRefreshToken();
   const [code, setCode] = useState("");
-  
+
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const { mutate, isPending, isSuccess, isError } = useMutation({
-    mutationFn: (variables: { phoneNumber: string; code: string }) => 
+    mutationFn: (variables: { phoneNumber: string; code: string }) =>
       postCode(variables),
     onSuccess: async (response) => {
       await setAccessToken(response.data.accessToken);
       await handleSetRefreshToken(response.data.refreshToken);
-      
+
       navigation.navigate(ROUTER_NAME_SPACES.USER_PROFILE.NAME);
     },
     onError: (error) => {
@@ -32,22 +32,25 @@ const useCode = (phoneNumber: string) => {
     },
   });
 
-  const handleCodeSubmit = useCallback((text: string) => {
-    setCode(text);
-    
-    if (text.length === 4) {
-      mutate({
-        phoneNumber,
-        code: text,
-      });
-    }
-  }, [phoneNumber, mutate]);
+  const handleCodeSubmit = useCallback(
+    (text: string) => {
+      setCode(text);
+
+      if (text.length === 4) {
+        mutate({
+          phoneNumber,
+          code: text,
+        });
+      }
+    },
+    [phoneNumber, mutate]
+  );
 
   return {
     code,
-    isCodeLoading: isPending,    
-    isCodeConfirmed: isSuccess, 
-    isCodeError: isError,       
+    isCodeLoading: isPending,
+    isCodeConfirmed: isSuccess,
+    isCodeError: isError,
     handleCodeSubmit,
   };
 };

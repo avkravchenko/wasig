@@ -7,88 +7,95 @@ import { uploadPhotos } from "@/shared/helpers";
 const MAX_PHOTOS = 10;
 
 interface UploadResponse {
-    urls: string[];
+  urls: string[];
 }
 
 interface UploadVariables {
-    photos: string[]; 
-    postFunction: typeof postPhotos;
+  photos: string[];
+  postFunction: typeof postPhotos;
 }
 
 const usePhotos = (onNextStep?: () => void) => {
-    const { image, pickImage, loading: galleryLoading, clearImage } = useImagePicker(['images']);
+  const {
+    image,
+    pickImage,
+    loading: galleryLoading,
+    clearImage,
+  } = useImagePicker(["images"]);
 
-    const [photos, setPhotos] = useState<Set<string>>(new Set());
-    const [uploadProgress, setUploadProgress] = useState<number>(0);
-    
+  const [photos, setPhotos] = useState<Set<string>>(new Set());
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
 
-    const uploadMutation = useMutation<UploadResponse, Error, UploadVariables>({
-        mutationFn: (variables) => uploadPhotos(variables),
-        onMutate: () => {
-            setUploadProgress(0);
-        },
-        onSuccess: (data) => {
-            console.log('Upload successful:', data);
-            
-            onNextStep?.();
-        },
-        onError: (error) => {
-            console.error('Upload failed:', error);
-            alert(`Failed to upload photos: ${error.message}`);
-        },
-        onSettled: () => {
-            setUploadProgress(0);
-        },
+  const uploadMutation = useMutation<UploadResponse, Error, UploadVariables>({
+    mutationFn: (variables) => uploadPhotos(variables),
+    onMutate: () => {
+      setUploadProgress(0);
+    },
+    onSuccess: (data) => {
+      console.log("Upload successful:", data);
+
+      onNextStep?.();
+    },
+    onError: (error) => {
+      console.error("Upload failed:", error);
+      alert(`Failed to upload photos: ${error.message}`);
+    },
+    onSettled: () => {
+      setUploadProgress(0);
+    },
+  });
+
+  const selectPhotos = useCallback(() => {
+    if (photos.size >= MAX_PHOTOS) {
+      return;
+    }
+    pickImage();
+  }, [photos.size, pickImage]);
+
+  const submitPhotos = useCallback(() => {
+    const photoArray = Array.from(photos);
+
+    if (photoArray.length === 0) {
+      alert("Please select at least one photo");
+      return;
+    }
+
+    uploadMutation.mutate({
+      photos: photoArray,
+      postFunction: postPhotos,
     });
+  }, [photos, uploadMutation]);
 
-    const selectPhotos = useCallback(() => {
-        if (photos.size >= MAX_PHOTOS) {
-            return;
-        }
-        pickImage();
-    }, [photos.size, pickImage]);
+  const removePhoto = useCallback((photoUri: string) => {
+    setPhotos(
+      (prevPhotos) =>
+        new Set([...prevPhotos].filter((photo) => photo !== photoUri))
+    );
+  }, []);
 
-    const submitPhotos = useCallback(() => {
-        const photoArray = Array.from(photos);
-        
-        if (photoArray.length === 0) {
-            alert('Please select at least one photo');
-            return;
-        }
+  useEffect(() => {
+    if (image && photos.size < MAX_PHOTOS && !photos.has(image)) {
+      setPhotos((prevPhotos) => new Set([...prevPhotos, image]));
+      clearImage();
+    }
+  }, [image, photos.size, photos, clearImage]);
 
-        uploadMutation.mutate({ 
-            photos: photoArray,
-            postFunction: postPhotos
-        });
-    }, [photos, uploadMutation]);
+  const isLoading = galleryLoading || uploadMutation.isPending;
 
-    const removePhoto = useCallback((photoUri: string) => {
-        setPhotos(prevPhotos => new Set([...prevPhotos].filter(photo => photo !== photoUri)));
-    }, []);
-
-    useEffect(() => {
-        if (image && photos.size < MAX_PHOTOS && !photos.has(image)) {
-            setPhotos(prevPhotos => new Set([...prevPhotos, image]));
-            clearImage();
-        }
-    }, [image, photos.size, photos, clearImage]);
-
-    const isLoading = galleryLoading || uploadMutation.isPending;
-
-    return {
-        loading: isLoading,
-        uploadLoading: uploadMutation.isPending,
-        uploadProgress,
-        photos: Array.from(photos),
-        galleryLoading,
-        selectPhotos,
-        submitPhotos,
-        removePhoto,
-        canAddMore: photos.size < MAX_PHOTOS,
-        remainingSlots: MAX_PHOTOS - photos.size,
-        isUploadError: uploadMutation.isError,
-        uploadError: uploadMutation.error,
-    };
+  return {
+    loading: isLoading,
+    uploadLoading: uploadMutation.isPending,
+    uploadProgress,
+    photos: Array.from(photos),
+    galleryLoading,
+    selectPhotos,
+    submitPhotos,
+    removePhoto,
+    canAddMore: photos.size < MAX_PHOTOS,
+    remainingSlots: MAX_PHOTOS - photos.size,
+    isUploadError: uploadMutation.isError,
+    uploadError: uploadMutation.error,
+  };
 };
 
 export default usePhotos;

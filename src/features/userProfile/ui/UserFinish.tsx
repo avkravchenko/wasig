@@ -8,7 +8,8 @@ import type { RootStackParamList } from "@/shared/routes/types";
 import { ROUTER_NAME_SPACES } from "@/shared/routes/routerNameSpaces";
 
 const UserFinish = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
     <View style={[commonStyles.container, { justifyContent: "flex-end" }]}>
@@ -17,11 +18,11 @@ const UserFinish = () => {
         <Text style={commonStyles.hintText}>Ты успешно прошел все шаги</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <Button 
-          title="На главную" 
-          type="secondary" 
-          size="lg" 
-          onPress={() => navigation.navigate(ROUTER_NAME_SPACES.HOME.NAME)} 
+        <Button
+          title="На главную"
+          type="secondary"
+          size="lg"
+          onPress={() => navigation.navigate(ROUTER_NAME_SPACES.HOME.NAME)}
         />
       </View>
     </View>

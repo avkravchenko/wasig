@@ -1,4 +1,4 @@
 export interface PostUserInterestsRequest {
-    interestIds: number[];
-    customInterests?: string[];
+  interestIds: number[];
+  customInterests?: string[];
 }

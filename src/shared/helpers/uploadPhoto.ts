@@ -1,24 +1,24 @@
 interface UploadResponse {
-    urls: string[];
+  urls: string[];
 }
 
-export const uploadPhotos = async ({ 
-    photos, 
-    postFunction 
+export const uploadPhotos = async ({
+  photos,
+  postFunction,
 }: {
-    photos: string[];
-    postFunction: (formData: FormData) => Promise<UploadResponse>;
+  photos: string[];
+  postFunction: (formData: FormData) => Promise<UploadResponse>;
 }): Promise<UploadResponse> => {
-    const formData = new FormData();
-    
-    photos.forEach((photoUri, index) => {        
-        const file = {
-            uri: photoUri,
-            type: 'image/jpeg',
-            name: `photo_${index}.jpg`,
-        };
-        formData.append('file', file as any);
-    });
+  const formData = new FormData();
 
-    return await postFunction(formData);
+  photos.forEach((photoUri, index) => {
+    const file = {
+      uri: photoUri,
+      type: "image/jpeg",
+      name: `photo_${index}.jpg`,
+    };
+    formData.append("file", file as any);
+  });
+
+  return await postFunction(formData);
 };

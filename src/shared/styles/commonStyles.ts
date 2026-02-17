@@ -23,7 +23,7 @@ const commonStyles = StyleSheet.create({
     fontSize: 12,
     color: "red",
     textAlign: "center",
-  }
+  },
 });
 
 export default commonStyles;

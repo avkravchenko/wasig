@@ -44,7 +44,11 @@ const Button = ({
         >
           {loading ? (
             <>
-              <ActivityIndicator size="small" color={type === "primary" ? "#3B3D4B" : "#fff"} /> {title}
+              <ActivityIndicator
+                size="small"
+                color={type === "primary" ? "#3B3D4B" : "#fff"}
+              />{" "}
+              {title}
             </>
           ) : (
             title

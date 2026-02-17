@@ -1,18 +1,25 @@
 import { MARGIN_BOTTOM, VERTICAL_OFFSET } from "@/shared/constants";
 import commonStyles from "@/shared/styles";
 import { Button, TextField } from "@/shared/ui";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import useExpectations from "../model/hooks/useExpectations";
 
 const UserExpectations = ({ onNextStep }: { onNextStep: () => void }) => {
-    const { 
-      expectations,
-      inputRef,
-      handleExpectationsChange,
-      submitExpectations 
-    } = useExpectations({ onNextStep });
+  const {
+    expectations,
+    inputRef,
+    handleExpectationsChange,
+    submitExpectations,
+  } = useExpectations({ onNextStep });
 
-   return (
+  return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}

@@ -7,11 +7,11 @@ const useAvoidKeyboard = () => {
   useEffect(() => {
     const showSubscription = Keyboard.addListener(
       "keyboardDidShow",
-      handleKeyboardShow,
+      handleKeyboardShow
     );
     const hideSubscription = Keyboard.addListener(
       "keyboardDidHide",
-      handleKeyboardHide,
+      handleKeyboardHide
     );
 
     return () => {
