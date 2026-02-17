@@ -1,6 +1,5 @@
-import axios from "axios";
-import { API_URL } from "@/shared/constants/apiConstants";
+import { publicApi } from "@/shared/api/publicApi";
 
 export const postCode = async (body: { phoneNumber: string; code: string }) => {
-  return await axios.post(`${API_URL}/api/v1/auth/verify-code`, body);
+  return await publicApi.post("/api/v1/auth/verify-code", body);
 };

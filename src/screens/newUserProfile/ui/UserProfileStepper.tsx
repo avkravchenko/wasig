@@ -1,22 +1,25 @@
 import { useState, useCallback } from "react";
-import UserName from "@/features/userProfile/ui/UserName";
-import UserBirthDay from "@/features/userProfile/ui/UserBirthDay";
-import UserHomeTown from "@/features/userProfile/ui/UserHomeTown";
-import UserSex from "@/features/userProfile/ui/UserSex";
-import UserHobbies from "@/features/userProfile/ui/UserHobbies";
-import UserMeetingGoal from "@/features/userProfile/ui/UserMeetingGoal";
-import UserCommunicationStyle from "@/features/userProfile/ui/UserCommunicationStyle";
-import UserExpectations from "@/features/userProfile/ui/UserExpectations";
-import UserPhotos from "@/features/userProfile/ui/UserPhotos";
+import {
+  UserName,
+  UserBirthDay,
+  UserHomeTown,
+  UserSex,
+  UserHobbies,
+  UserMeetingGoal,
+  UserCommunicationStyle,
+  UserExpectations,
+  UserPhotos,
+  UserFinish,
+} from "@/features/userProfile";
+
 import ErrorComponent from "@/shared/ui/ErrorComponent";
-import UserFinish from "@/features/userProfile/ui/UserFinish";
 
 const UserProfileStepper = () => {
   const [step, setStep] = useState(1);
 
   const handleNextStep = useCallback(() => {
-    setStep(step + 1);
-  }, [step]);
+    setStep((prev) => prev + 1);
+  }, []);
 
   switch (step) {
     case 1: {

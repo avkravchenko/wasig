@@ -5,6 +5,7 @@ import UserSex from "./ui/UserSex";
 import UserHobbies from "./ui/UserHobbies";
 import UserMeetingGoal from "./ui/UserMeetingGoal";
 import UserCommunicationStyle from "./ui/UserCommunicationStyle";
+import UserExpectations from "./ui/UserExpectations";
 import UserPhotos from "./ui/UserPhotos";
 import UserFinish from "./ui/UserFinish";
 
@@ -16,6 +17,7 @@ export {
   UserHobbies,
   UserMeetingGoal,
   UserCommunicationStyle,
+  UserExpectations,
   UserPhotos,
   UserFinish,
 };

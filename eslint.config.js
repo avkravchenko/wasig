@@ -12,6 +12,50 @@ module.exports = [
     },
   },
   {
+    files: ["src/shared/**/*.{ts,tsx,js,jsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: ["@/app/*", "@/screens/*", "@/features/*", "@/entities/*"],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/entities/**/*.{ts,tsx,js,jsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: ["@/app/*", "@/screens/*", "@/features/*"],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/features/**/*.{ts,tsx,js,jsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: ["@/app/*", "@/screens/*"],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/screens/**/*.{ts,tsx,js,jsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: ["@/app/*"],
+        },
+      ],
+    },
+  },
+  {
     ignores: ["dist/*", ".expo/*", "node_modules/*"],
   },
 ];

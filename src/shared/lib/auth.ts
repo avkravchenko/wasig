@@ -11,3 +11,15 @@ export const getAccessToken = async () => {
 export const clearAccessToken = async () => {
   await AsyncStorage.removeItem("accessToken");
 };
+
+export const setRefreshToken = async (refreshToken: string) => {
+  await AsyncStorage.setItem("refreshToken", refreshToken);
+};
+
+export const getRefreshToken = async () => {
+  return await AsyncStorage.getItem("refreshToken");
+};
+
+export const clearRefreshToken = async () => {
+  await AsyncStorage.removeItem("refreshToken");
+};

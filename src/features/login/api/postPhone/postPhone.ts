@@ -1,7 +1,7 @@
-import { privateApi } from "@/shared/api/privateApi";
+import { publicApi } from "@/shared/api/publicApi";
 
 export const postPhone = async (phoneNumber: string) => {
-  return await privateApi.post(`/api/v1/auth/send-code`, {
+  return await publicApi.post(`/api/v1/auth/send-code`, {
     phoneNumber,
   });
 };
