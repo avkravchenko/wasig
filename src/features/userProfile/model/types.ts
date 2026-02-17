@@ -1,3 +1,5 @@
+import { MeetingGoal, CommunicationStyle } from "@/entities";
+
 export {
   Town,
   Hobby,
@@ -8,8 +10,6 @@ export {
   CommunicationStyle,
   CommunicationStyleItem,
 } from "@/entities";
-
-import { MeetingGoal, CommunicationStyle } from "@/entities";
 
 export interface UserProfileFormData {
   name?: string;

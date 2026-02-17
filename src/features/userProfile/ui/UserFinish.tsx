@@ -22,7 +22,12 @@ const UserFinish = () => {
           title="На главную"
           type="secondary"
           size="lg"
-          onPress={() => navigation.navigate(ROUTER_NAME_SPACES.HOME.NAME)}
+          onPress={() =>
+            navigation.reset({
+              index: 0,
+              routes: [{ name: ROUTER_NAME_SPACES.HOME.NAME }],
+            })
+          }
         />
       </View>
     </View>

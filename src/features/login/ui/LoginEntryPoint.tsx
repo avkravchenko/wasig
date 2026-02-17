@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 
-import { AuthWithApp } from "@/features/login";
+import AuthWithApp from "./AuthWithApp";
 import TextField from "@/shared/ui/TextField";
 
 const LoginEntryPoint = ({

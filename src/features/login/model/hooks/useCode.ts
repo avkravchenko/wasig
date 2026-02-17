@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { postCode } from "@/features/login/api";
+import { postCode } from "../../api";
 import useRefreshToken from "@/shared/lib/useRefreshToken";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -25,7 +25,7 @@ const useCode = (phoneNumber: string) => {
       await setAccessToken(response.data.accessToken);
       await handleSetRefreshToken(response.data.refreshToken);
 
-      navigation.navigate(ROUTER_NAME_SPACES.USER_PROFILE.NAME);
+      navigation.replace(ROUTER_NAME_SPACES.USER_PROFILE.NAME);
     },
     onError: (error) => {
       console.error("Verification failed:", error);
@@ -43,7 +43,7 @@ const useCode = (phoneNumber: string) => {
         });
       }
     },
-    [phoneNumber, mutate]
+    [phoneNumber, mutate],
   );
 
   return {
