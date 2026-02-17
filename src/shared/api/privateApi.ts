@@ -1,6 +1,7 @@
 import { baseAxios } from "./axios";
-import { setupInterceptors } from "./interceptors";
+import { setupPrivateInterceptors } from "./interceptors";
+import { publicApi } from "./publicApi";
 
 export const privateApi = baseAxios.create();
 
-setupInterceptors(privateApi);
+setupPrivateInterceptors(privateApi, publicApi);

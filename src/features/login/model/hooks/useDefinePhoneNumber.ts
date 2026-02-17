@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import phoneSchema from "../schema/phoneSchema";
 import { postPhone } from "../../api/postPhone/postPhone";
+import { normalizeApiError } from "@/shared/api/errors";
 
 const useDefinePhoneNumber = (nextStep: () => void, step: number) => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -22,7 +23,10 @@ const useDefinePhoneNumber = (nextStep: () => void, step: number) => {
       if (step === 1) nextStep();
     },
     onError: (error) => {
-      console.error(error);
+      const apiError = normalizeApiError(error);
+      console.error(
+        `Send code failed [${apiError.code}] (${apiError.status}): ${apiError.message}`,
+      );
     },
   });
 

@@ -24,7 +24,7 @@ const AuthWithPhoneStepTwo = ({
   phoneNumber,
   onResendCode,
 }: AuthWithPhoneStepTwoProps) => {
-  const { seconds } = useTimer(60);
+  const { seconds, resetTimer } = useTimer(60);
 
   const {
     code,
@@ -33,6 +33,11 @@ const AuthWithPhoneStepTwo = ({
     isCodeError,
     handleCodeSubmit,
   } = useCode(phoneNumber);
+
+  const handleResendPress = () => {
+    resetTimer();
+    onResendCode();
+  };
 
   return (
     <KeyboardAvoidingView
@@ -64,7 +69,7 @@ const AuthWithPhoneStepTwo = ({
               seconds > 0 ? `через ${seconds}` : ""
             }`}
             size="lg"
-            onPress={onResendCode}
+            onPress={handleResendPress}
           />
         </View>
       </ScrollView>

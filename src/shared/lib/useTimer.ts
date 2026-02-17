@@ -1,23 +1,26 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const useTimer = (initialSeconds: number) => {
   const [seconds, setSeconds] = useState(initialSeconds);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setSeconds(seconds - 1);
-    }, 1000);
+    if (seconds === 0) return;
 
-    if (seconds === 0) {
-      clearInterval(timer);
-    }
+    const timer = setInterval(() => {
+      setSeconds((prevSeconds) => Math.max(prevSeconds - 1, 0));
+    }, 1000);
 
     return () => clearInterval(timer);
   }, [seconds]);
 
+  const resetTimer = useCallback(() => {
+    setSeconds(initialSeconds);
+  }, [initialSeconds]);
+
   return {
     seconds,
     setSeconds,
+    resetTimer,
   };
 };
 

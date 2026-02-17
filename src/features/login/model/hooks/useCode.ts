@@ -1,18 +1,17 @@
 import { useState, useCallback } from "react";
 import { postCode } from "../../api";
-import useRefreshToken from "@/shared/lib/useRefreshToken";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import ROUTER_NAME_SPACES from "@/shared/routes";
-import { setAccessToken } from "@/shared/lib/auth";
+import { setAccessToken, setRefreshToken } from "@/shared/lib/auth";
 import { useMutation } from "@tanstack/react-query";
+import { normalizeApiError } from "@/shared/api/errors";
 
 type RootStackParamList = {
   [ROUTER_NAME_SPACES.USER_PROFILE.NAME]: undefined;
 };
 
 const useCode = (phoneNumber: string) => {
-  const { handleSetRefreshToken } = useRefreshToken();
   const [code, setCode] = useState("");
 
   const navigation =
@@ -23,18 +22,23 @@ const useCode = (phoneNumber: string) => {
       postCode(variables),
     onSuccess: async (response) => {
       await setAccessToken(response.data.accessToken);
-      await handleSetRefreshToken(response.data.refreshToken);
+      await setRefreshToken(response.data.refreshToken);
 
       navigation.replace(ROUTER_NAME_SPACES.USER_PROFILE.NAME);
     },
     onError: (error) => {
-      console.error("Verification failed:", error);
+      const apiError = normalizeApiError(error);
+      console.error(
+        `Verification failed [${apiError.code}] (${apiError.status}): ${apiError.message}`,
+      );
     },
   });
 
   const handleCodeSubmit = useCallback(
     (text: string) => {
       setCode(text);
+
+      if (isPending) return;
 
       if (text.length === 4) {
         mutate({
@@ -43,7 +47,7 @@ const useCode = (phoneNumber: string) => {
         });
       }
     },
-    [phoneNumber, mutate],
+    [phoneNumber, isPending, mutate],
   );
 
   return {

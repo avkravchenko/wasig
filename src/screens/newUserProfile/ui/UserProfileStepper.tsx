@@ -18,8 +18,8 @@ const UserProfileStepper = () => {
   const [step, setStep] = useState(1);
 
   const handleNextStep = useCallback(() => {
-    setStep(step + 1);
-  }, [step]);
+    setStep((prev) => prev + 1);
+  }, []);
 
   switch (step) {
     case 1: {
