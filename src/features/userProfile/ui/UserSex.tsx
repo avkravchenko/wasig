@@ -1,8 +1,4 @@
-import {
-  Text,
-  View,
-  StyleSheet
-} from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import commonStyles from "@/shared/styles";
 import Button from "@/shared/ui/Button";
 import { MARGIN_BOTTOM } from "@/shared/constants";

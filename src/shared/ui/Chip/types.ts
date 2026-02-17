@@ -1,5 +1,5 @@
 export interface Chip {
-    title: string;
-    selected: boolean;
-    onPress: () => void;
+  title: string;
+  selected: boolean;
+  onPress: () => void;
 }

@@ -20,14 +20,17 @@ interface AuthWithPhoneStepTwoProps {
   onResendCode: () => void;
 }
 
-const AuthWithPhoneStepTwo = ({ phoneNumber, onResendCode }: AuthWithPhoneStepTwoProps) => {
+const AuthWithPhoneStepTwo = ({
+  phoneNumber,
+  onResendCode,
+}: AuthWithPhoneStepTwoProps) => {
   const { seconds } = useTimer(60);
 
-  const { 
+  const {
     code,
-    isCodeLoading,    
-    isCodeConfirmed, 
-    isCodeError,       
+    isCodeLoading,
+    isCodeConfirmed,
+    isCodeError,
     handleCodeSubmit,
   } = useCode(phoneNumber);
 
@@ -57,13 +60,19 @@ const AuthWithPhoneStepTwo = ({ phoneNumber, onResendCode }: AuthWithPhoneStepTw
           </View>
           <Button
             disabled={seconds > 0}
-            title={`Повторно отправить код ${seconds > 0 ? `через ${seconds}` : ""}`}
+            title={`Повторно отправить код ${
+              seconds > 0 ? `через ${seconds}` : ""
+            }`}
             size="lg"
             onPress={onResendCode}
           />
         </View>
       </ScrollView>
-      <Modal transparent presentationStyle="overFullScreen" visible={isCodeLoading}>
+      <Modal
+        transparent
+        presentationStyle="overFullScreen"
+        visible={isCodeLoading}
+      >
         <View style={styles.modalContainer}>
           <ActivityIndicator size="small" color="#fff" />
           <Text style={styles.loadingText}>Вспоминаем, кто вы такой..</Text>

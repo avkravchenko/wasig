@@ -1,137 +1,132 @@
 import { useDebounce } from "@/shared/lib";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAllHobbies } from "../../api/getAllHobbies";
 import { getHobbiesByCategory } from "../../api/getHobbiesByCategory";
-import { CategoriesWithHobbies, Hobby } from "../types";
+import { CustomHobby } from "../types";
 import { postUserInterests } from "../../api/postUserInterests";
 import { PostUserInterestsRequest } from "../../api/types";
+import normalizeHobbies from "@/features/userProfile/helpers/normalizeHobby";
+import generateHobby from "../../helpers/customHobbyFactory";
 
+const useHobbies = (
+  setVisible: (visible: boolean) => void,
+  onNextStep: () => void
+) => {
+  const [search, setSearch] = useState<string>("");
+  const debouncedSearch = useDebounce(search, 500);
 
-const useHobbies = (setVisible: (visible: boolean) => void, onNextStep: () => void) => {
-    const [search, setSearch] = useState<string>("");
-    const debouncedSearch = useDebounce(search, 500);
+  const [selectedHobbies, setSelectedHobbies] = useState<Set<number>>(
+    new Set()
+  );
 
-    const [hobbiesAndCategories, setHobbiesAndCategories] = useState<CategoriesWithHobbies[]>([]);
+  const [customHobbyInput, setCustomHobbyInput] = useState<string>("");
+  const debouncedCustomHobbyInput = useDebounce(customHobbyInput, 200);
 
-    const [selectedHobbies, setSelectedHobbies] = useState<Set<number>>(new Set());
-    const [selectedCustomHobbies, setSelectedCustomHobbies] = useState<Set<number>>(new Set());
-    const [customHobbyToDisplay, setCustomHobbyToDisplay] = useState<Hobby[]>([]);
-    const [customHobbyInput, setCustomHobbyInput] = useState<string>("");
-    const [nextCustomId, setNextCustomId] = useState<number>(1);
+  const [customHobbyToDisplay, setCustomHobbyToDisplay] = useState<
+    CustomHobby[]
+  >([]);
+  const [selectedCustomHobbies, setSelectedCustomHobbies] = useState<
+    Set<string>
+  >(new Set());
 
-    const addCustomHobby = () => {
-        if (!customHobbyInput.trim()) {
-            return;
-        }
-        const hobby = generateHobby();
-        setCustomHobbyToDisplay((prev) => [...prev, hobby]);
-        setCustomHobbyInput("");
-        setVisible(false);
+  const hobbiesQuery = useQuery({
+    queryKey: ["hobbies", debouncedSearch],
+    queryFn: async () => {
+      if (debouncedSearch) {
+        const result = await getAllHobbies(debouncedSearch);
+        return normalizeHobbies(result.data);
+      } else {
+        const result = await getHobbiesByCategory();
+        return result.data;
+      }
+    },
+    enabled: true,
+  });
+
+  const submitInterests = () => {
+    const request: PostUserInterestsRequest = {
+      interestIds: Array.from(selectedHobbies),
+    };
+
+    if (selectedCustomHobbies.size > 0) {
+      request.customInterests = customHobbyToDisplay.map((hobby) => hobby.name);
     }
 
-    const selectCustomHobby = (hobby: Hobby) => {
-        setSelectedCustomHobbies((prev) => {
-            const newSet = new Set(prev);
-            if (newSet.has(hobby.id)) {
-                newSet.delete(hobby.id);
-            } else {
-                newSet.add(hobby.id);
-            }
-            return newSet;
-        });
-    }
+    submitInterestsMutation.mutate(request);
+  };
 
-    const generateHobby = (): Hobby => {
-        const currentId = nextCustomId;
-        setNextCustomId((prev: number) => prev + 1);
-        
-        return {
-            id: currentId,
-            name: customHobbyInput,
-            category: "Свои интересы",
-            isCustom: true,
-        }
-    }
+  const trimmedInput = debouncedCustomHobbyInput.trim().toLowerCase();
 
-    const normalizeHobbies = (hobbies: Hobby[]): CategoriesWithHobbies[] => {
-        const map: Record<string, Hobby[]> = {};
-        const normalizedHobbies: CategoriesWithHobbies[] = [];
-        
-        if (hobbies.length === 0) {
-            return [];
-        }
+  const isCustomHobbyUnique =
+    !trimmedInput ||
+    !customHobbyToDisplay.some(
+      (item) => item.name.toLowerCase() === trimmedInput
+    );
 
-        hobbies.forEach((item) => {
-            if (map[item.category]) {
-                map[item.category].push(item);
-            } else {
-                map[item.category] = [item];
-            }
-        })
+  const addCustomHobby = () => {
+    if (!customHobbyInput.trim() || !isCustomHobbyUnique) return;
 
-        for (const key in map) {
-            normalizedHobbies.push({
-                category: key,
-                interests: map[key],
-            })
-        }
+    const newCustomHobby = generateHobby(customHobbyInput);
 
-        return normalizedHobbies;
-    }
+    setCustomHobbyToDisplay((prev) => [...prev, newCustomHobby]);
+    resetModal();
+  };
 
-    const submitInterests = async () => {
-        try {
-            const request: PostUserInterestsRequest = {
-                interestIds: Array.from(selectedHobbies)
-            };
-            
-            await postUserInterests(request);
-            onNextStep();
-        } catch (error) {
-            console.log(error);
-        }
-    }
+  const selectCustomHobby = (hobby: CustomHobby) => {
+    setSelectedCustomHobbies((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(hobby.id)) {
+        newSet.delete(hobby.id);
+      } else {
+        newSet.add(hobby.id);
+      }
+      return newSet;
+    });
+  };
 
-    useEffect(() => {
-        const controller = new AbortController();
+  const resetModal = () => {
+    setVisible(false);
+    resetCustomHobbyInput();
+  };
 
-        const fetchData = async () => {
-            try {
-                if (debouncedSearch) {
-                    const result = await getAllHobbies(debouncedSearch, controller.signal);
-                    
-                    const normalizedHobbies = normalizeHobbies(result.data);
-                    setHobbiesAndCategories(normalizedHobbies);
-                } else {
-                    const result = await getHobbiesByCategory(controller.signal);
-                    setHobbiesAndCategories(result.data);
-                }
-            } catch (error) {
-                console.error('Error fetching hobbies:', error);
-            }
-        };
+  const resetCustomHobbyInput = () => {
+    setCustomHobbyInput("");
+  };
 
-        fetchData();
+  const submitInterestsMutation = useMutation({
+    mutationFn: (request: PostUserInterestsRequest) =>
+      postUserInterests(request),
+    onSuccess: () => {
+      onNextStep();
+    },
+    onError: (error) => {
+      console.error("Error submitting interests:", error);
+    },
+  });
 
-        return () => controller.abort();
-    }, [debouncedSearch]);
-
-
-    return {
-        hobbiesAndCategories,
-        search,
-        selectedHobbies,
-        selectedCustomHobbies,
-        customHobbyInput,
-        customHobbyToDisplay,
-        addCustomHobby,
-        selectCustomHobby,
-        setSearch,
-        setSelectedHobbies,
-        setSelectedCustomHobbies,
-        setCustomHobbyInput,
-        submitInterests,
-    }
-}
+  return {
+    search,
+    selectedHobbies,
+    selectedCustomHobbies,
+    customHobbyInput,
+    customHobbyToDisplay,
+    hobbies: hobbiesQuery.data || [],
+    isSubmitting: submitInterestsMutation.isPending,
+    submitError: submitInterestsMutation.error,
+    isLoading: hobbiesQuery.isLoading,
+    isError: hobbiesQuery.isError,
+    error: hobbiesQuery.error,
+    isCustomHobbyUnique,
+    addCustomHobby,
+    selectCustomHobby,
+    setSearch,
+    setSelectedHobbies,
+    setSelectedCustomHobbies,
+    setCustomHobbyInput,
+    submitInterests,
+    resetModal,
+  };
+};
 
 export default useHobbies;

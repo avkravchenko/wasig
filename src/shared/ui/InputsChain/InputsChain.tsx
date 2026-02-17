@@ -55,7 +55,6 @@ const InputsChain = ({
     }
   }, [isCodeConfirmed, isCodeError, hiddenInput]);
 
-
   useEffect(() => {
     if (hiddenInput.length === 4) {
       onCodeFilled(hiddenInput);

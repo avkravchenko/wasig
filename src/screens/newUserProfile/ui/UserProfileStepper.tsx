@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import UserName from "@/features/userProfile/ui/UserName";
 import UserBirthDay from "@/features/userProfile/ui/UserBirthDay";
 import UserHomeTown from "@/features/userProfile/ui/UserHomeTown";
@@ -9,13 +9,14 @@ import UserCommunicationStyle from "@/features/userProfile/ui/UserCommunicationS
 import UserExpectations from "@/features/userProfile/ui/UserExpectations";
 import UserPhotos from "@/features/userProfile/ui/UserPhotos";
 import ErrorComponent from "@/shared/ui/ErrorComponent";
+import UserFinish from "@/features/userProfile/ui/UserFinish";
 
 const UserProfileStepper = () => {
   const [step, setStep] = useState(1);
 
-  const handleNextStep = () => {
+  const handleNextStep = useCallback(() => {
     setStep(step + 1);
-  };
+  }, [step]);
 
   switch (step) {
     case 1: {
@@ -44,6 +45,9 @@ const UserProfileStepper = () => {
     }
     case 9: {
       return <UserPhotos onNextStep={handleNextStep} />;
+    }
+    case 10: {
+      return <UserFinish />;
     }
     default: {
       return <ErrorComponent />;

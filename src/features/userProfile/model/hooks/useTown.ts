@@ -24,7 +24,7 @@ const useTown = (onNextStep: () => void) => {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const fetchTowns = useCallback(async () => {
     try {
@@ -46,7 +46,7 @@ const useTown = (onNextStep: () => void) => {
     handleSelectTown,
     setSearchHomeTown,
     submitUserHomeTown,
-  }
-}
+  };
+};
 
 export default useTown;

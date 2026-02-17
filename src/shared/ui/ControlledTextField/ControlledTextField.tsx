@@ -23,9 +23,9 @@ const ControlledTextField = <T extends FieldValues>({
     <Controller
       control={control}
       name={name}
-      render={({ 
-        field: { onChange, onBlur, value, ref }, 
-        fieldState: { error, invalid } 
+      render={({
+        field: { onChange, onBlur, value, ref },
+        fieldState: { error, invalid },
       }) => (
         <View style={styles.container}>
           <MaskInput
@@ -36,18 +36,19 @@ const ControlledTextField = <T extends FieldValues>({
             onBlur={onBlur}
             mask={mask}
             style={[
-              styles.input, 
+              styles.input,
               styles.primary,
               styles.lg,
-              invalid && styles.inputInvalid
+              invalid && styles.inputInvalid,
             ]}
           />
 
-          {error?.message && (
-            renderError ? renderError(error.message) : (
+          {error?.message &&
+            (renderError ? (
+              renderError(error.message)
+            ) : (
               <Text style={styles.errorText}>{error.message}</Text>
-            )
-          )}
+            ))}
         </View>
       )}
     />
@@ -84,4 +85,3 @@ const styles = StyleSheet.create({
 });
 
 export default ControlledTextField;
-

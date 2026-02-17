@@ -27,7 +27,7 @@ const UserName = ({ onNextStep }: { onNextStep: () => void }) => {
       >
         <View style={styles.inputContainer}>
           <Text numberOfLines={2} style={commonStyles.titleText}>
-            Привет, давай немного {'\n'} познакомимся
+            Привет, давай немного {"\n"} познакомимся
           </Text>
           <TextField
             value={name}

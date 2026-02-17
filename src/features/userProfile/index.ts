@@ -6,14 +6,16 @@ import UserHobbies from "./ui/UserHobbies";
 import UserMeetingGoal from "./ui/UserMeetingGoal";
 import UserCommunicationStyle from "./ui/UserCommunicationStyle";
 import UserPhotos from "./ui/UserPhotos";
+import UserFinish from "./ui/UserFinish";
 
-export { 
-    UserName,
-    UserBirthDay,
-    UserHomeTown,
-    UserSex,
-    UserHobbies,
-    UserMeetingGoal,
-    UserCommunicationStyle,
-    UserPhotos 
+export {
+  UserName,
+  UserBirthDay,
+  UserHomeTown,
+  UserSex,
+  UserHobbies,
+  UserMeetingGoal,
+  UserCommunicationStyle,
+  UserPhotos,
+  UserFinish,
 };

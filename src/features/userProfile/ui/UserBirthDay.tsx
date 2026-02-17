@@ -18,13 +18,8 @@ type UserBirthDayProps = {
 };
 
 const UserBirthDay = ({ onNextStep }: UserBirthDayProps) => {
-  const {
-    control,
-    isValid,
-    isLoading,
-    submitBirthDate,
-    handleSubmit,
-  } = useBirthDate({ onNextStep });
+  const { control, isValid, isLoading, submitBirthDate, handleSubmit } =
+    useBirthDate({ onNextStep });
 
   return (
     <KeyboardAvoidingView
@@ -50,7 +45,9 @@ const UserBirthDay = ({ onNextStep }: UserBirthDayProps) => {
             placeholder="дд.мм.гггг"
             keyboardType="numeric"
             autoFocus
-            renderError={(msg) => <Text style={styles.customError}>⚠ {msg}</Text>}
+            renderError={(msg) => (
+              <Text style={styles.customError}>⚠ {msg}</Text>
+            )}
           />
         </View>
         <View style={styles.buttonContainer}>
