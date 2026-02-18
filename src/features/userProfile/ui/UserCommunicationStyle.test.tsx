@@ -18,6 +18,9 @@ describe("UserCommunicationStyle", () => {
 
   it("calls handleCommunicationStyleChange on option press", () => {
     const handleCommunicationStyleChange = jest.fn();
+    const submitCommunicationStyle = jest
+      .fn<() => Promise<void>>()
+      .mockResolvedValue(undefined);
 
     mockedUseCommunicationStyle.mockReturnValue({
       communicationStyle: null,
@@ -25,7 +28,7 @@ describe("UserCommunicationStyle", () => {
         { label: "Баланс", value: "BALANCED" as any, selected: false },
       ],
       handleCommunicationStyleChange,
-      submitCommunicationStyle: jest.fn(),
+      submitCommunicationStyle,
     });
 
     const { getByText } = render(<UserCommunicationStyle onNextStep={jest.fn()} />);
@@ -39,7 +42,9 @@ describe("UserCommunicationStyle", () => {
   });
 
   it("submits when user presses next and value is selected", () => {
-    const submitCommunicationStyle = jest.fn();
+    const submitCommunicationStyle = jest
+      .fn<() => Promise<void>>()
+      .mockResolvedValue(undefined);
 
     mockedUseCommunicationStyle.mockReturnValue({
       communicationStyle: "BALANCED" as any,

@@ -1,4 +1,6 @@
 import { useState, useCallback } from "react";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import {
   UserName,
   UserBirthDay,
@@ -14,12 +16,25 @@ import {
 
 import ErrorComponent from "@/shared/ui/ErrorComponent";
 
+type UserProfileStackParamList = {
+  home: undefined;
+};
+
 const UserProfileStepper = () => {
   const [step, setStep] = useState(1);
+  const navigation =
+    useNavigation<NativeStackNavigationProp<UserProfileStackParamList>>();
 
   const handleNextStep = useCallback(() => {
     setStep((prev) => prev + 1);
   }, []);
+
+  const handleGoHome = useCallback(() => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "home" }],
+    });
+  }, [navigation]);
 
   switch (step) {
     case 1: {
@@ -50,7 +65,7 @@ const UserProfileStepper = () => {
       return <UserPhotos onNextStep={handleNextStep} />;
     }
     case 10: {
-      return <UserFinish />;
+      return <UserFinish onGoHome={handleGoHome} />;
     }
     default: {
       return <ErrorComponent />;

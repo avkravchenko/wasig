@@ -2,34 +2,39 @@ import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render } from "@testing-library/react-native";
 import UserHobbies from "./UserHobbies";
 import useModal from "@/shared/lib/useModal";
-import useHobbies from "@/features/userProfile/model/hooks/useHobbies";
+import useHobbies from "../model/hooks/useHobbies";
 
 jest.mock("@/shared/lib/useModal", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-jest.mock("@/features/userProfile/model/hooks/useHobbies", () => ({
+jest.mock("../model/hooks/useHobbies", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
 jest.mock("react-native-modal", () => {
-  const React = require("react");
-  const { View } = require("react-native");
+  const { View } =
+    jest.requireActual<typeof import("react-native")>("react-native");
+  const MockModal = ({ isVisible, children }: any) =>
+    isVisible ? <View>{children}</View> : null;
+  MockModal.displayName = "MockModal";
 
-  return ({ isVisible, children }: any) => (isVisible ? <View>{children}</View> : null);
+  return MockModal;
 });
 
 jest.mock("@/shared/ui/TextField", () => {
-  const React = require("react");
-  const { TextInput } = require("react-native");
+  const { TextInput } =
+    jest.requireActual<typeof import("react-native")>("react-native");
+  const MockTextField = ({ value, onChange, placeholder }: any) => (
+    <TextInput value={value} onChangeText={onChange} placeholder={placeholder} />
+  );
+  MockTextField.displayName = "MockTextField";
 
   return {
     __esModule: true,
-    default: ({ value, onChange, placeholder }: any) => (
-      <TextInput value={value} onChangeText={onChange} placeholder={placeholder} />
-    ),
+    default: MockTextField,
   };
 });
 

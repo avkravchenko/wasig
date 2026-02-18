@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { postUserGender } from "@/features/userProfile/api/postUserGender";
+import { postUserGender } from "../../api/postUserGender";
 
 const useGender = (onNextStep: () => void) => {
   const [gender, setGender] = useState<string>("");

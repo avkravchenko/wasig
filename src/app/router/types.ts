@@ -7,4 +7,5 @@ export type RootStackParamList = {
   [ROUTER_NAME_SPACES.USER_PROFILE.NAME]: undefined;
   [ROUTER_NAME_SPACES.HOME.NAME]: undefined;
 };
+
 export type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

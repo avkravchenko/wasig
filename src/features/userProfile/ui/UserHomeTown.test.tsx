@@ -1,22 +1,24 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render } from "@testing-library/react-native";
 import UserHomeTown from "./UserHomeTown";
-import useTown from "@/features/userProfile/model/hooks/useTown";
+import useTown from "../model/hooks/useTown";
 
-jest.mock("@/features/userProfile/model/hooks/useTown", () => ({
+jest.mock("../model/hooks/useTown", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
 jest.mock("@/shared/ui/TextField", () => {
-  const React = require("react");
-  const { TextInput } = require("react-native");
+  const { TextInput } =
+    jest.requireActual<typeof import("react-native")>("react-native");
+  const MockTextField = ({ value, onChange, placeholder }: any) => (
+    <TextInput value={value} onChangeText={onChange} placeholder={placeholder} />
+  );
+  MockTextField.displayName = "MockTextField";
 
   return {
     __esModule: true,
-    default: ({ value, onChange, placeholder }: any) => (
-      <TextInput value={value} onChangeText={onChange} placeholder={placeholder} />
-    ),
+    default: MockTextField,
   };
 });
 
@@ -29,6 +31,9 @@ describe("UserHomeTown", () => {
 
   it("calls setSearchHomeTown on search input change", () => {
     const setSearchHomeTown = jest.fn();
+    const submitUserHomeTown = jest
+      .fn<() => Promise<void>>()
+      .mockResolvedValue(undefined);
 
     mockedUseTown.mockReturnValue({
       searchHomeTown: "",
@@ -36,7 +41,7 @@ describe("UserHomeTown", () => {
       selectedTown: null,
       handleSelectTown: jest.fn(),
       setSearchHomeTown,
-      submitUserHomeTown: jest.fn(),
+      submitUserHomeTown,
     });
 
     const { getByPlaceholderText } = render(<UserHomeTown onNextStep={jest.fn()} />);
@@ -47,7 +52,9 @@ describe("UserHomeTown", () => {
 
   it("calls handlers for town select and submit", () => {
     const handleSelectTown = jest.fn();
-    const submitUserHomeTown = jest.fn();
+    const submitUserHomeTown = jest
+      .fn<() => Promise<void>>()
+      .mockResolvedValue(undefined);
     const town = { id: 1, name: "Москва", region: "Москва" };
 
     mockedUseTown.mockReturnValue({

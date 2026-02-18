@@ -18,11 +18,13 @@ import useTimer from "@/shared/lib/useTimer";
 interface AuthWithPhoneStepTwoProps {
   phoneNumber: string;
   onResendCode: () => void;
+  onCodeConfirmed: () => void;
 }
 
 const AuthWithPhoneStepTwo = ({
   phoneNumber,
   onResendCode,
+  onCodeConfirmed,
 }: AuthWithPhoneStepTwoProps) => {
   const { seconds, resetTimer } = useTimer(60);
 
@@ -32,7 +34,7 @@ const AuthWithPhoneStepTwo = ({
     isCodeConfirmed,
     isCodeError,
     handleCodeSubmit,
-  } = useCode(phoneNumber);
+  } = useCode(phoneNumber, onCodeConfirmed);
 
   const handleResendPress = () => {
     resetTimer();

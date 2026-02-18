@@ -7,6 +7,7 @@ type ButtonPropsType = {
   title?: string;
   type?: "primary" | "secondary";
   size?: "sm" | "lg";
+  fullWidth?: boolean;
   padding?: { x: number; y: number };
   onPress: () => void;
   children?: React.ReactNode;
@@ -18,6 +19,7 @@ const Button = ({
   title = "",
   type = "primary",
   size = "sm",
+  fullWidth = false,
   onPress,
   padding = { x: 0, y: 0 },
   children,
@@ -30,6 +32,7 @@ const Button = ({
         disabled && styles.disabled,
         styles[type],
         styles[size],
+        fullWidth && styles.fullWidth,
         styles.button,
         { paddingVertical: padding.y, paddingHorizontal: padding.x },
       ]}

@@ -2,12 +2,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import TopBar from "@/shared/ui/TopBar/TopBar";
 import { AuthScreen } from "@/screens/auth";
-import ROUTER_NAME_SPACES from "@/shared/routes";
+import { ROUTER_NAME_SPACES } from "@/app/router";
 import UserProfileStepper from "@/screens/newUserProfile";
 import { View, ActivityIndicator } from "react-native";
 import { getAccessToken } from "@/shared/lib/auth";
 import { useEffect, useState } from "react";
-import { HomeScreen } from "@/screens/home";
+import { HomeTabs } from "@/widgets";
 
 const Stack = createNativeStackNavigator();
 
@@ -62,11 +62,11 @@ function Navigation() {
         />
         <Stack.Screen
           name={ROUTER_NAME_SPACES.HOME.NAME}
-          component={HomeScreen}
+          component={HomeTabs}
           options={{
-            headerTitle: () => <TopBar />,
+            headerShown: false,
             headerShadowVisible: false,
-            contentStyle: { backgroundColor: "white", padding: 16 },
+            contentStyle: { backgroundColor: "#F5F6F8" },
           }}
         />
         <Stack.Screen

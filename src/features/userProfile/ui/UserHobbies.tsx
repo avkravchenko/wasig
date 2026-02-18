@@ -11,7 +11,7 @@ import Modal from "react-native-modal";
 import TextField from "@/shared/ui/TextField";
 import Button from "@/shared/ui/Button";
 import { VERTICAL_OFFSET, MARGIN_BOTTOM } from "@/shared/constants";
-import useHobbies from "@/features/userProfile/model/hooks/useHobbies";
+import useHobbies from "../model/hooks/useHobbies";
 import ChipsGroup from "@/shared/ui/ChipsGroup";
 import useModal from "@/shared/lib/useModal";
 import { Chip } from "@/shared/ui";

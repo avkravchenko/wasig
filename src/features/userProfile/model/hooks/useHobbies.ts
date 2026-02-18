@@ -6,7 +6,7 @@ import { getHobbiesByCategory } from "../../api/getHobbiesByCategory";
 import { CustomHobby } from "../types";
 import { postUserInterests } from "../../api/postUserInterests";
 import { PostUserInterestsRequest } from "../../api/types";
-import normalizeHobbies from "@/features/userProfile/helpers/normalizeHobby";
+import normalizeHobbies from "../../helpers/normalizeHobby";
 import generateHobby from "../../helpers/customHobbyFactory";
 
 const useHobbies = (

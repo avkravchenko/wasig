@@ -10,5 +10,8 @@ export const postPhotos = async (
   return await privateApi("/api/v1/onboarding/photos", {
     method: "POST",
     data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 };

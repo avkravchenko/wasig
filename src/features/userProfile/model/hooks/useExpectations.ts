@@ -1,6 +1,6 @@
 import { useFocus } from "@/shared/lib";
 import { useState } from "react";
-import { postExpectations } from "@/features/userProfile/api/postExpectations";
+import { postExpectations } from "../../api/postExpectations";
 
 const useExpectations = ({ onNextStep }: { onNextStep: () => void }) => {
   const [expectations, setExpectations] = useState<string>("");

@@ -3,7 +3,11 @@ import useCurrentStep from "../model/hooks/useCurrentStep";
 import AuthWithPhoneStepTwo from "./AuthWithPhoneStepTwo";
 import useDefinePhoneNumber from "../model/hooks/useDefinePhoneNumber";
 
-const AuthWithPhone = () => {
+interface AuthWithPhoneProps {
+  onCodeConfirmed: () => void;
+}
+
+const AuthWithPhone = ({ onCodeConfirmed }: AuthWithPhoneProps) => {
   const { step, nextStep } = useCurrentStep();
 
   const {
@@ -29,6 +33,7 @@ const AuthWithPhone = () => {
       <AuthWithPhoneStepTwo
         phoneNumber={phoneNumber}
         onResendCode={handleSubmitPhoneNumber}
+        onCodeConfirmed={onCodeConfirmed}
       />
     );
   }

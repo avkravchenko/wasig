@@ -19,13 +19,16 @@ describe("UserMeetingGoal", () => {
 
   it("calls handleMeetingGoalChange on option press", () => {
     const handleMeetingGoalChange = jest.fn();
+    const submitUserMeetingGoal = jest
+      .fn<() => Promise<void>>()
+      .mockResolvedValue(undefined);
     mockedUseMeetingGoals.mockReturnValue({
       meetingGoal: null,
       meetingGoalsList: [
         { label: "Общение", value: "TALK" as any, selected: false },
       ],
       handleMeetingGoalChange,
-      submitUserMeetingGoal: jest.fn(),
+      submitUserMeetingGoal,
     });
 
     const { getByText } = render(<UserMeetingGoal onNextStep={jest.fn()} />);
@@ -39,7 +42,9 @@ describe("UserMeetingGoal", () => {
   });
 
   it("submits when user presses next and value is selected", () => {
-    const submitUserMeetingGoal = jest.fn();
+    const submitUserMeetingGoal = jest
+      .fn<() => Promise<void>>()
+      .mockResolvedValue(undefined);
     mockedUseMeetingGoals.mockReturnValue({
       meetingGoal: "TALK" as any,
       meetingGoalsList: [{ label: "Общение", value: "TALK" as any, selected: true }],

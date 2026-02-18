@@ -9,14 +9,16 @@ jest.mock("../model/hooks/useName", () => ({
 }));
 
 jest.mock("@/shared/ui/TextField", () => {
-  const React = require("react");
-  const { TextInput } = require("react-native");
+  const { TextInput } =
+    jest.requireActual<typeof import("react-native")>("react-native");
+  const MockTextField = ({ value, onChange, placeholder }: any) => (
+    <TextInput value={value} onChangeText={onChange} placeholder={placeholder} />
+  );
+  MockTextField.displayName = "MockTextField";
 
   return {
     __esModule: true,
-    default: ({ value, onChange, placeholder }: any) => (
-      <TextInput value={value} onChangeText={onChange} placeholder={placeholder} />
-    ),
+    default: MockTextField,
   };
 });
 

@@ -11,7 +11,7 @@ import {
 import { Button } from "@/shared/ui";
 import commonStyles from "@/shared/styles";
 import { MARGIN_BOTTOM } from "@/shared/constants";
-import usePhotos from "@/features/userProfile/model/hooks/usePhotos";
+import usePhotos from "../model/hooks/usePhotos";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const PADDING_HORIZONTAL = 16;

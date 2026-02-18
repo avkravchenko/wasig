@@ -9,20 +9,26 @@ jest.mock("../model/hooks/useExpectations", () => ({
 }));
 
 jest.mock("@/shared/ui", () => {
-  const React = require("react");
-  const actual = jest.requireActual("@/shared/ui");
-  const { TextInput } = require("react-native");
+  const actual = jest.requireActual<typeof import("@/shared/ui")>("@/shared/ui");
+  const React = jest.requireActual<typeof import("react")>("react");
+  const { TextInput } =
+    jest.requireActual<typeof import("react-native")>("react-native");
 
-  return {
-    ...actual,
-    TextField: React.forwardRef(({ value, onChange, placeholder }: any, ref: any) => (
+  const MockTextField = React.forwardRef(
+    ({ value, onChange, placeholder }: any, ref: any) => (
       <TextInput
         ref={ref}
         value={value}
         onChangeText={onChange}
         placeholder={placeholder}
       />
-    )),
+    )
+  );
+  MockTextField.displayName = "MockTextField";
+
+  return {
+    ...actual,
+    TextField: MockTextField,
   };
 });
 
@@ -37,12 +43,15 @@ describe("UserExpectations", () => {
 
   it("calls handleExpectationsChange on input change", () => {
     const handleExpectationsChange = jest.fn();
+    const submitExpectations = jest
+      .fn<() => Promise<void>>()
+      .mockResolvedValue(undefined);
 
     mockedUseExpectations.mockReturnValue({
       expectations: "",
       inputRef: { current: null } as any,
       handleExpectationsChange,
-      submitExpectations: jest.fn(),
+      submitExpectations,
     });
 
     const { getByPlaceholderText } = render(
@@ -54,7 +63,9 @@ describe("UserExpectations", () => {
   });
 
   it("submits when next button is pressed and value exists", () => {
-    const submitExpectations = jest.fn();
+    const submitExpectations = jest
+      .fn<() => Promise<void>>()
+      .mockResolvedValue(undefined);
 
     mockedUseExpectations.mockReturnValue({
       expectations: "Пообщаться",
