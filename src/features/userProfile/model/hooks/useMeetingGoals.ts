@@ -1,6 +1,6 @@
 import { MeetingGoalItem, MeetingGoal } from "../types";
 import { useState } from "react";
-import { postUserMeetingGoal } from "@/features/userProfile/api/postUserMeetingGoal";
+import { postUserMeetingGoal } from "../../api/postUserMeetingGoal";
 
 const useMeetingGoals = ({ onNextStep }: { onNextStep: () => void }) => {
   const [meetingGoal, setMeetingGoal] = useState<MeetingGoal | null>(null);

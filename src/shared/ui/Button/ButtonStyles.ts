@@ -24,4 +24,7 @@ export const styles = StyleSheet.create({
   lg: {
     width: 343,
   },
+  fullWidth: {
+    width: "100%",
+  },
 });

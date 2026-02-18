@@ -9,12 +9,14 @@ jest.mock("../model/hooks/useBirthDate", () => ({
 }));
 
 jest.mock("@/shared/ui/ControlledTextField/ControlledTextField", () => {
-  const React = require("react");
-  const { Text } = require("react-native");
+  const { Text } =
+    jest.requireActual<typeof import("react-native")>("react-native");
+  const MockControlledTextField = () => <Text>birthday-field</Text>;
+  MockControlledTextField.displayName = "MockControlledTextField";
 
   return {
     __esModule: true,
-    default: () => <Text>birthday-field</Text>,
+    default: MockControlledTextField,
   };
 });
 

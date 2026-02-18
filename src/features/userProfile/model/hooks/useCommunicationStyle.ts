@@ -1,6 +1,6 @@
 import { CommunicationStyle, CommunicationStyleItem } from "../types";
 import { useState } from "react";
-import { postUserCommunicationStyle } from "@/features/userProfile/api/postUserCommunicationStyle";
+import { postUserCommunicationStyle } from "../../api/postUserCommunicationStyle";
 
 const useCommunicationStyle = ({ onNextStep }: { onNextStep: () => void }) => {
   const [communicationStyle, setCommunicationStyle] =

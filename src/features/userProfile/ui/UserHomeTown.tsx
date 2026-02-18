@@ -11,7 +11,7 @@ import TextField from "@/shared/ui/TextField";
 import RadioItem from "@/shared/ui/RadioItem";
 import Button from "@/shared/ui/Button";
 import { VERTICAL_OFFSET, MARGIN_BOTTOM } from "@/shared/constants";
-import useTown from "@/features/userProfile/model/hooks/useTown";
+import useTown from "../model/hooks/useTown";
 
 const UserHomeTown = ({ onNextStep }: { onNextStep: () => void }) => {
   const {

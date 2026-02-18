@@ -1,21 +1,11 @@
 import { useState, useCallback } from "react";
 import { postCode } from "../../api";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import ROUTER_NAME_SPACES from "@/shared/routes";
 import { setAccessToken, setRefreshToken } from "@/shared/lib/auth";
 import { useMutation } from "@tanstack/react-query";
 import { normalizeApiError } from "@/shared/api/errors";
 
-type RootStackParamList = {
-  [ROUTER_NAME_SPACES.USER_PROFILE.NAME]: undefined;
-};
-
-const useCode = (phoneNumber: string) => {
+const useCode = (phoneNumber: string, onCodeConfirmed?: () => void) => {
   const [code, setCode] = useState("");
-
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const { mutate, isPending, isSuccess, isError } = useMutation({
     mutationFn: (variables: { phoneNumber: string; code: string }) =>
@@ -23,8 +13,7 @@ const useCode = (phoneNumber: string) => {
     onSuccess: async (response) => {
       await setAccessToken(response.data.accessToken);
       await setRefreshToken(response.data.refreshToken);
-
-      navigation.replace(ROUTER_NAME_SPACES.USER_PROFILE.NAME);
+      onCodeConfirmed?.();
     },
     onError: (error) => {
       const apiError = normalizeApiError(error);

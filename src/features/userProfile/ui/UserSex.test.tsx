@@ -17,6 +17,9 @@ describe("UserSex", () => {
 
   it("calls handleGenderSelect when a gender is pressed", () => {
     const handleGenderSelect = jest.fn();
+    const submitGender = jest
+      .fn<() => Promise<void>>()
+      .mockResolvedValue(undefined);
 
     mockedUseGender.mockReturnValue({
       genders: [
@@ -24,7 +27,7 @@ describe("UserSex", () => {
         { sex: "female", label: "Женщина", selected: false },
       ],
       handleGenderSelect,
-      submitGender: jest.fn(),
+      submitGender,
     });
 
     const { getByText } = render(<UserSex onNextStep={jest.fn()} />);
@@ -34,7 +37,9 @@ describe("UserSex", () => {
   });
 
   it("submits when selection exists", () => {
-    const submitGender = jest.fn();
+    const submitGender = jest
+      .fn<() => Promise<void>>()
+      .mockResolvedValue(undefined);
     mockedUseGender.mockReturnValue({
       genders: [
         { sex: "male", label: "Мужчина", selected: true },
@@ -51,7 +56,9 @@ describe("UserSex", () => {
   });
 
   it("does not submit when no selection exists", () => {
-    const submitGender = jest.fn();
+    const submitGender = jest
+      .fn<() => Promise<void>>()
+      .mockResolvedValue(undefined);
     mockedUseGender.mockReturnValue({
       genders: [
         { sex: "male", label: "Мужчина", selected: false },

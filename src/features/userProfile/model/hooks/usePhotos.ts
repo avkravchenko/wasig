@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
 import useImagePicker from "@/shared/lib/useImagePicker";
-import { postPhotos } from "@/features/userProfile/api/postPhotos";
+import { postPhotos } from "../../api/postPhotos";
 import { uploadPhotos } from "@/shared/helpers";
 
 const MAX_PHOTOS = 10;
@@ -31,9 +31,7 @@ const usePhotos = (onNextStep?: () => void) => {
     onMutate: () => {
       setUploadProgress(0);
     },
-    onSuccess: (data) => {
-      console.log("Upload successful:", data);
-
+    onSuccess: () => {
       onNextStep?.();
     },
     onError: (error) => {
@@ -69,7 +67,7 @@ const usePhotos = (onNextStep?: () => void) => {
   const removePhoto = useCallback((photoUri: string) => {
     setPhotos(
       (prevPhotos) =>
-        new Set([...prevPhotos].filter((photo) => photo !== photoUri))
+        new Set([...prevPhotos].filter((photo) => photo !== photoUri)),
     );
   }, []);
 

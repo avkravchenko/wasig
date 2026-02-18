@@ -2,14 +2,12 @@ import { View, Text, StyleSheet } from "react-native";
 import { Button } from "@/shared/ui";
 import commonStyles from "@/shared/styles";
 import { MARGIN_BOTTOM } from "@/shared/constants";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/shared/routes/types";
-import { ROUTER_NAME_SPACES } from "@/shared/routes/routerNameSpaces";
 
-const UserFinish = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+interface UserFinishProps {
+  onGoHome: () => void;
+}
+
+const UserFinish = ({ onGoHome }: UserFinishProps) => {
 
   return (
     <View style={[commonStyles.container, { justifyContent: "flex-end" }]}>
@@ -22,12 +20,7 @@ const UserFinish = () => {
           title="На главную"
           type="secondary"
           size="lg"
-          onPress={() =>
-            navigation.reset({
-              index: 0,
-              routes: [{ name: ROUTER_NAME_SPACES.HOME.NAME }],
-            })
-          }
+          onPress={onGoHome}
         />
       </View>
     </View>

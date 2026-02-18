@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render } from "@testing-library/react-native";
 import UserPhotos from "./UserPhotos";
-import usePhotos from "@/features/userProfile/model/hooks/usePhotos";
+import usePhotos from "../model/hooks/usePhotos";
 
-jest.mock("@/features/userProfile/model/hooks/usePhotos", () => ({
+jest.mock("../model/hooks/usePhotos", () => ({
   __esModule: true,
   default: jest.fn(),
 }));

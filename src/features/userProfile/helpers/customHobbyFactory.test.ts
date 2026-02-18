@@ -1,11 +1,10 @@
 import { describe, expect, it, jest } from "@jest/globals";
+import generateHobby from "./customHobbyFactory";
 
 jest.mock("react-native-uuid", () => ({
   __esModule: true,
   default: { v4: jest.fn(() => "mocked-uuid") },
 }));
-
-import generateHobby from "./customHobbyFactory";
 
 describe("generateHobby", () => {
   it("creates a custom hobby with generated id and provided name", () => {
