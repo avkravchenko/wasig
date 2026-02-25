@@ -6,34 +6,42 @@ import { ROUTER_NAME_SPACES } from "@/app/router";
 import UserProfileStepper from "@/screens/newUserProfile";
 import { View, ActivityIndicator } from "react-native";
 import { getAccessToken } from "@/shared/lib/auth";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { HomeTabs } from "@/widgets";
+import { useAuthStore } from "@/shared/lib/authStore";
+import { clearAccessToken } from "@/shared/lib/auth";
 
 const Stack = createNativeStackNavigator();
 
 function Navigation() {
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const authStatus = useAuthStore((state) => state.status);
+  const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
+  const setUnauthenticated = useAuthStore((state) => state.setUnauthenticated);
 
   const checkUserAuth = async () => {
-    setIsLoading(true);
-
     try {
       const token = await getAccessToken();
-      setToken(token);
+
+      if (token) {
+        setAuthenticated();
+      } else {
+        setUnauthenticated();
+      }
     } catch (error) {
       console.error("Error checking user auth:", error);
-      setToken(null);
-    } finally {
-      setIsLoading(false);
+      setUnauthenticated();
     }
   };
 
   useEffect(() => {
     checkUserAuth();
-  }, []);
+  }, [setAuthenticated, setUnauthenticated]);
 
-  if (isLoading) {
+  // useEffect(() => {
+  //   clearAccessToken();
+  // }, []);
+
+  if (authStatus === "unknown") {
     return (
       <View style={{ flex: 1, justifyContent: "center" }}>
         <ActivityIndicator size="large" />
@@ -44,40 +52,46 @@ function Navigation() {
   return (
     <NavigationContainer>
       <Stack.Navigator
+        key={authStatus}
         initialRouteName={
-          token == null
-            ? ROUTER_NAME_SPACES.LOGIN_ENTRY_POINT.NAME
-            : ROUTER_NAME_SPACES.HOME.NAME
+          authStatus === "authenticated"
+            ? ROUTER_NAME_SPACES.HOME.NAME
+            : ROUTER_NAME_SPACES.LOGIN_ENTRY_POINT.NAME
         }
         screenOptions={{ contentStyle: { paddingHorizontal: 0 } }}
       >
-        <Stack.Screen
-          name={ROUTER_NAME_SPACES.LOGIN_ENTRY_POINT.NAME}
-          component={AuthScreen}
-          options={{
-            headerTitle: () => <TopBar />,
-            headerShadowVisible: false,
-            contentStyle: { backgroundColor: "white", padding: 16 },
-          }}
-        />
-        <Stack.Screen
-          name={ROUTER_NAME_SPACES.HOME.NAME}
-          component={HomeTabs}
-          options={{
-            headerShown: false,
-            headerShadowVisible: false,
-            contentStyle: { backgroundColor: "#F5F6F8" },
-          }}
-        />
-        <Stack.Screen
-          name={ROUTER_NAME_SPACES.USER_PROFILE.NAME}
-          component={UserProfileStepper}
-          options={{
-            headerTitle: () => <TopBar />,
-            headerShadowVisible: false,
-            contentStyle: { backgroundColor: "white", padding: 16 },
-          }}
-        />
+        {authStatus === "unauthenticated" ? (
+          <Stack.Screen
+            name={ROUTER_NAME_SPACES.LOGIN_ENTRY_POINT.NAME}
+            component={AuthScreen}
+            options={{
+              headerTitle: () => <TopBar />,
+              headerShadowVisible: false,
+              contentStyle: { backgroundColor: "white", padding: 16 },
+            }}
+          />
+        ) : (
+          <>
+            <Stack.Screen
+              name={ROUTER_NAME_SPACES.HOME.NAME}
+              component={HomeTabs}
+              options={{
+                headerShown: false,
+                headerShadowVisible: false,
+                contentStyle: { backgroundColor: "#F5F6F8" },
+              }}
+            />
+            <Stack.Screen
+              name={ROUTER_NAME_SPACES.USER_PROFILE.NAME}
+              component={UserProfileStepper}
+              options={{
+                headerTitle: () => <TopBar />,
+                headerShadowVisible: false,
+                contentStyle: { backgroundColor: "white", padding: 16 },
+              }}
+            />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -3,9 +3,11 @@ import { postCode } from "../../api";
 import { setAccessToken, setRefreshToken } from "@/shared/lib/auth";
 import { useMutation } from "@tanstack/react-query";
 import { normalizeApiError } from "@/shared/api/errors";
+import { useAuthStore } from "@/shared/lib/authStore";
 
 const useCode = (phoneNumber: string, onCodeConfirmed?: () => void) => {
   const [code, setCode] = useState("");
+  const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
 
   const { mutate, isPending, isSuccess, isError } = useMutation({
     mutationFn: (variables: { phoneNumber: string; code: string }) =>
@@ -13,6 +15,7 @@ const useCode = (phoneNumber: string, onCodeConfirmed?: () => void) => {
     onSuccess: async (response) => {
       await setAccessToken(response.data.accessToken);
       await setRefreshToken(response.data.refreshToken);
+      setAuthenticated();
       onCodeConfirmed?.();
     },
     onError: (error) => {

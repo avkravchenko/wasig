@@ -1,7 +1,10 @@
-import { useEffect, useState, useRef, useMemo } from "react";
-import { View, TextInput } from "react-native";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
+import { View, TextInput, Pressable, Platform } from "react-native";
 import TextField from "../TextField";
 import styles from "./InputsChainStyle";
+
+const CODE_LENGTH = 4;
+const normalizeCode = (text: string) => text.replace(/\D/g, "").slice(0, CODE_LENGTH);
 
 type TextFieldPropsType = {
   value: string;
@@ -30,14 +33,14 @@ const InputsChain = ({
 
   const arrayBuffer = useMemo(() => {
     const buffer = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < CODE_LENGTH; i++) {
       buffer.push(hiddenInput[i] || "-");
     }
     return buffer;
   }, [hiddenInput]);
 
   useEffect(() => {
-    setHiddenInput(value);
+    setHiddenInput(normalizeCode(value));
   }, [value]);
 
   useEffect(() => {
@@ -56,26 +59,51 @@ const InputsChain = ({
   }, [isCodeConfirmed, isCodeError, hiddenInput]);
 
   useEffect(() => {
-    if (hiddenInput.length === 4) {
+    if (hiddenInput.length === CODE_LENGTH) {
       onCodeFilled(hiddenInput);
     }
   }, [hiddenInput, onCodeFilled]);
 
+  const focusHiddenInput = () => {
+    hiddenInputRef.current?.focus();
+  };
+
+  const scheduleFocus = useCallback(() => {
+    // OTP autofill appears only for the currently focused input.
+    const timeoutId = setTimeout(() => {
+      hiddenInputRef.current?.focus();
+    }, 250);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
+    const clearFocusTimeout = scheduleFocus();
+    return clearFocusTimeout;
+  }, [scheduleFocus]);
+
   return (
-    <View>
+    <Pressable onPress={focusHiddenInput}>
       <TextInput
         ref={hiddenInputRef}
         value={hiddenInput}
         style={styles.hiddenInput}
-        keyboardType="number-pad"
+        keyboardType={keyBoardType}
+        inputMode="numeric"
         textContentType="oneTimeCode"
-        maxLength={4}
+        autoComplete={Platform.OS === "ios" ? "one-time-code" : "sms-otp"}
+        importantForAutofill="yes"
+        maxLength={CODE_LENGTH}
+        autoCorrect={false}
+        autoCapitalize="none"
+        spellCheck={false}
         autoFocus={true}
+        onBlur={focusHiddenInput}
         onChangeText={(text) => {
-          setHiddenInput(text);
+          setHiddenInput(normalizeCode(text));
         }}
       />
-      <View style={styles.container}>
+      <View style={styles.container} pointerEvents="none">
         {arrayBuffer.map((_, index) => (
           <TextField
             maxLength={1}
@@ -91,7 +119,7 @@ const InputsChain = ({
           />
         ))}
       </View>
-    </View>
+    </Pressable>
   );
 };
 

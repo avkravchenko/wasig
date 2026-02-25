@@ -8,6 +8,7 @@ import {
   setAccessToken,
   setRefreshToken,
 } from "../lib/auth";
+import { useAuthStore } from "../lib/authStore";
 
 type RetriableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
@@ -69,7 +70,9 @@ export const setupPrivateInterceptors = (
       const originalRequest = error.config as RetriableRequestConfig | undefined;
       const status = error.response?.status;
 
-      if (!originalRequest || status !== 401 || originalRequest._retry) {
+      const shouldRefresh = status === 401 || status === 403;
+
+      if (!originalRequest || !shouldRefresh || originalRequest._retry) {
         return Promise.reject(normalizeApiError(error));
       }
 
@@ -102,6 +105,7 @@ export const setupPrivateInterceptors = (
       } catch (refreshError) {
         await clearAccessToken();
         await clearRefreshToken();
+        useAuthStore.getState().setUnauthenticated();
         return Promise.reject(normalizeApiError(refreshError));
       }
     },

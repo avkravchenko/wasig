@@ -69,7 +69,8 @@ const styles = StyleSheet.create({
     borderColor: "#F3F5F7",
     backgroundColor: "#F3F5F7",
     height: 48,
-    paddingHorizontal: 12,
+    paddingLeft: 12,
+    paddingRight: 12,
     paddingVertical: 4,
   },
   inputInvalid: {
