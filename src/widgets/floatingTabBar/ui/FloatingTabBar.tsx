@@ -1,5 +1,6 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useEffect } from "react";
+import type { ComponentType } from "react";
 import {
   LayoutAnimation,
   Platform,
@@ -8,6 +9,9 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import FeedIcon from "../../../../assets/icons/broad-activity-feed-20-filled.svg";
+import MeetingsIcon from "../../../../assets/icons/chat-smile-ai-line.svg";
+import ProfileIcon from "../../../../assets/icons/chat-solid.svg";
 import FloatingTabBarTab from "./FloatingTabBarTab";
 
 const TAB_LABELS: Record<string, string> = {
@@ -18,6 +22,21 @@ const TAB_LABELS: Record<string, string> = {
 
 type TabRoute = BottomTabBarProps["state"]["routes"][number];
 type TabOptions = BottomTabBarProps["descriptors"][string]["options"];
+type TabIconComponent = ComponentType<{
+  color?: string;
+  width?: number;
+  height?: number;
+}>;
+
+const TAB_ICONS: Record<string, TabIconComponent> = {
+  "feed-tab": FeedIcon,
+  "meetings-tab": MeetingsIcon,
+  "profile-tab": ProfileIcon,
+};
+
+const TAB_ICON_OFFSET_X: Record<string, number> = {
+  "feed-tab": 1.5,
+};
 
 const getTabLabel = (route: TabRoute, options: TabOptions) => {
   if (TAB_LABELS[route.name]) {
@@ -88,6 +107,8 @@ const FloatingTabBar = ({
       onPress: createOnPress(route, isFocused),
       onLongPress: createOnLongPress(route),
       badgeCount: getBadgeCount(route.name),
+      Icon: TAB_ICONS[route.name],
+      iconOffsetX: TAB_ICON_OFFSET_X[route.name] ?? 0,
     };
   });
 
@@ -104,6 +125,8 @@ const FloatingTabBar = ({
             onPress={tab.onPress}
             onLongPress={tab.onLongPress}
             badgeCount={tab.badgeCount}
+            Icon={tab.Icon}
+            iconOffsetX={tab.iconOffsetX}
           />
         ))}
       </View>
@@ -119,7 +142,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   tabBarOuter: {
-    backgroundColor: "#F0F2F5",
+    backgroundColor: "#ffffffff",
     borderRadius: 999,
     paddingVertical: 8,
     paddingHorizontal: 10,

@@ -37,6 +37,8 @@ const AuthWithPhone = ({ onCodeConfirmed }: AuthWithPhoneProps) => {
       />
     );
   }
+
+  return null;
 };
 
 export default AuthWithPhone;

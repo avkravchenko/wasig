@@ -32,17 +32,59 @@ export const getFeedCards = async ({
 };
 
 export const extractFeedCards = (payload: FeedCardsResponse): FeedItem[] => {
-  if (Array.isArray(payload)) {
-    return payload;
-  }
+  const visited = new Set<unknown>();
 
-  if (Array.isArray(payload.content)) {
-    return payload.content;
-  }
+  const isObject = (value: unknown): value is Record<string, unknown> =>
+    typeof value === "object" && value !== null;
 
-  if (Array.isArray(payload.items)) {
-    return payload.items;
-  }
+  const isFeedItem = (value: unknown): value is FeedItem =>
+    isObject(value) && typeof value.activityId === "string";
 
-  return [];
+  const toFeedItems = (value: unknown): FeedItem[] => {
+    if (!Array.isArray(value)) {
+      return [];
+    }
+
+    return value.filter(isFeedItem);
+  };
+
+  const resolve = (value: unknown): FeedItem[] => {
+    if (!value || visited.has(value)) {
+      return [];
+    }
+
+    if (Array.isArray(value)) {
+      return toFeedItems(value);
+    }
+
+    if (!isObject(value)) {
+      return [];
+    }
+
+    visited.add(value);
+
+    if (typeof value.activityId === "string") {
+      return [value as unknown as FeedItem];
+    }
+
+    const directKeys = ["cards", "content", "items"];
+    for (const key of directKeys) {
+      const cards = toFeedItems(value[key]);
+      if (cards.length > 0) {
+        return cards;
+      }
+    }
+
+    const nestedKeys = ["data", "payload", "result", "results", "response"];
+    for (const key of nestedKeys) {
+      const nested = resolve(value[key]);
+      if (nested.length > 0) {
+        return nested;
+      }
+    }
+
+    return [];
+  };
+
+  return resolve(payload);
 };

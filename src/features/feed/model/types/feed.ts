@@ -9,8 +9,10 @@ export interface FeedCardsQuery {
 }
 
 export interface FeedCardsPagedResponse {
+  cards?: FeedItem[];
   content?: FeedItem[];
   items?: FeedItem[];
+  data?: FeedItem[];
 }
 
-export type FeedCardsResponse = FeedItem[] | FeedCardsPagedResponse;
+export type FeedCardsResponse = FeedItem[] | FeedItem | FeedCardsPagedResponse;

@@ -1,4 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import type { ComponentType } from "react";
+
+type TabIconProps = {
+  color?: string;
+  width?: number;
+  height?: number;
+};
 
 type FloatingTabBarTabProps = {
   isFocused: boolean;
@@ -8,6 +15,8 @@ type FloatingTabBarTabProps = {
   accessibilityLabel?: string;
   testID?: string;
   badgeCount?: number;
+  Icon?: ComponentType<TabIconProps>;
+  iconOffsetX?: number;
 };
 
 const FloatingTabBarTab = ({
@@ -18,8 +27,11 @@ const FloatingTabBarTab = ({
   accessibilityLabel,
   testID,
   badgeCount,
+  Icon,
+  iconOffsetX = 0,
 }: FloatingTabBarTabProps) => {
   const shouldShowBadge = typeof badgeCount === "number" && badgeCount > 0;
+  const iconColor = isFocused ? "#34394A" : "#B8BFCC";
 
   return (
     <Pressable
@@ -30,7 +42,11 @@ const FloatingTabBarTab = ({
       onLongPress={onLongPress}
       style={[styles.tabButton, isFocused && styles.tabButtonActive]}
     >
-      <View style={[styles.tabDot, isFocused && styles.tabDotActive]} />
+      {Icon ? (
+        <View style={iconOffsetX ? { transform: [{ translateX: iconOffsetX }] } : undefined}>
+          <Icon width={24} height={24} color={iconColor} />
+        </View>
+      ) : null}
       {isFocused ? (
         <Text style={styles.tabLabel} numberOfLines={1}>
           {label}
@@ -57,19 +73,10 @@ const styles = StyleSheet.create({
   },
   tabButtonActive: {
     width: "auto",
-    backgroundColor: "#E4E8EF",
+    backgroundColor: "#F4F3F6",
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     paddingHorizontal: 24,
-  },
-  tabDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: "#B8BFCC",
-  },
-  tabDotActive: {
-    backgroundColor: "#34394A",
   },
   tabLabel: {
     marginLeft: 12,

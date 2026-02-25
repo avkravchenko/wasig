@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { FeedItem } from "@/entities/feed";
+import { ImagePlaceholder } from "@/shared/ui";
 
 type CardHeaderProps = Pick<
   FeedItem,
@@ -11,10 +13,23 @@ const CardHeader = ({
   activityType,
   activityTypeLabel,
 }: CardHeaderProps) => {
+  const [isThumbError, setIsThumbError] = useState(false);
+  const hasThumbnail =
+    typeof mainPhotoThumbnailUrl === "string" && mainPhotoThumbnailUrl.length > 0;
+  const shouldShowThumbnail = hasThumbnail && !isThumbError;
+
   return (
     <View style={styles.container}>
       <View style={styles.contentContainer}>
-        <Image source={{ uri: mainPhotoThumbnailUrl }} style={styles.image} />
+        {shouldShowThumbnail ? (
+          <Image
+            source={{ uri: mainPhotoThumbnailUrl }}
+            style={styles.image}
+            onError={() => setIsThumbError(true)}
+          />
+        ) : (
+          <ImagePlaceholder compact style={styles.placeholder} />
+        )}
         <View style={styles.textContainer}>
           <View>
             <Text style={styles.activityTypeLabel}>{activityTypeLabel}</Text>
@@ -42,6 +57,12 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     backgroundColor: "#E5E7EB",
+  },
+  placeholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    overflow: "hidden",
   },
   textContainer: {
     flex: 1,

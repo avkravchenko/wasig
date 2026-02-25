@@ -1,20 +1,11 @@
-import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet } from "react-native";
-import Feed from "@/features/feed";
-import { useEffect } from "react";
-import { getAccessToken } from "@/shared/lib/auth";
+import { StyleSheet, View } from "react-native";
+import FeedList from "@/widgets/feedList";
 
 const HomeScreen = () => {
-  useEffect(() => {
-    (async () => {
-      const token = await getAccessToken();
-      console.log(token);
-    })();
-  }, []);
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <Feed />
-    </SafeAreaView>
+    <View style={styles.safeArea}>
+      <FeedList />
+    </View>
   );
 };
 

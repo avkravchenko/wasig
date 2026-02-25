@@ -1,9 +1,24 @@
+import { useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
+import { ImagePlaceholder } from "@/shared/ui";
 
-const CardCover = ({ imageUrl }: { imageUrl: string }) => {
+const CardCover = ({ imageUrl }: { imageUrl: string | null }) => {
+  const [isImageError, setIsImageError] = useState(false);
+  const hasImage = typeof imageUrl === "string" && imageUrl.length > 0;
+  const shouldShowImage = hasImage && !isImageError;
+
   return (
     <View style={styles.container}>
-      <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
+      {shouldShowImage ? (
+        <Image
+          source={{ uri: imageUrl }}
+          style={styles.image}
+          resizeMode="cover"
+          onError={() => setIsImageError(true)}
+        />
+      ) : (
+        <ImagePlaceholder title="Нет фото" style={styles.placeholder} />
+      )}
     </View>
   );
 };
@@ -19,6 +34,10 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
+  },
+  placeholder: {
+    flex: 1,
+    borderRadius: 32,
   },
 });
 

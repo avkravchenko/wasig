@@ -8,7 +8,6 @@ import {
   setAccessToken,
   setRefreshToken,
 } from "../lib/auth";
-import { useAuthStore } from "../lib/authStore";
 
 type RetriableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
@@ -53,6 +52,7 @@ export const setupPublicInterceptors = (api: AxiosInstance) => {
 export const setupPrivateInterceptors = (
   privateApi: AxiosInstance,
   publicApi: AxiosInstance,
+  options?: { onAuthExpired?: () => void },
 ) => {
   privateApi.interceptors.request.use(async (config) => {
     const token = await getAccessToken();
@@ -105,7 +105,7 @@ export const setupPrivateInterceptors = (
       } catch (refreshError) {
         await clearAccessToken();
         await clearRefreshToken();
-        useAuthStore.getState().setUnauthenticated();
+        options?.onAuthExpired?.();
         return Promise.reject(normalizeApiError(refreshError));
       }
     },

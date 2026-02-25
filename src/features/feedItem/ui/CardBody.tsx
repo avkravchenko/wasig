@@ -29,7 +29,9 @@ const CardBody = ({
     <View style={styles.container}>
       <View style={styles.durationDistanceContainer}>
         <Text style={styles.durationText}>{duration}</Text>
-        <Text style={styles.distanceText}>{distanceKm} км от вас</Text>
+        <Text style={styles.distanceText}>
+          {typeof distanceKm === "number" ? `${distanceKm} км от вас` : "Расстояние неизвестно"}
+        </Text>
       </View>
 
       <View style={styles.activityContainer}>

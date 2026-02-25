@@ -9,7 +9,6 @@ import { getAccessToken } from "@/shared/lib/auth";
 import { useEffect } from "react";
 import { HomeTabs } from "@/widgets";
 import { useAuthStore } from "@/shared/lib/authStore";
-import { clearAccessToken } from "@/shared/lib/auth";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,28 +17,24 @@ function Navigation() {
   const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
   const setUnauthenticated = useAuthStore((state) => state.setUnauthenticated);
 
-  const checkUserAuth = async () => {
-    try {
-      const token = await getAccessToken();
+  useEffect(() => {
+    const checkUserAuth = async () => {
+      try {
+        const token = await getAccessToken();
 
-      if (token) {
-        setAuthenticated();
-      } else {
+        if (token) {
+          setAuthenticated();
+        } else {
+          setUnauthenticated();
+        }
+      } catch (error) {
+        console.error("Error checking user auth:", error);
         setUnauthenticated();
       }
-    } catch (error) {
-      console.error("Error checking user auth:", error);
-      setUnauthenticated();
-    }
-  };
+    };
 
-  useEffect(() => {
     checkUserAuth();
   }, [setAuthenticated, setUnauthenticated]);
-
-  // useEffect(() => {
-  //   clearAccessToken();
-  // }, []);
 
   if (authStatus === "unknown") {
     return (
