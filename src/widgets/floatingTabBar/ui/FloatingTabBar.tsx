@@ -10,12 +10,14 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FeedIcon from "../../../../assets/icons/broad-activity-feed-20-filled.svg";
+import FilterIcon from "../../../../assets/icons/filter.svg";
 import MeetingsIcon from "../../../../assets/icons/chat-smile-ai-line.svg";
 import ProfileIcon from "../../../../assets/icons/chat-solid.svg";
 import FloatingTabBarTab from "./FloatingTabBarTab";
 
 const TAB_LABELS: Record<string, string> = {
   "feed-tab": "Лента",
+  "filters-tab": "Фильтры",
   "meetings-tab": "Встречи",
   "profile-tab": "Профиль",
 };
@@ -30,6 +32,7 @@ type TabIconComponent = ComponentType<{
 
 const TAB_ICONS: Record<string, TabIconComponent> = {
   "feed-tab": FeedIcon,
+  "filters-tab": FilterIcon,
   "meetings-tab": MeetingsIcon,
   "profile-tab": ProfileIcon,
 };
@@ -37,6 +40,8 @@ const TAB_ICONS: Record<string, TabIconComponent> = {
 const TAB_ICON_OFFSET_X: Record<string, number> = {
   "feed-tab": 1.5,
 };
+
+const SECONDARY_TAB_NAMES = new Set(["filters-tab"]);
 
 const getTabLabel = (route: TabRoute, options: TabOptions) => {
   if (TAB_LABELS[route.name]) {
@@ -100,6 +105,7 @@ const FloatingTabBar = ({
 
     return {
       key: route.key,
+      routeName: route.name,
       accessibilityLabel: options.tabBarAccessibilityLabel,
       testID: options.tabBarButtonTestID,
       isFocused,
@@ -112,23 +118,48 @@ const FloatingTabBar = ({
     };
   });
 
+  const primaryTabs = tabs.filter(
+    (tab) => !SECONDARY_TAB_NAMES.has(tab.routeName),
+  );
+  const secondaryTabs = tabs.filter((tab) =>
+    SECONDARY_TAB_NAMES.has(tab.routeName),
+  );
+
   return (
     <View style={[styles.tabBarHost, { paddingBottom: insets.bottom + 8 }]}>
-      <View style={styles.tabBarOuter}>
-        {tabs.map((tab) => (
-          <FloatingTabBarTab
-            key={tab.key}
-            accessibilityLabel={tab.accessibilityLabel}
-            testID={tab.testID}
-            isFocused={tab.isFocused}
-            label={tab.label}
-            onPress={tab.onPress}
-            onLongPress={tab.onLongPress}
-            badgeCount={tab.badgeCount}
-            Icon={tab.Icon}
-            iconOffsetX={tab.iconOffsetX}
-          />
-        ))}
+      <View style={styles.tabBarRow}>
+        <View style={[styles.tabBarOuter, styles.primaryTabGroup]}>
+          {primaryTabs.map((tab) => (
+            <FloatingTabBarTab
+              key={tab.key}
+              accessibilityLabel={tab.accessibilityLabel}
+              testID={tab.testID}
+              isFocused={tab.isFocused}
+              label={tab.label}
+              onPress={tab.onPress}
+              onLongPress={tab.onLongPress}
+              badgeCount={tab.badgeCount}
+              Icon={tab.Icon}
+              iconOffsetX={tab.iconOffsetX}
+            />
+          ))}
+        </View>
+        <View style={[styles.tabBarOuter, styles.secondaryTabGroup]}>
+          {secondaryTabs.map((tab) => (
+            <FloatingTabBarTab
+              key={tab.key}
+              accessibilityLabel={tab.accessibilityLabel}
+              testID={tab.testID}
+              isFocused={tab.isFocused}
+              label={tab.label}
+              onPress={tab.onPress}
+              onLongPress={tab.onLongPress}
+              badgeCount={tab.badgeCount}
+              Icon={tab.Icon}
+              iconOffsetX={tab.iconOffsetX}
+            />
+          ))}
+        </View>
       </View>
     </View>
   );
@@ -141,8 +172,21 @@ const styles = StyleSheet.create({
     right: 16,
     bottom: 0,
   },
+  tabBarRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    shadowColor: "#ffffff",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 14,
+    elevation: 0,
+  },
   tabBarOuter: {
-    backgroundColor: "#ffffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.96)",
     borderRadius: 999,
     paddingVertical: 8,
     paddingHorizontal: 10,
@@ -150,6 +194,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     gap: 10,
+    shadowColor: "#1B2330",
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 24,
+    elevation: 8,
+  },
+  primaryTabGroup: {
+    flex: 1,
+  },
+  secondaryTabGroup: {
+    justifyContent: "center",
   },
 });
 

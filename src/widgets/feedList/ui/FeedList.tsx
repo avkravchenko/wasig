@@ -1,18 +1,28 @@
 import { useCallback } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import useFeed from "@/features/feed/model/hooks/useFeed";
 import Card from "@/features/feedItem";
 import { ErrorComponent } from "@/shared/ui";
 import { getApiErrorMessage } from "@/shared/api/errors";
+import { FeedItem } from "@/entities/feed";
 
 const FeedList = () => {
   const { data, isLoading, isError, error } = useFeed();
   const insets = useSafeAreaInsets();
   const contentTopPadding = insets.top + 16;
   const contentBottomPadding = insets.bottom + 96;
-  const renderItem = useCallback(({ item }) => <Card cardData={item} />, []);
+  const renderItem = useCallback(
+    ({ item }: { item: FeedItem }) => <Card cardData={item} />,
+    [],
+  );
 
   if (isLoading) {
     return (
@@ -47,14 +57,14 @@ const FeedList = () => {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyTitle}>Карточки пока не найдены</Text>
-            <Text style={styles.emptyDescription}>
-              Проверь, что API возвращает массив в поле cards
-            </Text>
           </View>
         }
         contentContainerStyle={[
           styles.content,
-          { paddingTop: contentTopPadding, paddingBottom: contentBottomPadding },
+          {
+            paddingTop: contentTopPadding,
+            paddingBottom: contentBottomPadding,
+          },
         ]}
       />
       <View pointerEvents="none" style={[styles.gradient, styles.gradientTop]}>
@@ -65,9 +75,12 @@ const FeedList = () => {
           style={styles.gradientFill}
         />
       </View>
-      <View pointerEvents="none" style={[styles.gradient, styles.gradientBottom]}>
+      <View
+        pointerEvents="none"
+        style={[styles.gradient, styles.gradientBottom]}
+      >
         <LinearGradient
-          colors={["rgba(245, 246, 248, 0)", "rgba(245, 246, 248, 0.55)"]}
+          colors={["rgba(245, 246, 248, 0)", "#ffffff"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
           style={styles.gradientFill}
@@ -91,7 +104,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-    height: 56,
+    height: 130,
   },
   gradientTop: {
     top: 0,

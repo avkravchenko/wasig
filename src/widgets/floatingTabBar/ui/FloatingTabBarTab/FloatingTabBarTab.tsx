@@ -43,7 +43,13 @@ const FloatingTabBarTab = ({
       style={[styles.tabButton, isFocused && styles.tabButtonActive]}
     >
       {Icon ? (
-        <View style={iconOffsetX ? { transform: [{ translateX: iconOffsetX }] } : undefined}>
+        <View
+          style={
+            iconOffsetX
+              ? { transform: [{ translateX: iconOffsetX }] }
+              : undefined
+          }
+        >
           <Icon width={24} height={24} color={iconColor} />
         </View>
       ) : null}
