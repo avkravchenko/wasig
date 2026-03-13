@@ -13,7 +13,6 @@ type TextFieldPropsType = {
   keyBoardType?: "default" | "numeric" | "number-pad" | "phone-pad";
   placeholderPlacement?: "center" | "left";
   placeholder?: string;
-  autoFocus?: boolean;
   rules?: [() => boolean, string][];
   readonly?: boolean;
   onFocus?: () => void;
@@ -33,7 +32,6 @@ const TextField = ({
   keyBoardType = "default",
   placeholder = "useless placeholder",
   placeholderPlacement = "left",
-  autoFocus = false,
   onFocus,
   onPress,
   onChange,
@@ -54,7 +52,6 @@ const TextField = ({
         placeholder={placeholder}
         keyboardType={keyBoardType}
         maxLength={maxLength}
-        autoFocus={autoFocus}
         readOnly={readonly}
         onKeyPress={onKeyPress}
         onChangeText={onChange}

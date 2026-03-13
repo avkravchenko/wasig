@@ -27,36 +27,34 @@ const InputsChain = ({
 }: TextFieldPropsType) => {
   const [hiddenInput, setHiddenInput] = useState<string>("");
   const hiddenInputRef = useRef<TextInput>(null);
-  const [backgroundColor, setBackgroundColor] = useState<
-    "primary" | "confirmed" | "invalid"
-  >("primary");
-
-  const arrayBuffer = useMemo(() => {
-    const buffer = [];
-    for (let i = 0; i < CODE_LENGTH; i++) {
-      buffer.push(hiddenInput[i] || "-");
+  const backgroundColor = useMemo(() => {
+    if (!hiddenInput.length) {
+      return "primary";
     }
-    return buffer;
-  }, [hiddenInput]);
+
+    if (isCodeConfirmed) {
+      return "confirmed";
+    }
+
+    if (isCodeError) {
+      return "invalid";
+    }
+
+    return "primary";
+  }, [hiddenInput, isCodeConfirmed, isCodeError]);
+
+  const codeSlots = useMemo(
+    () =>
+      Array.from({ length: CODE_LENGTH }, (_, slot) => ({
+        id: `slot-${slot}`,
+        value: hiddenInput[slot] || "-",
+      })),
+    [hiddenInput],
+  );
 
   useEffect(() => {
     setHiddenInput(normalizeCode(value));
   }, [value]);
-
-  useEffect(() => {
-    if (!hiddenInput.length) {
-      setBackgroundColor("primary");
-      return;
-    }
-
-    if (isCodeConfirmed) {
-      setBackgroundColor("confirmed");
-    } else if (isCodeError) {
-      setBackgroundColor("invalid");
-    } else {
-      setBackgroundColor("primary");
-    }
-  }, [isCodeConfirmed, isCodeError, hiddenInput]);
 
   useEffect(() => {
     if (hiddenInput.length === CODE_LENGTH) {
@@ -97,18 +95,17 @@ const InputsChain = ({
         autoCorrect={false}
         autoCapitalize="none"
         spellCheck={false}
-        autoFocus={true}
         onBlur={focusHiddenInput}
         onChangeText={(text) => {
           setHiddenInput(normalizeCode(text));
         }}
       />
       <View style={styles.container} pointerEvents="none">
-        {arrayBuffer.map((_, index) => (
+        {codeSlots.map((slot) => (
           <TextField
             maxLength={1}
-            key={index}
-            value={arrayBuffer[index] || "-"}
+            key={slot.id}
+            value={slot.value}
             backgroundColor={backgroundColor}
             size="sm"
             readonly={true}

@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { FlatList, Text, View } from "react-native";
 import Chip from "../Chip/Chip";
 
@@ -18,17 +19,30 @@ export function ChipGroup<T>({
   getLabel,
   onChange,
 }: ChipListProps<T>) {
-  const toggle = (id: number) => {
-    const next = new Set(value);
+  const toggle = useCallback(
+    (id: number) => {
+      const next = new Set(value);
 
-    if (next.has(id)) {
-      next.delete(id);
-    } else {
-      next.add(id);
-    }
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
 
-    onChange(next);
-  };
+      onChange(next);
+    },
+    [onChange, value],
+  );
+  const renderItem = useCallback(
+    ({ item }: { item: T }) => (
+      <Chip
+        title={getLabel(item)}
+        selected={value.has(getId(item))}
+        onPress={() => toggle(getId(item))}
+      />
+    ),
+    [getId, getLabel, toggle, value],
+  );
 
   return (
     <View style={{ marginVertical: 16, gap: 8, minWidth: "100%" }}>
@@ -37,13 +51,7 @@ export function ChipGroup<T>({
         data={items}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => String(getId(item))}
-        renderItem={({ item }) => (
-          <Chip
-            title={getLabel(item)}
-            selected={value.has(getId(item))}
-            onPress={() => toggle(getId(item))}
-          />
-        )}
+        renderItem={renderItem}
         style={{ flexDirection: "row", flexWrap: "wrap" }}
       />
     </View>

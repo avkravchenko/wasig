@@ -14,6 +14,7 @@ type CardBodyProps = Pick<
   | "duration"
   | "distanceKm"
 >;
+const EMPTY_INTERESTS: NonNullable<CardBodyProps["interests"]> = [];
 
 const CardBody = ({
   userName,
@@ -21,7 +22,7 @@ const CardBody = ({
   userGender,
   activityTitle,
   activityDescription,
-  interests = [],
+  interests = EMPTY_INTERESTS,
   duration,
   distanceKm,
 }: CardBodyProps) => {

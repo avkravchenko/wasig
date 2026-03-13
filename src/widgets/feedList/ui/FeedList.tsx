@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,6 +12,7 @@ const FeedList = () => {
   const insets = useSafeAreaInsets();
   const contentTopPadding = insets.top + 16;
   const contentBottomPadding = insets.bottom + 96;
+  const renderItem = useCallback(({ item }) => <Card cardData={item} />, []);
 
   if (isLoading) {
     return (
@@ -36,7 +38,7 @@ const FeedList = () => {
       <FlatList
         data={data}
         keyExtractor={(item) => item.activityId}
-        renderItem={({ item }) => <Card cardData={item} />}
+        renderItem={renderItem}
         contentInsetAdjustmentBehavior="never"
         automaticallyAdjustContentInsets={false}
         bounces={false}

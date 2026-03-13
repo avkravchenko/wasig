@@ -7,7 +7,6 @@ interface ControlledProps<T extends FieldValues> {
   name: Path<T>;
   mask?: Mask;
   placeholder?: string;
-  autoFocus?: boolean;
   keyboardType?: "default" | "numeric" | "number-pad";
   renderError?: (error: string) => React.ReactNode;
 }

@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { FlatList } from "react-native";
 import RadioItem from "../RadioItem/RadioItem";
 
@@ -14,16 +15,21 @@ const RadioGroup = <
   options,
   onChange,
 }: RadioGroupProps<T>) => {
+  const renderItem = useCallback(
+    ({ item }: { item: T }) => (
+      <RadioItem
+        label={item.label}
+        selected={item.selected}
+        onPress={() => onChange(item)}
+      />
+    ),
+    [onChange],
+  );
+
   return (
     <FlatList
       data={options}
-      renderItem={({ item }) => (
-        <RadioItem
-          label={item.label}
-          selected={item.selected}
-          onPress={() => onChange(item)}
-        />
-      )}
+      renderItem={renderItem}
     />
   );
 };
