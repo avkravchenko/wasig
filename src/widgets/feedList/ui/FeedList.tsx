@@ -12,9 +12,11 @@ import useFeed from "@/features/feed/model/hooks/useFeed";
 import { ErrorComponent } from "@/shared/ui";
 import { getApiErrorMessage } from "@/shared/api/errors";
 import { FeedCard, FeedItem } from "@/entities/feed";
+import { useCurrentLocation } from "@/shared/lib";
 
 const FeedList = () => {
-  const { data, isLoading, isError, error } = useFeed();
+  const { latitude, longitude } = useCurrentLocation();
+  const { data, isLoading, isError, error } = useFeed({ latitude, longitude });
   const insets = useSafeAreaInsets();
   const contentTopPadding = insets.top + 16;
   const contentBottomPadding = insets.bottom + 96;
