@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import commonStyles from "@/shared/styles";
 import {
   FlatList,
@@ -35,6 +36,60 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
     submitInterests,
     resetModal,
   } = useHobbies(setVisible, onNextStep);
+  const lastCategoryIndex = (hobbies?.length || 0) - 1;
+
+  const renderCustomHobbyItem = useCallback(
+    ({ item }: { item: CustomHobby }) => (
+      <Chip
+        title={item.name}
+        selected={selectedCustomHobbies.has(item.id)}
+        onPress={() => selectCustomHobby(item)}
+      />
+    ),
+    [selectCustomHobby, selectedCustomHobbies],
+  );
+
+  const renderCategoryItem = useCallback(
+    ({ item, index }: { item: CategoriesWithHobbies; index: number }) => (
+      <>
+        <ChipsGroup
+          value={selectedHobbies}
+          items={item.interests}
+          groupTitle={item.category}
+          getId={(hobby) => hobby.id}
+          getLabel={(hobby) => hobby.name}
+          onChange={setSelectedHobbies}
+        />
+
+        {index === lastCategoryIndex && (
+          <View>
+            <Text>Свои интересы</Text>
+            <View style={styles.addCustomWrapper}>
+              <FlatList
+                data={customHobbyToDisplay}
+                renderItem={renderCustomHobbyItem}
+                keyExtractor={(hobby) => String(hobby.id)}
+                style={{ flexDirection: "row", flexWrap: "wrap" }}
+              />
+              <Chip
+                title="Добавить свой интерес"
+                selected={false}
+                onPress={() => setVisible(true)}
+              />
+            </View>
+          </View>
+        )}
+      </>
+    ),
+    [
+      customHobbyToDisplay,
+      lastCategoryIndex,
+      renderCustomHobbyItem,
+      selectedHobbies,
+      setSelectedHobbies,
+      setVisible,
+    ],
+  );
 
   return (
     <>
@@ -61,51 +116,7 @@ const UserHobbies = ({ onNextStep }: { onNextStep: () => void }) => {
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{ paddingBottom: 16 }}
             ListEmptyComponent={<Text>No hobbies found</Text>}
-            renderItem={({
-              item,
-              index,
-            }: {
-              item: CategoriesWithHobbies;
-              index: number;
-            }) => {
-              return (
-                <>
-                  <ChipsGroup
-                    value={selectedHobbies}
-                    items={item.interests}
-                    groupTitle={item.category}
-                    getId={(item) => item.id}
-                    getLabel={(item) => item.name}
-                    onChange={setSelectedHobbies}
-                  />
-
-                  {index === (hobbies?.length || 0) - 1 && (
-                    <View>
-                      <Text>Свои интересы</Text>
-                      <View style={styles.addCustomWrapper}>
-                        <FlatList
-                          data={customHobbyToDisplay}
-                          renderItem={({ item }: { item: CustomHobby }) => (
-                            <Chip
-                              title={item.name}
-                              selected={selectedCustomHobbies.has(item.id)}
-                              onPress={() => selectCustomHobby(item)}
-                            />
-                          )}
-                          keyExtractor={(item) => String(item.id)}
-                          style={{ flexDirection: "row", flexWrap: "wrap" }}
-                        />
-                        <Chip
-                          title="Добавить свой интерес"
-                          selected={false}
-                          onPress={() => setVisible(true)}
-                        />
-                      </View>
-                    </View>
-                  )}
-                </>
-              );
-            }}
+            renderItem={renderCategoryItem}
           />
 
           <View style={styles.buttonContainer}>

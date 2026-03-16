@@ -33,7 +33,6 @@ const UserName = ({ onNextStep }: { onNextStep: () => void }) => {
             value={name}
             placeholder="Твое имя"
             keyBoardType="default"
-            autoFocus={true}
             onChange={setName}
             onPress={() => {}}
           />

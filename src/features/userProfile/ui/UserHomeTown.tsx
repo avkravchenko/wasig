@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import commonStyles from "@/shared/styles";
 import {
   FlatList,
@@ -12,6 +13,7 @@ import RadioItem from "@/shared/ui/RadioItem";
 import Button from "@/shared/ui/Button";
 import { VERTICAL_OFFSET, MARGIN_BOTTOM } from "@/shared/constants";
 import useTown from "../model/hooks/useTown";
+import { Town } from "../model/types";
 
 const UserHomeTown = ({ onNextStep }: { onNextStep: () => void }) => {
   const {
@@ -22,6 +24,16 @@ const UserHomeTown = ({ onNextStep }: { onNextStep: () => void }) => {
     setSearchHomeTown,
     submitUserHomeTown,
   } = useTown(onNextStep);
+  const renderItem = useCallback(
+    ({ item }: { item: Town }) => (
+      <RadioItem
+        label={item.name}
+        selected={selectedTown?.id === item.id}
+        onPress={() => handleSelectTown(item)}
+      />
+    ),
+    [handleSelectTown, selectedTown?.id],
+  );
 
   return (
     <KeyboardAvoidingView
@@ -46,13 +58,7 @@ const UserHomeTown = ({ onNextStep }: { onNextStep: () => void }) => {
 
         <FlatList
           data={towns}
-          renderItem={({ item }) => (
-            <RadioItem
-              label={item.name}
-              selected={selectedTown?.id === item.id}
-              onPress={() => handleSelectTown(item)}
-            />
-          )}
+          renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}

@@ -1,7 +1,10 @@
-import { useEffect, useState, useRef, useMemo } from "react";
-import { View, TextInput } from "react-native";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
+import { View, TextInput, Pressable, Platform } from "react-native";
 import TextField from "../TextField";
 import styles from "./InputsChainStyle";
+
+const CODE_LENGTH = 4;
+const normalizeCode = (text: string) => text.replace(/\D/g, "").slice(0, CODE_LENGTH);
 
 type TextFieldPropsType = {
   value: string;
@@ -24,63 +27,85 @@ const InputsChain = ({
 }: TextFieldPropsType) => {
   const [hiddenInput, setHiddenInput] = useState<string>("");
   const hiddenInputRef = useRef<TextInput>(null);
-  const [backgroundColor, setBackgroundColor] = useState<
-    "primary" | "confirmed" | "invalid"
-  >("primary");
-
-  const arrayBuffer = useMemo(() => {
-    const buffer = [];
-    for (let i = 0; i < 4; i++) {
-      buffer.push(hiddenInput[i] || "-");
-    }
-    return buffer;
-  }, [hiddenInput]);
-
-  useEffect(() => {
-    setHiddenInput(value);
-  }, [value]);
-
-  useEffect(() => {
+  const backgroundColor = useMemo(() => {
     if (!hiddenInput.length) {
-      setBackgroundColor("primary");
-      return;
+      return "primary";
     }
 
     if (isCodeConfirmed) {
-      setBackgroundColor("confirmed");
-    } else if (isCodeError) {
-      setBackgroundColor("invalid");
-    } else {
-      setBackgroundColor("primary");
+      return "confirmed";
     }
-  }, [isCodeConfirmed, isCodeError, hiddenInput]);
+
+    if (isCodeError) {
+      return "invalid";
+    }
+
+    return "primary";
+  }, [hiddenInput, isCodeConfirmed, isCodeError]);
+
+  const codeSlots = useMemo(
+    () =>
+      Array.from({ length: CODE_LENGTH }, (_, slot) => ({
+        id: `slot-${slot}`,
+        value: hiddenInput[slot] || "-",
+      })),
+    [hiddenInput],
+  );
 
   useEffect(() => {
-    if (hiddenInput.length === 4) {
+    setHiddenInput(normalizeCode(value));
+  }, [value]);
+
+  useEffect(() => {
+    if (hiddenInput.length === CODE_LENGTH) {
       onCodeFilled(hiddenInput);
     }
   }, [hiddenInput, onCodeFilled]);
 
+  const focusHiddenInput = () => {
+    hiddenInputRef.current?.focus();
+  };
+
+  const scheduleFocus = useCallback(() => {
+    // OTP autofill appears only for the currently focused input.
+    const timeoutId = setTimeout(() => {
+      hiddenInputRef.current?.focus();
+    }, 250);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
+    const clearFocusTimeout = scheduleFocus();
+    return clearFocusTimeout;
+  }, [scheduleFocus]);
+
   return (
-    <View>
+    <Pressable onPress={focusHiddenInput}>
       <TextInput
         ref={hiddenInputRef}
         value={hiddenInput}
         style={styles.hiddenInput}
-        keyboardType="number-pad"
+        keyboardType={keyBoardType}
+        inputMode="numeric"
         textContentType="oneTimeCode"
-        maxLength={4}
-        autoFocus={true}
+        autoComplete={Platform.OS === "ios" ? "one-time-code" : "sms-otp"}
+        importantForAutofill="yes"
+        maxLength={CODE_LENGTH}
+        autoCorrect={false}
+        autoCapitalize="none"
+        spellCheck={false}
+        onBlur={focusHiddenInput}
         onChangeText={(text) => {
-          setHiddenInput(text);
+          setHiddenInput(normalizeCode(text));
         }}
       />
-      <View style={styles.container}>
-        {arrayBuffer.map((_, index) => (
+      <View style={styles.container} pointerEvents="none">
+        {codeSlots.map((slot) => (
           <TextField
             maxLength={1}
-            key={index}
-            value={arrayBuffer[index] || "-"}
+            key={slot.id}
+            value={slot.value}
             backgroundColor={backgroundColor}
             size="sm"
             readonly={true}
@@ -91,7 +116,7 @@ const InputsChain = ({
           />
         ))}
       </View>
-    </View>
+    </Pressable>
   );
 };
 

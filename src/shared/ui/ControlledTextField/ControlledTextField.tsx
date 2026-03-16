@@ -7,7 +7,6 @@ interface ControlledProps<T extends FieldValues> {
   name: Path<T>;
   mask?: Mask;
   placeholder?: string;
-  autoFocus?: boolean;
   keyboardType?: "default" | "numeric" | "number-pad";
   renderError?: (error: string) => React.ReactNode;
 }
@@ -69,7 +68,8 @@ const styles = StyleSheet.create({
     borderColor: "#F3F5F7",
     backgroundColor: "#F3F5F7",
     height: 48,
-    paddingHorizontal: 12,
+    paddingLeft: 12,
+    paddingRight: 12,
     paddingVertical: 4,
   },
   inputInvalid: {

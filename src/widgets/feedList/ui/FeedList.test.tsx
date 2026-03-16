@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { render } from "@testing-library/react-native";
-import useFeed from "../model/hooks/useFeed";
+import useFeed from "@/features/feed/model/hooks/useFeed";
 import FeedList from "./FeedList";
 import { FeedItem } from "@/entities/feed";
 import Card from "@/features/feedItem";
 
-jest.mock("../model/hooks/useFeed", () => ({
+jest.mock("@/features/feed/model/hooks/useFeed", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
@@ -13,6 +13,10 @@ jest.mock("../model/hooks/useFeed", () => ({
 jest.mock("@/features/feedItem", () => ({
   __esModule: true,
   default: jest.fn(() => null),
+}));
+
+jest.mock("react-native-safe-area-context", () => ({
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 
 const mockedUseFeed = useFeed as jest.MockedFunction<typeof useFeed>;

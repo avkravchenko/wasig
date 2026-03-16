@@ -3,9 +3,11 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View, Text, StyleSheet } from "react-native";
 import { HomeScreen } from "@/screens/home";
 import FloatingTabBar from "@/widgets/floatingTabBar";
+import FeedFilterScreen from "@/screens/feedFilter/ui/FeedFilterScreen";
 
 const Tab = createBottomTabNavigator();
 const FeedStack = createNativeStackNavigator();
+const FiltersStack = createNativeStackNavigator();
 const MeetingsStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 
@@ -43,6 +45,16 @@ const MeetingsStackNavigator = () => {
   );
 };
 
+const FiltersStackNavigator = () => {
+  return (
+    <FiltersStack.Navigator>
+      <FiltersStack.Screen name="filters" options={{ title: "Фильтры" }}>
+        {() => <FeedFilterScreen />}
+      </FiltersStack.Screen>
+    </FiltersStack.Navigator>
+  );
+};
+
 const ProfileStackNavigator = () => {
   return (
     <ProfileStack.Navigator>
@@ -73,6 +85,11 @@ const HomeTabs = () => {
         name="meetings-tab"
         component={MeetingsStackNavigator}
         options={{ title: "Встречи" }}
+      />
+      <Tab.Screen
+        name="filters-tab"
+        component={FiltersStackNavigator}
+        options={{ title: "Фильтры" }}
       />
       <Tab.Screen
         name="profile-tab"

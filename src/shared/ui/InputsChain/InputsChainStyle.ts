@@ -8,8 +8,14 @@ const styles = StyleSheet.create({
     gap: 9,
   },
   hiddenInput: {
-    height: 0,
-    opacity: 0,
+    width: "100%",
+    height: 48,
+    position: "absolute",
+    left: 0,
+    top: 0,
+    zIndex: 1,
+    color: "transparent",
+    backgroundColor: "transparent",
   },
 });
 

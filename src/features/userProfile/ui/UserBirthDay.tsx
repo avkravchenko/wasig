@@ -44,7 +44,6 @@ const UserBirthDay = ({ onNextStep }: UserBirthDayProps) => {
             mask={sharedMasks.date}
             placeholder="дд.мм.гггг"
             keyboardType="numeric"
-            autoFocus
             renderError={(msg) => (
               <Text style={styles.customError}>⚠ {msg}</Text>
             )}

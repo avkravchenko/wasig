@@ -1,51 +1,59 @@
-import { FlatList, Text, View } from "react-native";
+import { useCallback } from "react";
+import { Text, View } from "react-native";
 import Chip from "../Chip/Chip";
 
-type ChipListProps<T> = {
+type ChipValue = number | string;
+
+type ChipListProps<T, Id extends ChipValue = number> = {
   items: T[];
-  value: Set<number>;
+  value: Set<Id>;
   groupTitle?: string;
-  getId: (item: T) => number;
+  getId: (item: T) => Id;
   getLabel: (item: T) => string;
-  onChange: (value: Set<number>) => void;
+  onChange: (value: Set<Id>) => void;
 };
 
-export function ChipGroup<T>({
+export function ChipGroup<T, Id extends ChipValue = number>({
   items,
   value,
   groupTitle,
   getId,
   getLabel,
   onChange,
-}: ChipListProps<T>) {
-  const toggle = (id: number) => {
-    const next = new Set(value);
+}: ChipListProps<T, Id>) {
+  const toggle = useCallback(
+    (id: Id) => {
+      const next = new Set(value);
 
-    if (next.has(id)) {
-      next.delete(id);
-    } else {
-      next.add(id);
-    }
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
 
-    onChange(next);
-  };
+      onChange(next);
+    },
+    [onChange, value],
+  );
+  const renderItem = useCallback(
+    (item: T) => (
+      <Chip
+        title={getLabel(item)}
+        selected={value.has(getId(item))}
+        onPress={() => toggle(getId(item))}
+      />
+    ),
+    [getId, getLabel, toggle, value],
+  );
 
   return (
     <View style={{ marginVertical: 16, gap: 8, minWidth: "100%" }}>
       {groupTitle && <Text>{groupTitle}</Text>}
-      <FlatList
-        data={items}
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => String(getId(item))}
-        renderItem={({ item }) => (
-          <Chip
-            title={getLabel(item)}
-            selected={value.has(getId(item))}
-            onPress={() => toggle(getId(item))}
-          />
-        )}
-        style={{ flexDirection: "row", flexWrap: "wrap" }}
-      />
+      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+        {items.map((item) => (
+          <View key={String(getId(item))}>{renderItem(item)}</View>
+        ))}
+      </View>
     </View>
   );
 }

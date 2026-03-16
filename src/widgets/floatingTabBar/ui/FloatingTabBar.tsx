@@ -1,11 +1,66 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect } from "react";
+import type { ComponentType } from "react";
+import {
+  LayoutAnimation,
+  Platform,
+  StyleSheet,
+  UIManager,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import FeedIcon from "../../../../assets/icons/broad-activity-feed-20-filled.svg";
+import FilterIcon from "../../../../assets/icons/filter.svg";
+import MeetingsIcon from "../../../../assets/icons/chat-smile-ai-line.svg";
+import ProfileIcon from "../../../../assets/icons/chat-solid.svg";
+import FloatingTabBarTab from "./FloatingTabBarTab";
 
 const TAB_LABELS: Record<string, string> = {
   "feed-tab": "Лента",
+  "filters-tab": "Фильтры",
   "meetings-tab": "Встречи",
   "profile-tab": "Профиль",
+};
+
+type TabRoute = BottomTabBarProps["state"]["routes"][number];
+type TabOptions = BottomTabBarProps["descriptors"][string]["options"];
+type TabIconComponent = ComponentType<{
+  color?: string;
+  width?: number;
+  height?: number;
+}>;
+
+const TAB_ICONS: Record<string, TabIconComponent> = {
+  "feed-tab": FeedIcon,
+  "filters-tab": FilterIcon,
+  "meetings-tab": MeetingsIcon,
+  "profile-tab": ProfileIcon,
+};
+
+const TAB_ICON_OFFSET_X: Record<string, number> = {
+  "feed-tab": 1.5,
+};
+
+const SECONDARY_TAB_NAMES = new Set(["filters-tab"]);
+
+const getTabLabel = (route: TabRoute, options: TabOptions) => {
+  if (TAB_LABELS[route.name]) {
+    return TAB_LABELS[route.name];
+  }
+
+  if (typeof options.tabBarLabel === "string") {
+    return options.tabBarLabel;
+  }
+
+  if (typeof options.title === "string") {
+    return options.title;
+  }
+
+  return route.name;
+};
+
+const getBadgeCount = (routeName: string) => {
+  return routeName === "meetings-tab" ? 4 : undefined;
 };
 
 const FloatingTabBar = ({
@@ -15,64 +70,96 @@ const FloatingTabBar = ({
 }: BottomTabBarProps) => {
   const insets = useSafeAreaInsets();
 
+  useEffect(() => {
+    if (
+      Platform.OS === "android" &&
+      UIManager.setLayoutAnimationEnabledExperimental
+    ) {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+  }, []);
+
+  const createOnPress = (route: TabRoute, isFocused: boolean) => () => {
+    const event = navigation.emit({
+      type: "tabPress",
+      target: route.key,
+      canPreventDefault: true,
+    });
+
+    if (!isFocused && !event.defaultPrevented) {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      navigation.navigate(route.name, route.params);
+    }
+  };
+
+  const createOnLongPress = (route: TabRoute) => () => {
+    navigation.emit({
+      type: "tabLongPress",
+      target: route.key,
+    });
+  };
+
+  const tabs = state.routes.map((route, index) => {
+    const { options } = descriptors[route.key];
+    const isFocused = state.index === index;
+
+    return {
+      key: route.key,
+      routeName: route.name,
+      accessibilityLabel: options.tabBarAccessibilityLabel,
+      testID: options.tabBarButtonTestID,
+      isFocused,
+      label: getTabLabel(route, options),
+      onPress: createOnPress(route, isFocused),
+      onLongPress: createOnLongPress(route),
+      badgeCount: getBadgeCount(route.name),
+      Icon: TAB_ICONS[route.name],
+      iconOffsetX: TAB_ICON_OFFSET_X[route.name] ?? 0,
+    };
+  });
+
+  const primaryTabs = tabs.filter(
+    (tab) => !SECONDARY_TAB_NAMES.has(tab.routeName),
+  );
+  const secondaryTabs = tabs.filter((tab) =>
+    SECONDARY_TAB_NAMES.has(tab.routeName),
+  );
+
   return (
     <View style={[styles.tabBarHost, { paddingBottom: insets.bottom + 8 }]}>
-      <View style={styles.tabBarOuter}>
-        {state.routes.map((route, index) => {
-          const { options } = descriptors[route.key];
-          const isFocused = state.index === index;
-
-          const label =
-            TAB_LABELS[route.name] ??
-            (typeof options.tabBarLabel === "string"
-              ? options.tabBarLabel
-              : typeof options.title === "string"
-                ? options.title
-                : route.name);
-
-          const onPress = () => {
-            const event = navigation.emit({
-              type: "tabPress",
-              target: route.key,
-              canPreventDefault: true,
-            });
-
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name, route.params);
-            }
-          };
-
-          const onLongPress = () => {
-            navigation.emit({
-              type: "tabLongPress",
-              target: route.key,
-            });
-          };
-
-          return (
-            <Pressable
-              key={route.key}
-              accessibilityRole="button"
-              accessibilityLabel={options.tabBarAccessibilityLabel}
-              testID={options.tabBarButtonTestID}
-              onPress={onPress}
-              onLongPress={onLongPress}
-              style={[styles.tabButton, isFocused && styles.tabButtonActive]}
-            >
-              <View style={[styles.tabDot, isFocused && styles.tabDotActive]} />
-              {isFocused ? (
-                <Text style={styles.tabLabel} numberOfLines={1}>
-                  {label}
-                </Text>
-              ) : null}
-              {route.name === "meetings-tab" ? (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>4</Text>
-                </View>
-              ) : null}
-            </Pressable>
-          );
-        })}
+      <View style={styles.tabBarRow}>
+        <View style={[styles.tabBarOuter, styles.primaryTabGroup]}>
+          {primaryTabs.map((tab) => (
+            <FloatingTabBarTab
+              key={tab.key}
+              accessibilityLabel={tab.accessibilityLabel}
+              testID={tab.testID}
+              isFocused={tab.isFocused}
+              label={tab.label}
+              onPress={tab.onPress}
+              onLongPress={tab.onLongPress}
+              badgeCount={tab.badgeCount}
+              Icon={tab.Icon}
+              iconOffsetX={tab.iconOffsetX}
+            />
+          ))}
+        </View>
+        <View style={[styles.tabBarOuter, styles.secondaryTabGroup]}>
+          {secondaryTabs.map((tab) => (
+            <FloatingTabBarTab
+              key={tab.key}
+              accessibilityLabel={tab.accessibilityLabel}
+              testID={tab.testID}
+              isFocused={tab.isFocused}
+              label={tab.label}
+              onPress={tab.onPress}
+              onLongPress={tab.onLongPress}
+              badgeCount={tab.badgeCount}
+              Icon={tab.Icon}
+              iconOffsetX={tab.iconOffsetX}
+            />
+          ))}
+        </View>
       </View>
     </View>
   );
@@ -85,62 +172,42 @@ const styles = StyleSheet.create({
     right: 16,
     bottom: 0,
   },
+  tabBarRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    shadowColor: "#ffffff",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 14,
+    elevation: 0,
+  },
   tabBarOuter: {
-    backgroundColor: "#F0F2F5",
+    backgroundColor: "rgba(255, 255, 255, 0.96)",
     borderRadius: 999,
     paddingVertical: 8,
     paddingHorizontal: 10,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     gap: 10,
+    shadowColor: "#1B2330",
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 24,
+    elevation: 8,
   },
-  tabButton: {
+  primaryTabGroup: {
     flex: 1,
-    minHeight: 46,
-    borderRadius: 999,
-    alignItems: "center",
+  },
+  secondaryTabGroup: {
     justifyContent: "center",
-    position: "relative",
-  },
-  tabButtonActive: {
-    backgroundColor: "#E4E8EF",
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    paddingHorizontal: 24,
-  },
-  tabDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: "#B8BFCC",
-  },
-  tabDotActive: {
-    backgroundColor: "#34394A",
-  },
-  tabLabel: {
-    marginLeft: 12,
-    fontSize: 16,
-    lineHeight: 20,
-    fontWeight: "600",
-    color: "#34394A",
-  },
-  badge: {
-    position: "absolute",
-    top: 2,
-    right: 10,
-    minWidth: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: "#34394A",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 6,
-  },
-  badgeText: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    lineHeight: 14,
-    fontWeight: "700",
   },
 });
 

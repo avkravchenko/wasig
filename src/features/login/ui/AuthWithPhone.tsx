@@ -4,7 +4,7 @@ import AuthWithPhoneStepTwo from "./AuthWithPhoneStepTwo";
 import useDefinePhoneNumber from "../model/hooks/useDefinePhoneNumber";
 
 interface AuthWithPhoneProps {
-  onCodeConfirmed: () => void;
+  onCodeConfirmed?: () => void;
 }
 
 const AuthWithPhone = ({ onCodeConfirmed }: AuthWithPhoneProps) => {
@@ -37,6 +37,8 @@ const AuthWithPhone = ({ onCodeConfirmed }: AuthWithPhoneProps) => {
       />
     );
   }
+
+  return null;
 };
 
 export default AuthWithPhone;

@@ -18,7 +18,7 @@ import useTimer from "@/shared/lib/useTimer";
 interface AuthWithPhoneStepTwoProps {
   phoneNumber: string;
   onResendCode: () => void;
-  onCodeConfirmed: () => void;
+  onCodeConfirmed?: () => void;
 }
 
 const AuthWithPhoneStepTwo = ({

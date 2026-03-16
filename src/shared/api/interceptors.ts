@@ -52,6 +52,7 @@ export const setupPublicInterceptors = (api: AxiosInstance) => {
 export const setupPrivateInterceptors = (
   privateApi: AxiosInstance,
   publicApi: AxiosInstance,
+  options?: { onAuthExpired?: () => void },
 ) => {
   privateApi.interceptors.request.use(async (config) => {
     const token = await getAccessToken();
@@ -69,7 +70,9 @@ export const setupPrivateInterceptors = (
       const originalRequest = error.config as RetriableRequestConfig | undefined;
       const status = error.response?.status;
 
-      if (!originalRequest || status !== 401 || originalRequest._retry) {
+      const shouldRefresh = status === 401 || status === 403;
+
+      if (!originalRequest || !shouldRefresh || originalRequest._retry) {
         return Promise.reject(normalizeApiError(error));
       }
 
@@ -102,6 +105,7 @@ export const setupPrivateInterceptors = (
       } catch (refreshError) {
         await clearAccessToken();
         await clearRefreshToken();
+        options?.onAuthExpired?.();
         return Promise.reject(normalizeApiError(refreshError));
       }
     },

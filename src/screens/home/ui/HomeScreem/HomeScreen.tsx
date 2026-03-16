@@ -1,12 +1,11 @@
-import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet } from "react-native";
-import Feed from "@/features/feed";
+import { StyleSheet, View } from "react-native";
+import FeedList from "@/widgets/feedList";
 
 const HomeScreen = () => {
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <Feed />
-    </SafeAreaView>
+    <View style={styles.safeArea}>
+      <FeedList />
+    </View>
   );
 };
 

@@ -7,8 +7,8 @@ export interface FeedItem {
   userAge: number;
   userGender: string;
   isVerified: boolean;
-  mainPhotoUrl: string;
-  mainPhotoThumbnailUrl: string;
+  mainPhotoUrl: string | null;
+  mainPhotoThumbnailUrl: string | null;
   activityTitle: string;
   activityDescription: string;
   activityType: string;
@@ -17,6 +17,6 @@ export interface FeedItem {
   whenAvailable: string;
   timeOfDay: string;
   duration: string;
-  distanceKm: number;
+  distanceKm: number | null;
   cityName: string;
 }

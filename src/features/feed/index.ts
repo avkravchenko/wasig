@@ -1,1 +1,1 @@
-export { default } from "./ui/FeedList";
+export { default as useFeed } from "./model/hooks/useFeed";
