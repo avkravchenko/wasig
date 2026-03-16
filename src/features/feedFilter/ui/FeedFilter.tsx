@@ -5,7 +5,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, ErrorComponent } from "@/shared/ui";
 import useFeedFilterOptions from "../model/hooks/useFeedFilterOptions";
 import { useFeedFilterStore } from "../model/store";
-import { hasActiveFeedFilters } from "../model/selectors";
 import { FeedFilters } from "../model/types";
 import defaultFilterStateFactory from "../lib/factories/defaultFilterStateFactory";
 import { getApiErrorMessage } from "@/shared/api/errors";
@@ -76,7 +75,7 @@ const FeedFilter = () => {
   }, [defaults, localFilters, options, patchLocalFilters]);
 
   const bottomSpacing = TAB_BAR_CLEARANCE + insets.bottom;
-  const isApplyDisabled = !hasActiveFeedFilters(localFilters, defaults);
+  const isApplyDisabled = areFiltersEqual(localFilters, applied);
 
   const handleApply = useCallback(() => {
     applyFilters(localFilters);
