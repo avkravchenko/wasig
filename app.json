@@ -17,7 +17,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.avkravchenko.wasig"
+      "bundleIdentifier": "com.avkravchenko.wasig",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Используем геопозицию, чтобы показывать расстояние до встреч в ленте."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -26,12 +29,22 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.avkravchenko.wasig"
+      "package": "com.avkravchenko.wasig",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Используем геопозицию, чтобы показывать расстояние до встреч в ленте."
+        }
+      ],
       [
         "expo-font",
         {
