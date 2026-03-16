@@ -1,20 +1,26 @@
 import { View } from "react-native";
-import { ChipsGroup } from "@/shared/ui";
+import { RadioGroup } from "@/shared/ui";
+import { FeedFilterOption } from "../model/types";
 
-const FilterConversationStyle = () => {
+const FilterConversationStyle = ({
+  value,
+  options,
+  onChange,
+}: {
+  value: string | null;
+  options: FeedFilterOption[];
+  onChange: (value: string) => void;
+}) => {
   return (
     <View>
-      <ChipsGroup
-        groupTitle="Стиль общения"
-        items={[
-          { id: "1", label: "Больше слушает" },
-          { id: "2", label: "Больше говорит" },
-          { id: "3", label: "Равномерно" },
-        ]}
-        value={new Set<number>()}
-        getId={(item) => Number(item.id)}
-        getLabel={(item) => item.label}
-        onChange={() => {}}
+      <RadioGroup
+        title="Стиль общения"
+        variant="chip"
+        options={options.map((option) => ({
+          ...option,
+          selected: option.value === value,
+        }))}
+        onChange={(option) => onChange(option.value)}
       />
     </View>
   );

@@ -1,55 +1,35 @@
 import { create } from "zustand";
 import { FeedFilters } from "./types";
 import defaultFilterStateFactory from "../lib/factories/defaultFilterStateFactory";
+import { areFiltersEqual, cloneFilters } from "../lib/filterUtils";
 
 interface FeedFilterState {
-  draft: FeedFilters;
+  defaults: FeedFilters;
   applied: FeedFilters;
-  setDraft: (nextDraft: FeedFilters) => void;
-  patchDraft: (patch: Partial<FeedFilters>) => void;
-  hydrateDraftFromApplied: () => void;
-  applyDraft: () => void;
-  resetDraft: () => void;
-  clearAll: () => void;
+  setDefaults: (nextDefaults: FeedFilters) => void;
+  applyFilters: (filters: FeedFilters) => void;
 }
 
-const cloneFilters = (filters: FeedFilters): FeedFilters => ({
-  ...filters,
-  hobbyIds: [...filters.hobbyIds],
-  meetingGoals: [...filters.meetingGoals],
-});
-
 export const useFeedFilterStore = create<FeedFilterState>((set) => ({
-  draft: cloneFilters(defaultFilterStateFactory()),
+  defaults: cloneFilters(defaultFilterStateFactory()),
   applied: cloneFilters(defaultFilterStateFactory()),
-  setDraft: (nextDraft) =>
-    set({
-      draft: cloneFilters(nextDraft),
+  setDefaults: (nextDefaults) =>
+    set((state) => {
+      const normalizedDefaults = cloneFilters(nextDefaults);
+
+      if (areFiltersEqual(normalizedDefaults, state.defaults)) {
+        return state;
+      }
+
+      return {
+        defaults: normalizedDefaults,
+        applied: areFiltersEqual(state.applied, state.defaults)
+          ? normalizedDefaults
+          : state.applied,
+      };
     }),
-  patchDraft: (patch) =>
-    set((state) => ({
-      draft: {
-        ...state.draft,
-        ...patch,
-        hobbyIds: patch.hobbyIds ?? state.draft.hobbyIds,
-        meetingGoals: patch.meetingGoals ?? state.draft.meetingGoals,
-      },
-    })),
-  hydrateDraftFromApplied: () =>
-    set((state) => ({
-      draft: cloneFilters(state.applied),
-    })),
-  applyDraft: () =>
-    set((state) => ({
-      applied: cloneFilters(state.draft),
-    })),
-  resetDraft: () =>
+  applyFilters: (filters) =>
     set({
-      draft: cloneFilters(defaultFilterStateFactory()),
-    }),
-  clearAll: () =>
-    set({
-      draft: cloneFilters(defaultFilterStateFactory()),
-      applied: cloneFilters(defaultFilterStateFactory()),
+      applied: cloneFilters(filters),
     }),
 }));

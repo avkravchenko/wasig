@@ -6,18 +6,34 @@ type RangeFilterProps = {
   title?: string;
   minValue?: number;
   maxValue?: number;
+  value?: [number, number];
+  onChange?: (nextValue: [number, number]) => void;
 };
 
 const RangeFilter = ({
   title = "Диапазон",
   minValue = 0,
   maxValue = 100,
+  value,
+  onChange,
 }: RangeFilterProps) => {
   const [range, setRange] = useState<[number, number]>([minValue, maxValue]);
+  const isControlled = value !== undefined;
+  const currentRange = value ?? range;
 
   useEffect(() => {
-    setRange([minValue, maxValue]);
-  }, [minValue, maxValue]);
+    if (!isControlled) {
+      setRange([minValue, maxValue]);
+    }
+  }, [isControlled, maxValue, minValue]);
+
+  const handleValueChange = (nextValue: [number, number]) => {
+    if (!isControlled) {
+      setRange(nextValue);
+    }
+
+    onChange?.(nextValue);
+  };
 
   return (
     <View>
@@ -25,13 +41,13 @@ const RangeFilter = ({
         <Text>{title}</Text>
       </View>
       <View style={styles.valueContainer}>
-        <Text style={styles.valueChip}>от {range[0]}</Text>
-        <Text style={styles.valueChip}>до {range[1]}</Text>
+        <Text style={styles.valueChip}>от {currentRange[0]}</Text>
+        <Text style={styles.valueChip}>до {currentRange[1]}</Text>
       </View>
 
       <View style={styles.sliderContainer}>
         <RangeSlider
-          range={range}
+          range={currentRange}
           style={styles.slider}
           step={1}
           minimumRange={1}
@@ -42,7 +58,7 @@ const RangeFilter = ({
           thumbTintColor="#000000"
           trackHeight={4}
           thumbSize={16}
-          onValueChange={setRange}
+          onValueChange={handleValueChange}
         />
       </View>
     </View>

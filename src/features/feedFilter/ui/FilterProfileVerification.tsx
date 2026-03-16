@@ -1,8 +1,14 @@
 import { Toggler } from "@/shared/ui";
 
-const FilterProfileVerification = () => {
+const FilterProfileVerification = ({
+  value,
+  onChange,
+}: {
+  value: boolean;
+  onChange: (value: boolean) => void;
+}) => {
   return (
-    <Toggler title="Профиль подтвержден" checked={false} onChange={() => {}} />
+    <Toggler title="Профиль подтвержден" checked={value} onChange={onChange} />
   );
 };
 

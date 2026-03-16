@@ -1,32 +1,85 @@
 import { FeedItem } from "@/entities/feed";
 import { privateApi } from "@/shared/api/privateApi";
-import { FeedCardsQuery, FeedCardsResponse } from "../model/types/feed";
+import {
+  FeedCardsQuery,
+  FeedCardsRequest,
+  FeedCardsResponse,
+} from "../model/types/feed";
+
+export const createFeedCardsRequest = ({
+  filters,
+  defaults,
+  page = 0,
+  size = 20,
+  latitude,
+  longitude,
+}: Omit<FeedCardsQuery, "signal">): FeedCardsRequest => {
+  const hasValidLatitude = typeof latitude === "number" && Number.isFinite(latitude);
+  const hasValidLongitude =
+    typeof longitude === "number" && Number.isFinite(longitude);
+
+  return {
+    gender: filters.gender ?? undefined,
+    ageMin:
+      filters.ageRange[0] !== defaults.ageRange[0]
+        ? filters.ageRange[0]
+        : undefined,
+    ageMax:
+      filters.ageRange[1] !== defaults.ageRange[1]
+        ? filters.ageRange[1]
+        : undefined,
+    distanceMaxKm:
+      filters.distanceRange[1] !== defaults.distanceRange[1]
+        ? filters.distanceRange[1]
+        : undefined,
+    activityTypes:
+      filters.meetingGoals.length > 0
+        ? filters.meetingGoals
+        : undefined,
+    whenAvailable:
+      filters.availability || filters.availableOnWeekdays
+        ? [
+            ...(filters.availability ? [filters.availability] : []),
+            ...(filters.availableOnWeekdays ? ["THIS_WEEK"] : []),
+          ]
+        : undefined,
+    timeOfDay: filters.timeSlots.length > 0 ? filters.timeSlots : undefined,
+    duration: filters.durations.length > 0 ? filters.durations : undefined,
+    communicationStyle: filters.communicationStyle ?? undefined,
+    verifiedOnly: filters.onlyVerifiedProfiles ? true : undefined,
+    hasHistory: filters.hasHistory ? true : undefined,
+    ...(hasValidLatitude && hasValidLongitude
+      ? {
+          latitude,
+          longitude,
+        }
+      : {}),
+    page,
+    size,
+  };
+};
 
 export const getFeedCards = async ({
+  filters,
+  defaults,
   page = 0,
   size = 20,
   latitude,
   longitude,
   signal,
 }: FeedCardsQuery): Promise<FeedCardsResponse> => {
-  const hasValidLatitude = typeof latitude === "number" && Number.isFinite(latitude);
-  const hasValidLongitude =
-    typeof longitude === "number" && Number.isFinite(longitude);
-
-  const params: Record<string, number> = {
-    page,
-    size,
-  };
-
-  if (hasValidLatitude && hasValidLongitude) {
-    params.latitude = latitude;
-    params.longitude = longitude;
-  }
-
-  const response = await privateApi.get<FeedCardsResponse>("/api/v1/feed/cards", {
-    params,
-    signal,
-  });
+  const response = await privateApi.post<FeedCardsResponse>(
+    "/api/v1/feed",
+    createFeedCardsRequest({
+      filters,
+      defaults,
+      page,
+      size,
+      latitude,
+      longitude,
+    }),
+    { signal },
+  );
 
   return response.data;
 };

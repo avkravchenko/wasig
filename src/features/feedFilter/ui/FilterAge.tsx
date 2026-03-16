@@ -1,14 +1,23 @@
 import { RangeFilter } from "@/shared/ui";
 
-const MIN_AGE = 18;
-const MAX_AGE = 100;
-
-const FilterAge = () => {
+const FilterAge = ({
+  value,
+  minValue,
+  maxValue,
+  onChange,
+}: {
+  value: [number, number];
+  minValue: number;
+  maxValue: number;
+  onChange: (value: [number, number]) => void;
+}) => {
   return (
     <RangeFilter
       title="Возраст, лет"
-      minValue={MIN_AGE}
-      maxValue={MAX_AGE}
+      minValue={minValue}
+      maxValue={maxValue}
+      value={value}
+      onChange={onChange}
     />
   );
 };

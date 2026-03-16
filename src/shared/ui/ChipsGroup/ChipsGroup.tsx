@@ -1,26 +1,28 @@
 import { useCallback } from "react";
-import { FlatList, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import Chip from "../Chip/Chip";
 
-type ChipListProps<T> = {
+type ChipValue = number | string;
+
+type ChipListProps<T, Id extends ChipValue = number> = {
   items: T[];
-  value: Set<number>;
+  value: Set<Id>;
   groupTitle?: string;
-  getId: (item: T) => number;
+  getId: (item: T) => Id;
   getLabel: (item: T) => string;
-  onChange: (value: Set<number>) => void;
+  onChange: (value: Set<Id>) => void;
 };
 
-export function ChipGroup<T>({
+export function ChipGroup<T, Id extends ChipValue = number>({
   items,
   value,
   groupTitle,
   getId,
   getLabel,
   onChange,
-}: ChipListProps<T>) {
+}: ChipListProps<T, Id>) {
   const toggle = useCallback(
-    (id: number) => {
+    (id: Id) => {
       const next = new Set(value);
 
       if (next.has(id)) {
@@ -34,7 +36,7 @@ export function ChipGroup<T>({
     [onChange, value],
   );
   const renderItem = useCallback(
-    ({ item }: { item: T }) => (
+    (item: T) => (
       <Chip
         title={getLabel(item)}
         selected={value.has(getId(item))}
@@ -47,13 +49,11 @@ export function ChipGroup<T>({
   return (
     <View style={{ marginVertical: 16, gap: 8, minWidth: "100%" }}>
       {groupTitle && <Text>{groupTitle}</Text>}
-      <FlatList
-        data={items}
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => String(getId(item))}
-        renderItem={renderItem}
-        style={{ flexDirection: "row", flexWrap: "wrap" }}
-      />
+      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+        {items.map((item) => (
+          <View key={String(getId(item))}>{renderItem(item)}</View>
+        ))}
+      </View>
     </View>
   );
 }

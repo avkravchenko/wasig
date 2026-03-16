@@ -1,47 +1,57 @@
 import { View } from "react-native";
-import { RadioGroup, Toggler, ChipsGroup } from "@/shared/ui";
+import { RadioGroup, ChipsGroup } from "@/shared/ui";
+import { FeedFilterOption } from "../model/types";
 
-const FilterSchedule = () => {
+const FilterSchedule = ({
+  availability,
+  timeSlots,
+  durations,
+  availabilityOptions,
+  timeOfDayOptions,
+  durationOptions,
+  onAvailabilityChange,
+  onTimeSlotsChange,
+  onDurationsChange,
+}: {
+  availability: string | null;
+  timeSlots: string[];
+  durations: string[];
+  availabilityOptions: FeedFilterOption[];
+  timeOfDayOptions: FeedFilterOption[];
+  durationOptions: FeedFilterOption[];
+  onAvailabilityChange: (value: string) => void;
+  onTimeSlotsChange: (value: string[]) => void;
+  onDurationsChange: (value: string[]) => void;
+}) => {
   return (
     <View>
       <RadioGroup
-        options={[
-          { label: "Сегодня", value: "today", selected: true },
-          { label: "Завтра", value: "tomorrow", selected: false },
-          { label: "На выходных", value: "weekend", selected: false },
-        ]}
-        onChange={() => {}}
-      />
-      <Toggler
-        title="Договоримся на неделе"
-        checked={false}
-        onChange={() => {}}
+        title="Когда"
+        options={availabilityOptions.map((option) => ({
+          ...option,
+          selected: option.value === availability,
+        }))}
+        onChange={(option) => onAvailabilityChange(option.value)}
       />
       <ChipsGroup
         groupTitle="В какое время"
-        items={[
-          { id: "0", label: "В течение дня" },
-          { id: "1", label: "Утро" },
-          { id: "2", label: "День" },
-          { id: "3", label: "Вечер" },
-        ]}
-        value={new Set<number>()}
-        getId={(item) => Number(item.id)}
+        items={timeOfDayOptions}
+        value={new Set(timeSlots)}
+        getId={(item) => item.value}
         getLabel={(item) => item.label}
-        onChange={() => {}}
+        onChange={(nextValue) =>
+          onTimeSlotsChange(Array.from(nextValue) as string[])
+        }
       />
       <ChipsGroup
         groupTitle="Длительность встречи"
-        items={[
-          { id: "0", label: "Как пойдет" },
-          { id: "1", label: "1 час" },
-          { id: "2", label: "2 часа" },
-          { id: "3", label: "3 часа" },
-        ]}
-        value={new Set<number>()}
-        getId={(item) => Number(item.id)}
+        items={durationOptions}
+        value={new Set(durations)}
+        getId={(item) => item.value}
         getLabel={(item) => item.label}
-        onChange={() => {}}
+        onChange={(nextValue) =>
+          onDurationsChange(Array.from(nextValue) as string[])
+        }
       />
     </View>
   );

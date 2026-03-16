@@ -1,6 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { FeedItem } from "@/entities/feed";
-import { extractFeedCards } from "./getFeedCards";
+import { createFeedCardsRequest, extractFeedCards } from "./getFeedCards";
+import defaultFilterStateFactory from "@/features/feedFilter/lib/factories/defaultFilterStateFactory";
 
 jest.mock("@/shared/api/privateApi", () => ({
   __esModule: true,
@@ -61,5 +62,41 @@ describe("extractFeedCards", () => {
     };
 
     expect(extractFeedCards(payload as any)).toEqual([]);
+  });
+});
+
+describe("createFeedCardsRequest", () => {
+  it("omits coordinates when location is unavailable", () => {
+    const defaults = defaultFilterStateFactory();
+    const request = createFeedCardsRequest({
+      filters: defaults,
+      defaults,
+      page: 0,
+      size: 20,
+    });
+
+    expect(request).toEqual({
+      page: 0,
+      size: 20,
+    });
+  });
+
+  it("includes coordinates only when both are valid", () => {
+    const defaults = defaultFilterStateFactory();
+    const request = createFeedCardsRequest({
+      filters: defaults,
+      defaults,
+      page: 1,
+      size: 10,
+      latitude: 59.93,
+      longitude: 30.31,
+    });
+
+    expect(request).toEqual({
+      latitude: 59.93,
+      longitude: 30.31,
+      page: 1,
+      size: 10,
+    });
   });
 });

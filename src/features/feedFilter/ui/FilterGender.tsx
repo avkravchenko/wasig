@@ -1,18 +1,25 @@
 import { RadioGroup } from "@/shared/ui";
-import { Text } from "react-native";
+import { FeedFilterOption } from "../model/types";
 
-const FilterGender = () => {
+const FilterGender = ({
+  value,
+  options,
+  onChange,
+}: {
+  value: string | null;
+  options: FeedFilterOption[];
+  onChange: (value: string) => void;
+}) => {
   return (
     <>
-      <Text>Пол</Text>
       <RadioGroup
+        title="Пол"
         variant="chip"
-        options={[
-          { label: "Неважно", value: "any", selected: true },
-          { label: "Женщины", value: "female", selected: false },
-          { label: "Мужчины", value: "male", selected: false },
-        ]}
-        onChange={() => {}}
+        options={options.map((option) => ({
+          ...option,
+          selected: option.value === value,
+        }))}
+        onChange={(option) => onChange(option.value)}
       />
     </>
   );

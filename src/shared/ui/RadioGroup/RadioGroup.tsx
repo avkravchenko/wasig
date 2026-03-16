@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import Chip from "../Chip/Chip";
 import RadioItem from "../RadioItem/RadioItem";
 
@@ -8,6 +8,8 @@ type RadioGroupProps<
   options: T[];
   onChange: (value: T) => void;
   variant?: "default" | "chip";
+  title?: string;
+  label?: string;
 };
 
 const RadioGroup = <
@@ -16,32 +18,45 @@ const RadioGroup = <
   options,
   onChange,
   variant = "default",
+  title,
+  label,
 }: RadioGroupProps<T>) => {
+  const resolvedTitle = title ?? label;
+
   return (
-    <View style={variant === "chip" ? styles.chipContainer : styles.container}>
-      {options.map((item) =>
-        variant === "chip" ? (
-          <Chip
-            key={String(item.value)}
-            title={item.label}
-            selected={item.selected}
-            onPress={() => onChange(item)}
-          />
-        ) : (
-          <RadioItem
-            key={String(item.value)}
-            label={item.label}
-            selected={item.selected}
-            onPress={() => onChange(item)}
-          />
-        ),
-      )}
+    <View style={styles.container}>
+      {resolvedTitle && <Text style={styles.title}>{resolvedTitle}</Text>}
+      <View style={variant === "chip" ? styles.chipContainer : styles.optionsContainer}>
+        {options.map((item) =>
+          variant === "chip" ? (
+            <Chip
+              key={String(item.value)}
+              title={item.label}
+              selected={item.selected}
+              onPress={() => onChange(item)}
+            />
+          ) : (
+            <RadioItem
+              key={String(item.value)}
+              label={item.label}
+              selected={item.selected}
+              onPress={() => onChange(item)}
+            />
+          ),
+        )}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    width: "100%",
+  },
+  title: {
+    marginBottom: 8,
+  },
+  optionsContainer: {
     width: "100%",
   },
   chipContainer: {
