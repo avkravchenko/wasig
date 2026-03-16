@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
-import { FeedItem } from "@/entities/feed";
+import type { FeedItem } from "../model/types";
 import CardBodyHobbies from "./CardBodyHobbies";
 import { Button } from "@/shared/ui";
 

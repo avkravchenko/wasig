@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import NotificationsIcon from "../../../../assets/icons/notifications-alt-fill.svg";
-import { FeedItem } from "@/entities/feed";
+import type { FeedItem } from "../model/types";
 import { ImagePlaceholder } from "@/shared/ui";
 
 type CardHeaderProps = Pick<

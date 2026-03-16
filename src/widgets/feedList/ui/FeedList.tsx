@@ -9,10 +9,9 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import useFeed from "@/features/feed/model/hooks/useFeed";
-import Card from "@/features/feedItem";
 import { ErrorComponent } from "@/shared/ui";
 import { getApiErrorMessage } from "@/shared/api/errors";
-import { FeedItem } from "@/entities/feed";
+import { FeedCard, FeedItem } from "@/entities/feed";
 
 const FeedList = () => {
   const { data, isLoading, isError, error } = useFeed();
@@ -20,7 +19,7 @@ const FeedList = () => {
   const contentTopPadding = insets.top + 16;
   const contentBottomPadding = insets.bottom + 96;
   const renderItem = useCallback(
-    ({ item }: { item: FeedItem }) => <Card cardData={item} />,
+    ({ item }: { item: FeedItem }) => <FeedCard cardData={item} />,
     [],
   );
 

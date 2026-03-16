@@ -2,17 +2,17 @@ import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { render } from "@testing-library/react-native";
 import useFeed from "@/features/feed/model/hooks/useFeed";
 import FeedList from "./FeedList";
-import { FeedItem } from "@/entities/feed";
-import Card from "@/features/feedItem";
+import { FeedCard, FeedItem } from "@/entities/feed";
 
 jest.mock("@/features/feed/model/hooks/useFeed", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-jest.mock("@/features/feedItem", () => ({
+jest.mock("@/entities/feed", () => ({
   __esModule: true,
-  default: jest.fn(() => null),
+  ...(jest.requireActual("@/entities/feed") as object),
+  FeedCard: jest.fn(() => null),
 }));
 
 jest.mock("react-native-safe-area-context", () => ({
@@ -20,7 +20,7 @@ jest.mock("react-native-safe-area-context", () => ({
 }));
 
 const mockedUseFeed = useFeed as jest.MockedFunction<typeof useFeed>;
-const mockedCard = Card as unknown as jest.Mock;
+const mockedCard = FeedCard as unknown as jest.Mock;
 
 const feedItem: FeedItem = {
   activityId: "activity-1",

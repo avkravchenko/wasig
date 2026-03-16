@@ -1,7 +1,7 @@
 import { StyleSheet, View } from "react-native";
 import CardCover from "./CardCover";
 import CardBody from "./CardBody";
-import { FeedItem } from "@/entities/feed";
+import type { FeedItem } from "../model/types";
 import CardHeader from "./CardHeader";
 
 const Card = ({ cardData }: { cardData: FeedItem }) => {

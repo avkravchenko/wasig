@@ -1,7 +1,9 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
 import { render } from "@testing-library/react-native";
 import { Image } from "react-native";
 import CardHeader from "./CardHeader";
+
+jest.mock("../../../../assets/icons/notifications-alt-fill.svg", () => "MockSvg");
 
 describe("CardHeader", () => {
   it("renders activity labels, counters and avatar", () => {
