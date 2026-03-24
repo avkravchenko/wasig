@@ -34,8 +34,8 @@ const CardHeader = ({
         )}
         <View style={styles.textContainer}>
           <View>
-            <Text style={styles.activityTypeLabel}>{activityTypeLabel}</Text>
-            <Text style={styles.activityType}>{activityType}</Text>
+            <Text style={styles.activityTypeLabel}>Я хочу</Text>
+            <Text style={styles.activityType}>{activityTypeLabel}</Text>
           </View>
           <Text style={styles.indicator}>9</Text>
         </View>

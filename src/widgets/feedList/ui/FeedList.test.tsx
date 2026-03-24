@@ -2,7 +2,13 @@ import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { render } from "@testing-library/react-native";
 import useFeed from "@/features/feed/model/hooks/useFeed";
 import FeedList from "./FeedList";
-import { FeedCard, FeedItem } from "@/entities/feed";
+import {
+  FeedAvailability,
+  FeedCard,
+  FeedDuration,
+  FeedItem,
+  FeedTimeOfDay,
+} from "@/entities/feed";
 import { useCurrentLocation } from "@/shared/lib";
 
 jest.mock("@/features/feed/model/hooks/useFeed", () => ({
@@ -45,9 +51,9 @@ const feedItem: FeedItem = {
   activityType: "Прогулка",
   activityTypeLabel: "Активность",
   interests: [{ id: 1, name: "Кофе", category: "Еда", isCustom: false }],
-  whenAvailable: "today",
-  timeOfDay: "evening",
-  duration: "2 часа",
+  whenAvailable: FeedAvailability.TODAY,
+  timeOfDay: FeedTimeOfDay.EVENING,
+  duration: FeedDuration.TWO_HOURS,
   distanceKm: 4,
   cityName: "Москва",
 };

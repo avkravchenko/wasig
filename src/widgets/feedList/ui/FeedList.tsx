@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -11,18 +11,27 @@ import { LinearGradient } from "expo-linear-gradient";
 import useFeed from "@/features/feed/model/hooks/useFeed";
 import { ErrorComponent } from "@/shared/ui";
 import { getApiErrorMessage } from "@/shared/api/errors";
-import { FeedCard, FeedItem } from "@/entities/feed";
+import { CardDetails, FeedCard, FeedItem } from "@/entities/feed";
 import { useCurrentLocation } from "@/shared/lib";
 
 const FeedList = () => {
   const { latitude, longitude } = useCurrentLocation();
+  const [selectedCard, setSelectedCard] = useState<FeedItem | null>(null);
   const { data, isLoading, isError, error } = useFeed({ latitude, longitude });
   const insets = useSafeAreaInsets();
   const contentTopPadding = insets.top + 16;
   const contentBottomPadding = insets.bottom + 96;
-  const renderItem = useCallback(
-    ({ item }: { item: FeedItem }) => <FeedCard cardData={item} />,
+  const handleOpenCard = useCallback(
+    (card: FeedItem) => {
+      setSelectedCard(card);
+    },
     [],
+  );
+  const renderItem = useCallback(
+    ({ item }: { item: FeedItem }) => (
+      <FeedCard cardData={item} onCardPress={handleOpenCard} />
+    ),
+    [handleOpenCard],
   );
 
   if (isLoading) {
@@ -87,6 +96,11 @@ const FeedList = () => {
           style={styles.gradientFill}
         />
       </View>
+      <CardDetails
+        cardData={selectedCard}
+        isVisible={selectedCard !== null}
+        onClose={() => setSelectedCard(null)}
+      />
     </View>
   );
 };
@@ -130,11 +144,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     color: "#3B3D4B",
-    textAlign: "center",
-  },
-  emptyDescription: {
-    fontSize: 14,
-    color: "#7E8191",
     textAlign: "center",
   },
   center: {

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { render } from "@testing-library/react-native";
 import CardBody from "./CardBody";
 import CardBodyHobbies from "./CardBodyHobbies";
+import { FeedDuration } from "../../model/types";
 
 jest.mock("./CardBodyHobbies", () => ({
   __esModule: true,
@@ -25,8 +26,9 @@ describe("CardBody", () => {
         activityTitle="Прогулка"
         activityDescription="Парк и кофе"
         interests={interests}
-        duration="2 часа"
+        duration={FeedDuration.TWO_HOURS}
         distanceKm={4}
+        onDetailsPress={() => {}}
       />
     );
 

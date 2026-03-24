@@ -3,10 +3,15 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View, Text, StyleSheet } from "react-native";
 import { HomeScreen } from "@/screens/home";
 import FloatingTabBar from "@/widgets/floatingTabBar";
-import FeedFilterScreen from "@/screens/feedFilter/ui/FeedFilterScreen";
+import { FeedFilterScreen } from "@/screens/feedFilter";
+import { ROUTER_NAME_SPACES } from "@/app/router";
+
+type FeedStackParamList = {
+  [ROUTER_NAME_SPACES.HOME.NAME]: undefined;
+};
 
 const Tab = createBottomTabNavigator();
-const FeedStack = createNativeStackNavigator();
+const FeedStack = createNativeStackNavigator<FeedStackParamList>();
 const FiltersStack = createNativeStackNavigator();
 const MeetingsStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
@@ -24,7 +29,7 @@ const FeedStackNavigator = () => {
   return (
     <FeedStack.Navigator>
       <FeedStack.Screen
-        name="home"
+        name={ROUTER_NAME_SPACES.HOME.NAME}
         component={HomeScreen}
         options={{ headerShown: false }}
       />

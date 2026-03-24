@@ -7,6 +7,7 @@ import {
   StyleSheet,
   UIManager,
   View,
+  type ViewStyle,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FeedIcon from "../../../../assets/icons/broad-activity-feed-20-filled.svg";
@@ -69,6 +70,12 @@ const FloatingTabBar = ({
   navigation,
 }: BottomTabBarProps) => {
   const insets = useSafeAreaInsets();
+  const focusedRoute = state.routes[state.index];
+  const focusedOptions = descriptors[focusedRoute.key]?.options;
+  const flattenedTabBarStyle = focusedOptions?.tabBarStyle
+    ? (StyleSheet.flatten(focusedOptions.tabBarStyle) as ViewStyle | undefined)
+    : undefined;
+  const isHidden = flattenedTabBarStyle?.display === "none";
 
   useEffect(() => {
     if (
@@ -78,6 +85,10 @@ const FloatingTabBar = ({
       UIManager.setLayoutAnimationEnabledExperimental(true);
     }
   }, []);
+
+  if (isHidden) {
+    return null;
+  }
 
   const createOnPress = (route: TabRoute, isFocused: boolean) => () => {
     const event = navigation.emit({

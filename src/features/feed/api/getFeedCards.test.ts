@@ -1,5 +1,10 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { FeedItem } from "@/entities/feed";
+import {
+  FeedAvailability,
+  FeedDuration,
+  FeedItem,
+  FeedTimeOfDay,
+} from "@/entities/feed";
 import { createFeedCardsRequest, extractFeedCards } from "./getFeedCards";
 import defaultFilterStateFactory from "@/features/feedFilter/lib/factories/defaultFilterStateFactory";
 
@@ -24,9 +29,9 @@ const card: FeedItem = {
   activityType: "COFFEE",
   activityTypeLabel: "Попить кофе",
   interests: [],
-  whenAvailable: "THIS_WEEK",
-  timeOfDay: "AFTERNOON",
-  duration: "TWO_HOURS",
+  whenAvailable: FeedAvailability.THIS_WEEK,
+  timeOfDay: FeedTimeOfDay.AFTERNOON,
+  duration: FeedDuration.TWO_HOURS,
   distanceKm: null,
   cityName: "Москва",
 };

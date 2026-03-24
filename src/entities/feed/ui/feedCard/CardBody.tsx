@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import type { FeedItem } from "../../model/types";
+import { getFeedDurationLabel } from "../../lib/formatters";
 import CardBodyHobbies from "./CardBodyHobbies";
 import { Button } from "@/shared/ui";
 
@@ -13,7 +14,9 @@ type CardBodyProps = Pick<
   | "interests"
   | "duration"
   | "distanceKm"
->;
+> & {
+  onDetailsPress: () => void;
+};
 const EMPTY_INTERESTS: NonNullable<CardBodyProps["interests"]> = [];
 
 const CardBody = ({
@@ -25,11 +28,12 @@ const CardBody = ({
   interests = EMPTY_INTERESTS,
   duration,
   distanceKm,
+  onDetailsPress,
 }: CardBodyProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.durationDistanceContainer}>
-        <Text style={styles.durationText}>{duration}</Text>
+        <Text style={styles.durationText}>{getFeedDurationLabel(duration)}</Text>
         <Text style={styles.distanceText}>
           {typeof distanceKm === "number"
             ? `${distanceKm} км от вас`
@@ -52,7 +56,7 @@ const CardBody = ({
         size="lg"
         fullWidth
         title="Подробнее"
-        onPress={() => {}}
+        onPress={onDetailsPress}
       />
     </View>
   );

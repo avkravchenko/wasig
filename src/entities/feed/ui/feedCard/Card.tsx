@@ -4,7 +4,13 @@ import CardBody from "./CardBody";
 import type { FeedItem } from "../../model/types";
 import CardHeader from "./CardHeader";
 
-const Card = ({ cardData }: { cardData: FeedItem }) => {
+const Card = ({
+  cardData,
+  onCardPress,
+}: {
+  cardData: FeedItem;
+  onCardPress: (card: FeedItem) => void;
+}) => {
   return (
     <View style={styles.container}>
       <CardHeader
@@ -23,6 +29,7 @@ const Card = ({ cardData }: { cardData: FeedItem }) => {
           interests={cardData.interests}
           duration={cardData.duration}
           distanceKm={cardData.distanceKm}
+          onDetailsPress={() => onCardPress(cardData)}
         />
       </View>
     </View>

@@ -2,7 +2,11 @@ import { useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { ImagePlaceholder } from "@/shared/ui";
 
-const CardCover = ({ imageUrl }: { imageUrl: string | null }) => {
+const CardCover = ({
+  imageUrl,
+}: {
+  imageUrl: string | null;
+}) => {
   const [isImageError, setIsImageError] = useState(false);
   const hasImage = typeof imageUrl === "string" && imageUrl.length > 0;
   const shouldShowImage = hasImage && !isImageError;

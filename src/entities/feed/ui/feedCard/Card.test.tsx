@@ -4,7 +4,12 @@ import Card from "./Card";
 import CardBody from "../feedCard/CardBody";
 import CardCover from "../feedCard/CardCover";
 import CardHeader from "../feedCard/CardHeader";
-import { FeedItem } from "@/entities/feed";
+import {
+  FeedAvailability,
+  FeedDuration,
+  FeedItem,
+  FeedTimeOfDay,
+} from "@/entities/feed";
 
 jest.mock("./CardHeader", () => ({
   __esModule: true,
@@ -39,22 +44,27 @@ const cardData: FeedItem = {
   activityType: "Прогулка",
   activityTypeLabel: "Активность",
   interests: [{ id: 1, name: "Кофе", category: "Еда", isCustom: false }],
-  whenAvailable: "today",
-  timeOfDay: "evening",
-  duration: "2 часа",
+  whenAvailable: FeedAvailability.TODAY,
+  timeOfDay: FeedTimeOfDay.EVENING,
+  duration: FeedDuration.TWO_HOURS,
   distanceKm: 4,
   cityName: "Москва",
 };
 
 describe("Card", () => {
+  const onCardPress = jest.fn();
+
   beforeEach(() => {
     mockedCardHeader.mockClear();
     mockedCardCover.mockClear();
     mockedCardBody.mockClear();
+    onCardPress.mockClear();
   });
 
   it("passes relevant data to child sections", () => {
-    render(<Card cardData={cardData} />);
+    render(
+      <Card cardData={cardData} onCardPress={onCardPress} />,
+    );
 
     expect(mockedCardHeader.mock.calls[0][0]).toEqual(
       expect.objectContaining({
@@ -76,7 +86,19 @@ describe("Card", () => {
         interests: cardData.interests,
         duration: cardData.duration,
         distanceKm: cardData.distanceKm,
+        onDetailsPress: expect.any(Function),
       }),
     );
+  });
+
+  it("opens details with full card payload on details press", () => {
+    render(<Card cardData={cardData} onCardPress={onCardPress} />);
+
+    const { onDetailsPress } = mockedCardBody.mock.calls[0][0] as {
+      onDetailsPress: () => void;
+    };
+    onDetailsPress();
+
+    expect(onCardPress).toHaveBeenCalledWith(cardData);
   });
 });
