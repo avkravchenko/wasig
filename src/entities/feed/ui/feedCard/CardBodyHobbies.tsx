@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet } from "react-native";
-import type { FeedItem } from "../model/types";
+import type { FeedItem } from "../../model/types";
 import { Chip } from "@/shared/ui";
 
 type CardBodyHobbiesProps = Pick<FeedItem, "interests">;

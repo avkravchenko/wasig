@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { render } from "@testing-library/react-native";
 import Card from "./Card";
-import CardBody from "./CardBody";
-import CardCover from "./CardCover";
-import CardHeader from "./CardHeader";
+import CardBody from "../feedCard/CardBody";
+import CardCover from "../feedCard/CardCover";
+import CardHeader from "../feedCard/CardHeader";
 import { FeedItem } from "@/entities/feed";
 
 jest.mock("./CardHeader", () => ({
@@ -61,10 +61,10 @@ describe("Card", () => {
         mainPhotoThumbnailUrl: cardData.mainPhotoThumbnailUrl,
         activityType: cardData.activityType,
         activityTypeLabel: cardData.activityTypeLabel,
-      })
+      }),
     );
     expect(mockedCardCover.mock.calls[0][0]).toEqual(
-      expect.objectContaining({ imageUrl: cardData.mainPhotoUrl })
+      expect.objectContaining({ imageUrl: cardData.mainPhotoUrl }),
     );
     expect(mockedCardBody.mock.calls[0][0]).toEqual(
       expect.objectContaining({
@@ -76,7 +76,7 @@ describe("Card", () => {
         interests: cardData.interests,
         duration: cardData.duration,
         distanceKm: cardData.distanceKm,
-      })
+      }),
     );
   });
 });

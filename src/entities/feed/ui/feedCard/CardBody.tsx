@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
-import type { FeedItem } from "../model/types";
+import type { FeedItem } from "../../model/types";
 import CardBodyHobbies from "./CardBodyHobbies";
 import { Button } from "@/shared/ui";
 
@@ -31,7 +31,9 @@ const CardBody = ({
       <View style={styles.durationDistanceContainer}>
         <Text style={styles.durationText}>{duration}</Text>
         <Text style={styles.distanceText}>
-          {typeof distanceKm === "number" ? `${distanceKm} км от вас` : "Расстояние неизвестно"}
+          {typeof distanceKm === "number"
+            ? `${distanceKm} км от вас`
+            : "Расстояние неизвестно"}
         </Text>
       </View>
 
@@ -58,8 +60,8 @@ const CardBody = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
     backgroundColor: "white",
+    width: "100%",
     gap: 16,
     padding: 16,
     borderRadius: 32,
