@@ -20,7 +20,7 @@ const TAB_LABELS: Record<string, string> = {
   "feed-tab": "Лента",
   "filters-tab": "Фильтры",
   "meetings-tab": "Встречи",
-  "profile-tab": "Профиль",
+  "profile-tab": "Чаты",
 };
 
 type TabRoute = BottomTabBarProps["state"]["routes"][number];
@@ -135,6 +135,7 @@ const FloatingTabBar = ({
   const secondaryTabs = tabs.filter((tab) =>
     SECONDARY_TAB_NAMES.has(tab.routeName),
   );
+  const shouldShowSecondaryTabs = focusedRoute.name === "feed-tab";
 
   return (
     <View style={[styles.tabBarHost, { paddingBottom: insets.bottom + 8 }]}>
@@ -155,22 +156,24 @@ const FloatingTabBar = ({
             />
           ))}
         </View>
-        <View style={[styles.tabBarOuter, styles.secondaryTabGroup]}>
-          {secondaryTabs.map((tab) => (
-            <FloatingTabBarTab
-              key={tab.key}
-              accessibilityLabel={tab.accessibilityLabel}
-              testID={tab.testID}
-              isFocused={tab.isFocused}
-              label={tab.label}
-              onPress={tab.onPress}
-              onLongPress={tab.onLongPress}
-              badgeCount={tab.badgeCount}
-              Icon={tab.Icon}
-              iconOffsetX={tab.iconOffsetX}
-            />
-          ))}
-        </View>
+        {shouldShowSecondaryTabs ? (
+          <View style={[styles.tabBarOuter, styles.secondaryTabGroup]}>
+            {secondaryTabs.map((tab) => (
+              <FloatingTabBarTab
+                key={tab.key}
+                accessibilityLabel={tab.accessibilityLabel}
+                testID={tab.testID}
+                isFocused={tab.isFocused}
+                label={tab.label}
+                onPress={tab.onPress}
+                onLongPress={tab.onLongPress}
+                badgeCount={tab.badgeCount}
+                Icon={tab.Icon}
+                iconOffsetX={tab.iconOffsetX}
+              />
+            ))}
+          </View>
+        ) : null}
       </View>
     </View>
   );

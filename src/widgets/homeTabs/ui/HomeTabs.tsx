@@ -4,6 +4,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { HomeScreen } from "@/screens/home";
 import FloatingTabBar from "@/widgets/floatingTabBar";
 import { FeedFilterScreen } from "@/screens/feedFilter";
+import { ChatsScreen } from "@/screens/chats";
 import { ROUTER_NAME_SPACES } from "@/app/router";
 
 type FeedStackParamList = {
@@ -65,10 +66,9 @@ const ProfileStackNavigator = () => {
     <ProfileStack.Navigator>
       <ProfileStack.Screen
         name="profile"
-        options={{ title: "Профиль", headerTitleAlign: "center" }}
-      >
-        {() => <PlaceholderScreen title="Профиль" />}
-      </ProfileStack.Screen>
+        component={ChatsScreen}
+        options={{ headerShown: false, title: "Чаты" }}
+      />
     </ProfileStack.Navigator>
   );
 };
@@ -99,7 +99,7 @@ const HomeTabs = () => {
       <Tab.Screen
         name="profile-tab"
         component={ProfileStackNavigator}
-        options={{ title: "Профиль" }}
+        options={{ title: "Чаты" }}
       />
     </Tab.Navigator>
   );
