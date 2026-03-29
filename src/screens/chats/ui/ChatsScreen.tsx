@@ -1,11 +1,19 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CHAT_ITEMS } from "../model/mocks";
+import {
+  CHAT_CONVERSATION_ROUTE,
+  ChatConversationRouteParams,
+} from "../model/types";
 import { ChatList } from "./components/ChatList";
 import { ChatsHeader } from "./components/ChatsHeader";
 
 const ChatsScreen = () => {
   const insets = useSafeAreaInsets();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<ChatConversationRouteParams>>();
 
   return (
     <View style={styles.root}>
@@ -21,7 +29,14 @@ const ChatsScreen = () => {
       >
         <ChatsHeader />
         <Text style={styles.title}>Чаты</Text>
-        <ChatList items={CHAT_ITEMS} />
+        <ChatList
+          items={CHAT_ITEMS}
+          onPressItem={(item) =>
+            navigation.navigate(CHAT_CONVERSATION_ROUTE, {
+              chatId: item.id,
+            })
+          }
+        />
       </ScrollView>
     </View>
   );

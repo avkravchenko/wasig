@@ -7,10 +7,12 @@ import UserProfileStepper from "@/screens/newUserProfile";
 import { View, ActivityIndicator } from "react-native";
 import { getAccessToken } from "@/shared/lib/auth";
 import { useEffect } from "react";
-import { HomeTabs } from "@/widgets";
+import HomeTabs from "@/app/navigation/HomeTabs";
 import { useAuthStore } from "@/shared/lib/authStore";
+import { ChatConversationScreen } from "@/screens/chats";
+import { RootStackParamList } from "@/app/router/types";
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function Navigation() {
   const authStatus = useAuthStore((state) => state.status);
@@ -83,6 +85,14 @@ function Navigation() {
                 headerTitle: () => <TopBar />,
                 headerShadowVisible: false,
                 contentStyle: { backgroundColor: "white", padding: 16 },
+              }}
+            />
+            <Stack.Screen
+              name={ROUTER_NAME_SPACES.CHAT_CONVERSATION.NAME}
+              component={ChatConversationScreen}
+              options={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "#FFFFFF" },
               }}
             />
           </>

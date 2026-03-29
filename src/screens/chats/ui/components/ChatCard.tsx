@@ -1,15 +1,19 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ChatItem } from "../../model/types";
 import { ChatAvatar } from "./ChatAvatar";
 
 type ChatCardProps = {
   item: ChatItem;
+  onPress?: (item: ChatItem) => void;
 };
 
-export const ChatCard = ({ item }: ChatCardProps) => {
+export const ChatCard = ({ item, onPress }: ChatCardProps) => {
   return (
-    <View style={styles.card}>
-      <ChatAvatar kind={item.avatarKind} />
+    <Pressable
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      onPress={() => onPress?.(item)}
+    >
+      <ChatAvatar kind={item.avatarKind} label={item.avatarLabel} />
 
       <View style={styles.body}>
         <View style={styles.head}>
@@ -40,7 +44,7 @@ export const ChatCard = ({ item }: ChatCardProps) => {
           ) : null}
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
@@ -54,6 +58,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
+  },
+  cardPressed: {
+    opacity: 0.92,
+    transform: [{ scale: 0.99 }],
   },
   body: {
     flex: 1,
@@ -87,7 +95,6 @@ const styles = StyleSheet.create({
   newBadgeText: {
     fontSize: 10,
     lineHeight: 10,
-    letterSpacing: -0.16,
     color: "#808699",
     fontWeight: "700",
   },

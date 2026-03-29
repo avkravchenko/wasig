@@ -14,10 +14,11 @@ import FeedIcon from "../../../../assets/icons/broad-activity-feed-20-filled.svg
 import FilterIcon from "../../../../assets/icons/filter.svg";
 import MeetingsIcon from "../../../../assets/icons/chat-smile-ai-line.svg";
 import ProfileIcon from "../../../../assets/icons/chat-solid.svg";
+import { MEETING_REQUESTS } from "@/entities/meeting";
 import FloatingTabBarTab from "./FloatingTabBarTab";
 
 const TAB_LABELS: Record<string, string> = {
-  "feed-tab": "Лента",
+  "home-tab": "Лента",
   "filters-tab": "Фильтры",
   "meetings-tab": "Встречи",
   "profile-tab": "Чаты",
@@ -32,14 +33,14 @@ type TabIconComponent = ComponentType<{
 }>;
 
 const TAB_ICONS: Record<string, TabIconComponent> = {
-  "feed-tab": FeedIcon,
+  "home-tab": FeedIcon,
   "filters-tab": FilterIcon,
   "meetings-tab": MeetingsIcon,
   "profile-tab": ProfileIcon,
 };
 
 const TAB_ICON_OFFSET_X: Record<string, number> = {
-  "feed-tab": 1.5,
+  "home-tab": 1.5,
 };
 
 const SECONDARY_TAB_NAMES = new Set(["filters-tab"]);
@@ -61,7 +62,7 @@ const getTabLabel = (route: TabRoute, options: TabOptions) => {
 };
 
 const getBadgeCount = (routeName: string) => {
-  return routeName === "meetings-tab" ? 4 : undefined;
+  return routeName === "meetings-tab" ? MEETING_REQUESTS.length : undefined;
 };
 
 const FloatingTabBar = ({
@@ -135,7 +136,7 @@ const FloatingTabBar = ({
   const secondaryTabs = tabs.filter((tab) =>
     SECONDARY_TAB_NAMES.has(tab.routeName),
   );
-  const shouldShowSecondaryTabs = focusedRoute.name === "feed-tab";
+  const shouldShowSecondaryTabs = focusedRoute.name === "home-tab";
 
   return (
     <View style={[styles.tabBarHost, { paddingBottom: insets.bottom + 8 }]}>

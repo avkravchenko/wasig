@@ -1,36 +1,25 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View, Text, StyleSheet } from "react-native";
 import { HomeScreen } from "@/screens/home";
-import FloatingTabBar from "@/widgets/floatingTabBar";
 import { FeedFilterScreen } from "@/screens/feedFilter";
 import { ChatsScreen } from "@/screens/chats";
-import { ROUTER_NAME_SPACES } from "@/app/router";
+import { MeetingsScreen } from "@/screens/meetings";
+import FloatingTabBar from "@/widgets/floatingTabBar";
 
 type FeedStackParamList = {
-  [ROUTER_NAME_SPACES.HOME.NAME]: undefined;
+  home: undefined;
 };
 
 const Tab = createBottomTabNavigator();
 const FeedStack = createNativeStackNavigator<FeedStackParamList>();
 const FiltersStack = createNativeStackNavigator();
 const MeetingsStack = createNativeStackNavigator();
-const ProfileStack = createNativeStackNavigator();
-
-const PlaceholderScreen = ({ title }: { title: string }) => {
-  return (
-    <View style={styles.placeholder}>
-      <Text style={styles.placeholderTitle}>{title}</Text>
-      <Text style={styles.placeholderText}>Секция в разработке</Text>
-    </View>
-  );
-};
 
 const FeedStackNavigator = () => {
   return (
     <FeedStack.Navigator>
       <FeedStack.Screen
-        name={ROUTER_NAME_SPACES.HOME.NAME}
+        name="home"
         component={HomeScreen}
         options={{ headerShown: false }}
       />
@@ -43,10 +32,9 @@ const MeetingsStackNavigator = () => {
     <MeetingsStack.Navigator>
       <MeetingsStack.Screen
         name="meetings"
-        options={{ title: "Встречи", headerTitleAlign: "center" }}
-      >
-        {() => <PlaceholderScreen title="Встречи" />}
-      </MeetingsStack.Screen>
+        component={MeetingsScreen}
+        options={{ headerShown: false }}
+      />
     </MeetingsStack.Navigator>
   );
 };
@@ -54,35 +42,24 @@ const MeetingsStackNavigator = () => {
 const FiltersStackNavigator = () => {
   return (
     <FiltersStack.Navigator>
-      <FiltersStack.Screen name="filters" options={{ title: "Фильтры" }}>
-        {() => <FeedFilterScreen />}
-      </FiltersStack.Screen>
-    </FiltersStack.Navigator>
-  );
-};
-
-const ProfileStackNavigator = () => {
-  return (
-    <ProfileStack.Navigator>
-      <ProfileStack.Screen
-        name="profile"
-        component={ChatsScreen}
-        options={{ headerShown: false, title: "Чаты" }}
+      <FiltersStack.Screen
+        name="filters"
+        component={FeedFilterScreen}
+        options={{ headerShown: false }}
       />
-    </ProfileStack.Navigator>
+    </FiltersStack.Navigator>
   );
 };
 
 const HomeTabs = () => {
   return (
     <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
+      initialRouteName="home-tab"
+      screenOptions={{ headerShown: false }}
       tabBar={(props) => <FloatingTabBar {...props} />}
     >
       <Tab.Screen
-        name="feed-tab"
+        name="home-tab"
         component={FeedStackNavigator}
         options={{ title: "Лента" }}
       />
@@ -98,31 +75,11 @@ const HomeTabs = () => {
       />
       <Tab.Screen
         name="profile-tab"
-        component={ProfileStackNavigator}
+        component={ChatsScreen}
         options={{ title: "Чаты" }}
       />
     </Tab.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  placeholder: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 24,
-    backgroundColor: "#F5F6F8",
-  },
-  placeholderTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#111111",
-    marginBottom: 8,
-  },
-  placeholderText: {
-    fontSize: 15,
-    color: "#5A6473",
-  },
-});
 
 export default HomeTabs;

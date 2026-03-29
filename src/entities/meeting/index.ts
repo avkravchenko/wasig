@@ -24,3 +24,5 @@ export interface CommunicationStyleItem {
   value: CommunicationStyle;
   selected: boolean;
 }
+
+export * from "./model/meetingRequests";

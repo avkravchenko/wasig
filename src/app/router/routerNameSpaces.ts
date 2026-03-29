@@ -1,3 +1,5 @@
+import { CHAT_CONVERSATION_ROUTE } from "@/screens/chats/model/types";
+
 export const ROUTER_NAME_SPACES = {
   SMS_STEP: {
     NAME: "sms-step",
@@ -14,5 +16,9 @@ export const ROUTER_NAME_SPACES = {
   HOME: {
     NAME: "home",
     SCREEN: "home",
+  },
+  CHAT_CONVERSATION: {
+    NAME: CHAT_CONVERSATION_ROUTE,
+    SCREEN: CHAT_CONVERSATION_ROUTE,
   },
 };
