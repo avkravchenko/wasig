@@ -7,9 +7,11 @@ type CardBodyHobbiesProps = Pick<FeedItem, "interests">;
 const CardBodyHobbies = ({ interests }: CardBodyHobbiesProps) => {
   return (
     <ScrollView
+      style={styles.scroll}
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.container}
+      alwaysBounceHorizontal={false}
     >
       {interests.map((interest) => (
         <Chip
@@ -24,11 +26,17 @@ const CardBodyHobbies = ({ interests }: CardBodyHobbiesProps) => {
 };
 
 const styles = StyleSheet.create({
+  scroll: {
+    width: "100%",
+    minHeight: 40,
+    maxHeight: 40,
+  },
   container: {
     paddingHorizontal: 0,
     flexDirection: "row",
     flexWrap: "nowrap",
     gap: 4,
+    alignItems: "center",
   },
 });
 

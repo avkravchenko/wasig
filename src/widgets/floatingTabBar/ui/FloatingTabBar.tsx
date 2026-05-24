@@ -15,6 +15,7 @@ import FilterIcon from "../../../../assets/icons/filter.svg";
 import MeetingsIcon from "../../../../assets/icons/chat-smile-ai-line.svg";
 import ProfileIcon from "../../../../assets/icons/chat-solid.svg";
 import { MEETING_REQUESTS } from "@/entities/meeting";
+import { useFeedModeStore } from "@/features/feed";
 import FloatingTabBarTab from "./FloatingTabBarTab";
 
 const TAB_LABELS: Record<string, string> = {
@@ -71,6 +72,7 @@ const FloatingTabBar = ({
   navigation,
 }: BottomTabBarProps) => {
   const insets = useSafeAreaInsets();
+  const feedMode = useFeedModeStore((store) => store.mode);
   const focusedRoute = state.routes[state.index];
   const focusedOptions = descriptors[focusedRoute.key]?.options;
   const flattenedTabBarStyle = focusedOptions?.tabBarStyle
@@ -136,7 +138,8 @@ const FloatingTabBar = ({
   const secondaryTabs = tabs.filter((tab) =>
     SECONDARY_TAB_NAMES.has(tab.routeName),
   );
-  const shouldShowSecondaryTabs = focusedRoute.name === "home-tab";
+  const shouldShowSecondaryTabs =
+    focusedRoute.name === "home-tab" && feedMode === "feed";
 
   return (
     <View style={[styles.tabBarHost, { paddingBottom: insets.bottom + 8 }]}>
@@ -223,6 +226,7 @@ const styles = StyleSheet.create({
   },
   secondaryTabGroup: {
     justifyContent: "center",
+    paddingHorizontal: 8,
   },
 });
 

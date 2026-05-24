@@ -8,6 +8,6 @@ export {
   getFeedDurationLabel,
   getFeedTimeOfDayLabel,
 } from "./lib/formatters";
-export type { FeedItem } from "./model/types";
+export type { FeedItem, FeedPhoto } from "./model/types";
 export { default as FeedCard } from "./ui/feedCard/Card";
 export { default as CardDetails } from "./ui/cardDetails/CardDetails";

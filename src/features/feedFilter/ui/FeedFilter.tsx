@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, ErrorComponent } from "@/shared/ui";
@@ -20,6 +26,8 @@ import FeedFilterSection, {
 } from "./FeedFilterSection";
 
 const TAB_BAR_CLEARANCE = 84;
+const HEADER_TOP_OFFSET = 12;
+const HEADER_CONTENT_HEIGHT = 72;
 
 const FeedFilter = () => {
   const insets = useSafeAreaInsets();
@@ -79,7 +87,7 @@ const FeedFilter = () => {
 
   const handleApply = useCallback(() => {
     applyFilters(localFilters);
-    navigation.getParent()?.navigate("feed-tab" as never);
+    navigation.getParent()?.navigate("home-tab" as never);
   }, [applyFilters, localFilters, navigation]);
 
   const handleResetAllFilters = useCallback(() => {
@@ -149,7 +157,12 @@ const FeedFilter = () => {
   return (
     <View style={styles.root}>
       {isHeaderElevated && activeFilterChips.length > 0 ? (
-        <View style={styles.floatingHeader}>
+        <View
+          style={[
+            styles.floatingHeader,
+            { top: insets.top + HEADER_TOP_OFFSET + HEADER_CONTENT_HEIGHT },
+          ]}
+        >
           <ActiveFiltersSection
             chips={activeFilterChips}
             elevated
@@ -166,13 +179,25 @@ const FeedFilter = () => {
         onScroll={(event) => handleScroll(event.nativeEvent.contentOffset.y)}
         scrollEventThrottle={16}
         ListHeaderComponent={
-          activeFilterChips.length > 0 ? (
-            <ActiveFiltersSection
-              chips={activeFilterChips}
-              hidden={isHeaderElevated}
-              onResetAll={handleResetAllFilters}
-            />
-          ) : null
+          <View style={styles.headerShell}>
+            <View
+              style={[styles.header, { paddingTop: insets.top + HEADER_TOP_OFFSET }]}
+            >
+              <View style={styles.headerRow}>
+                <Text style={styles.title}>Фильтры</Text>
+                <View style={styles.headerAction} />
+              </View>
+            </View>
+            {activeFilterChips.length > 0 ? (
+              <View style={styles.activeFiltersSection}>
+                <ActiveFiltersSection
+                  chips={activeFilterChips}
+                  hidden={isHeaderElevated}
+                  onResetAll={handleResetAllFilters}
+                />
+              </View>
+            ) : null}
+          </View>
         }
         ListFooterComponent={
           <View style={[styles.actions, { marginBottom: bottomSpacing }]}>
@@ -194,21 +219,57 @@ const FeedFilter = () => {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    backgroundColor: "#F5F6F8",
   },
   floatingHeader: {
     left: 16,
     position: "absolute",
     right: 16,
-    top: 16,
     zIndex: 10,
   },
   container: {
     gap: 16,
+    paddingBottom: 16,
+    paddingTop: 0,
+  },
+  headerShell: {
+    marginBottom: 0,
+  },
+  header: {
+    minHeight: HEADER_CONTENT_HEIGHT + HEADER_TOP_OFFSET,
+    paddingBottom: 20,
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    backgroundColor: "#FFFFFF",
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEF0F4",
+    justifyContent: "flex-end",
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  title: {
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: "700",
+    color: "#404257",
+  },
+  headerAction: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "#404257",
+  },
+  activeFiltersSection: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
   },
   actions: {
     paddingTop: 8,
+    paddingHorizontal: 16,
   },
   center: {
     flex: 1,

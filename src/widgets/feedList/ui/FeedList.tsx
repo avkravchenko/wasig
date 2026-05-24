@@ -1,82 +1,148 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  FlatList,
+  Animated,
   StyleSheet,
   Text,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import useFeed from "@/features/feed/model/hooks/useFeed";
 import { ErrorComponent } from "@/shared/ui";
-import { getApiErrorMessage } from "@/shared/api/errors";
 import { CardDetails, FeedCard, FeedItem } from "@/entities/feed";
-import { useCurrentLocation } from "@/shared/lib";
+import useFeedPager from "../model/useFeedPager";
+import FeedListState from "./FeedListState";
 
-const FeedList = () => {
-  const { latitude, longitude } = useCurrentLocation();
+const HORIZONTAL_PADDING = 16;
+
+type FeedListProps = {
+  contentBottomPadding: number;
+  contentTopPadding: number;
+  data: FeedItem[];
+  emptyTitle: string;
+  errorDescription?: string;
+  errorTitle: string;
+  isError: boolean;
+  isLoading: boolean;
+  onRefresh?: () => Promise<unknown> | unknown;
+  refreshingText: string;
+  resetKey?: string | number;
+};
+
+const FeedList = ({
+  contentBottomPadding,
+  contentTopPadding,
+  data,
+  emptyTitle,
+  errorDescription,
+  errorTitle,
+  isError,
+  isLoading,
+  onRefresh,
+  refreshingText,
+  resetKey,
+}: FeedListProps) => {
   const [selectedCard, setSelectedCard] = useState<FeedItem | null>(null);
-  const { data, isLoading, isError, error } = useFeed({ latitude, longitude });
-  const insets = useSafeAreaInsets();
-  const contentTopPadding = insets.top + 16;
-  const contentBottomPadding = insets.bottom + 96;
-  const handleOpenCard = useCallback(
-    (card: FeedItem) => {
-      setSelectedCard(card);
-    },
-    [],
-  );
-  const renderItem = useCallback(
-    ({ item }: { item: FeedItem }) => (
-      <FeedCard cardData={item} onCardPress={handleOpenCard} />
-    ),
-    [handleOpenCard],
-  );
+  const {
+    currentIndex,
+    handlePagerLayout,
+    isRefreshing,
+    pageHeight,
+    panHandlers,
+    stackTranslateY,
+    visibleIndices,
+  } = useFeedPager({
+    itemsCount: data.length,
+    onRefresh,
+    resetKey,
+  });
 
-  if (isLoading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#1B7EFF" />
-      </View>
-    );
-  }
+  const handleOpenCard = useCallback((card: FeedItem) => {
+    setSelectedCard(card);
+  }, []);
 
-  if (isError) {
-    return (
-      <View style={styles.center}>
-        <ErrorComponent
-          title="Не удалось загрузить ленту"
-          description={getApiErrorMessage(error)}
-        />
-      </View>
-    );
-  }
+  useEffect(() => {
+    setSelectedCard(null);
+  }, [resetKey]);
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={data}
-        keyExtractor={(item) => item.activityId}
-        renderItem={renderItem}
-        contentInsetAdjustmentBehavior="never"
-        automaticallyAdjustContentInsets={false}
-        bounces={false}
-        overScrollMode="never"
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyTitle}>Карточки пока не найдены</Text>
+      <View
+        style={styles.pager}
+        onLayout={handlePagerLayout}
+        {...panHandlers}
+      >
+        {isLoading ? (
+          <FeedListState
+            contentBottomPadding={contentBottomPadding}
+            contentTopPadding={contentTopPadding}
+          >
+            <ActivityIndicator size="large" color="#1B7EFF" />
+          </FeedListState>
+        ) : isError ? (
+          <FeedListState
+            contentBottomPadding={contentBottomPadding}
+            contentTopPadding={contentTopPadding}
+          >
+            <ErrorComponent title={errorTitle} description={errorDescription} />
+          </FeedListState>
+        ) : data.length === 0 ? (
+          <FeedListState
+            contentBottomPadding={contentBottomPadding}
+            contentTopPadding={contentTopPadding}
+          >
+            <Text style={styles.emptyTitle}>{emptyTitle}</Text>
+          </FeedListState>
+        ) : (
+          <Animated.View
+            style={[
+              styles.stack,
+              {
+                height: pageHeight * data.length,
+                transform: [{ translateY: stackTranslateY }],
+              },
+            ]}
+          >
+            {visibleIndices.map((index) => {
+              const item = data[index];
+
+              return (
+                <View
+                  key={item.activityId}
+                  pointerEvents={index === currentIndex ? "auto" : "none"}
+                  style={[
+                    styles.page,
+                    {
+                      top: index * pageHeight,
+                      height: pageHeight,
+                      paddingTop: contentTopPadding,
+                      paddingBottom: contentBottomPadding,
+                      zIndex: index === currentIndex ? 2 : 1,
+                    },
+                  ]}
+                >
+                  <View style={styles.pageContent}>
+                    <FeedCard cardData={item} onCardPress={handleOpenCard} />
+                  </View>
+                </View>
+              );
+            })}
+          </Animated.View>
+        )}
+      </View>
+      {isRefreshing ? (
+        <View
+          pointerEvents="none"
+          style={[
+            styles.refreshIndicatorWrap,
+            { top: contentTopPadding - 8 },
+          ]}
+        >
+          <View style={styles.refreshIndicator}>
+            <ActivityIndicator size="small" color="#1B7EFF" />
+            <Text style={styles.refreshIndicatorText}>{refreshingText}</Text>
           </View>
-        }
-        contentContainerStyle={[
-          styles.content,
-          {
-            paddingTop: contentTopPadding,
-            paddingBottom: contentBottomPadding,
-          },
-        ]}
-      />
+        </View>
+      ) : null}
       <View pointerEvents="none" style={[styles.gradient, styles.gradientTop]}>
         <LinearGradient
           colors={["rgba(245, 246, 248, 0.55)", "rgba(245, 246, 248, 0)"]}
@@ -110,10 +176,44 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F5F6F8",
   },
-  content: {
-    flexGrow: 1,
-    paddingHorizontal: 16,
-    paddingBottom: 24,
+  pager: {
+    flex: 1,
+    overflow: "hidden",
+  },
+  stack: {
+    flex: 1,
+  },
+  page: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    paddingHorizontal: HORIZONTAL_PADDING,
+  },
+  pageContent: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  refreshIndicatorWrap: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    zIndex: 3,
+  },
+  refreshIndicator: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: "rgba(255, 255, 255, 0.96)",
+  },
+  refreshIndicatorText: {
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: "600",
+    color: "#30323E",
   },
   gradient: {
     position: "absolute",
@@ -130,27 +230,11 @@ const styles = StyleSheet.create({
   gradientFill: {
     flex: 1,
   },
-  separator: {
-    height: 16,
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 16,
-    gap: 4,
-  },
   emptyTitle: {
     fontSize: 16,
     fontWeight: "700",
     color: "#3B3D4B",
     textAlign: "center",
-  },
-  center: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 16,
   },
 });
 

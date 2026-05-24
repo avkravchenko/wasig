@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import type { ComponentProps } from "react";
 import { render } from "@testing-library/react-native";
-import useFeed from "@/features/feed/model/hooks/useFeed";
 import FeedList from "./FeedList";
 import {
   FeedAvailability,
@@ -9,12 +9,6 @@ import {
   FeedItem,
   FeedTimeOfDay,
 } from "@/entities/feed";
-import { useCurrentLocation } from "@/shared/lib";
-
-jest.mock("@/features/feed/model/hooks/useFeed", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
 
 jest.mock("@/entities/feed", () => ({
   __esModule: true,
@@ -26,16 +20,7 @@ jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 
-jest.mock("@/shared/lib", () => ({
-  __esModule: true,
-  ...(jest.requireActual("@/shared/lib") as object),
-  useCurrentLocation: jest.fn(),
-}));
-
-const mockedUseFeed = useFeed as jest.MockedFunction<typeof useFeed>;
 const mockedCard = FeedCard as unknown as jest.Mock;
-const mockedUseCurrentLocation =
-  useCurrentLocation as jest.MockedFunction<typeof useCurrentLocation>;
 
 const feedItem: FeedItem = {
   activityId: "activity-1",
@@ -58,29 +43,41 @@ const feedItem: FeedItem = {
   cityName: "Москва",
 };
 
+const renderFeedList = (props?: Partial<ComponentProps<typeof FeedList>>) =>
+  render(
+    <FeedList
+      contentBottomPadding={96}
+      contentTopPadding={80}
+      data={[feedItem]}
+      emptyTitle="Карточки пока не найдены"
+      errorTitle="Не удалось загрузить ленту"
+      isError={false}
+      isLoading={false}
+      refreshingText="Обновляем ленту"
+      {...props}
+    />,
+  );
+
 describe("FeedList", () => {
   beforeEach(() => {
-    mockedUseFeed.mockReset();
     mockedCard.mockClear();
-    mockedUseCurrentLocation.mockReturnValue({
-      latitude: 55.75,
-      longitude: 37.61,
-    });
   });
 
   it("renders feed items using Card component", () => {
-    const data = [feedItem];
-    mockedUseFeed.mockReturnValue({ data } as any);
+    renderFeedList();
 
-    render(<FeedList />);
-
-    expect(mockedCard).toHaveBeenCalledTimes(1);
-    expect(mockedCard.mock.calls[0][0]).toEqual(
+    expect(mockedCard).toHaveBeenCalled();
+    expect(mockedCard.mock.calls.at(-1)?.[0]).toEqual(
       expect.objectContaining({ cardData: feedItem })
     );
-    expect(mockedUseFeed).toHaveBeenCalledWith({
-      latitude: 55.75,
-      longitude: 37.61,
+  });
+
+  it("renders empty state from props", () => {
+    const { getByText } = renderFeedList({
+      data: [],
+      emptyTitle: "У вас пока нет активностей",
     });
+
+    expect(getByText("У вас пока нет активностей")).toBeTruthy();
   });
 });

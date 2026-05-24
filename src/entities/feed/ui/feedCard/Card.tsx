@@ -2,7 +2,6 @@ import { StyleSheet, View } from "react-native";
 import CardCover from "./CardCover";
 import CardBody from "./CardBody";
 import type { FeedItem } from "../../model/types";
-import CardHeader from "./CardHeader";
 
 const Card = ({
   cardData,
@@ -13,11 +12,6 @@ const Card = ({
 }) => {
   return (
     <View style={styles.container}>
-      <CardHeader
-        mainPhotoThumbnailUrl={cardData.mainPhotoThumbnailUrl}
-        activityType={cardData.activityType}
-        activityTypeLabel={cardData.activityTypeLabel}
-      />
       <View style={styles.cardContent}>
         <CardCover imageUrl={cardData.mainPhotoUrl} />
         <CardBody
@@ -39,7 +33,6 @@ const Card = ({
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    gap: 16,
     alignItems: "stretch",
   },
   cardContent: {

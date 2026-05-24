@@ -1,9 +1,12 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   MEETING_REQUESTS,
   type MeetingRequest,
 } from "@/entities/meeting";
+import type { NavigationProp } from "@/app/router/types";
+import { ROUTER_NAME_SPACES } from "@/app/router";
 import CloseIcon from "../../../../assets/icons/material-symbols_close-rounded.svg";
 
 const MeetingsScreen = () => {
@@ -37,11 +40,20 @@ const MeetingsScreen = () => {
 };
 
 const MeetingRequestCard = ({ request }: { request: MeetingRequest }) => {
+  const navigation = useNavigation<NavigationProp>();
+
   return (
-    <View style={styles.card}>
+    <Pressable
+      style={styles.card}
+      onPress={() =>
+        navigation.navigate(ROUTER_NAME_SPACES.MEETING_REQUEST.NAME, {
+          requestId: request.id,
+        })
+      }
+    >
       <View style={styles.cardTopRow}>
         <View style={styles.profileRow}>
-          <View style={styles.avatar} />
+          <Image source={{ uri: request.photoUrl }} style={styles.avatar} />
           <View style={styles.profileMeta}>
             <View style={styles.nameRow}>
               <Text style={styles.nameText}>
@@ -75,7 +87,7 @@ const MeetingRequestCard = ({ request }: { request: MeetingRequest }) => {
           <Text style={styles.secondaryActionText}>Отклонить</Text>
         </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 };
 

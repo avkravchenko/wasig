@@ -42,8 +42,20 @@ const CardBody = ({
       </View>
 
       <View style={styles.activityContainer}>
-        <Text style={styles.activityTitle}>{activityTitle}</Text>
-        <Text style={styles.activityDescription}>{activityDescription}</Text>
+        <Text
+          style={styles.activityTitle}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {activityTitle}
+        </Text>
+        <Text
+          style={styles.activityDescription}
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
+          {activityDescription}
+        </Text>
         <CardBodyHobbies interests={interests} />
       </View>
       <View style={styles.userContainer}>
@@ -66,11 +78,13 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
     width: "100%",
+    minHeight: 248,
     gap: 16,
     padding: 16,
     borderRadius: 32,
     marginTop: -82,
     zIndex: 1,
+    justifyContent: "space-between",
   },
   durationDistanceContainer: {
     flexDirection: "row",
@@ -96,17 +110,23 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     gap: 8,
-    marginBottom: 16,
+    minHeight: 112,
   },
 
   activityTitle: {
     fontSize: 18,
+    lineHeight: 22,
     fontWeight: "bold",
+    textAlign: "center",
+    width: "100%",
   },
   activityDescription: {
     textAlign: "center",
     fontSize: 14,
+    lineHeight: 20,
     color: "#3B3D4B",
+    minHeight: 40,
+    width: "100%",
   },
   userContainer: {
     flexDirection: "row",

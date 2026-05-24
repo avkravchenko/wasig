@@ -6,6 +6,44 @@ import {
   FeedCardsResponse,
 } from "../model/types/feed";
 
+const MOCK_FEED_PHOTOS = [
+  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=1200&q=80",
+];
+
+const getMainPhoto = (card: FeedItem) => {
+  const sortedPhotos = [...(card.photos || [])].sort(
+    (currentPhoto, nextPhoto) => currentPhoto.position - nextPhoto.position,
+  );
+
+  return sortedPhotos.find((photo) => photo.isMain) || sortedPhotos[0];
+};
+
+const withMockFeedPhotos = (cards: FeedItem[]) =>
+  cards.map((card, index) => {
+    const fallbackPhotoUrl = MOCK_FEED_PHOTOS[index % MOCK_FEED_PHOTOS.length];
+    const mainPhoto = getMainPhoto(card);
+    const mainPhotoUrl =
+      typeof card.mainPhotoUrl === "string" && card.mainPhotoUrl.length > 0
+        ? card.mainPhotoUrl
+        : mainPhoto?.url || fallbackPhotoUrl;
+    const mainPhotoThumbnailUrl =
+      typeof card.mainPhotoThumbnailUrl === "string" &&
+      card.mainPhotoThumbnailUrl.length > 0
+        ? card.mainPhotoThumbnailUrl
+        : mainPhoto?.thumbnailUrl || mainPhotoUrl;
+
+    return {
+      ...card,
+      mainPhotoUrl,
+      mainPhotoThumbnailUrl,
+    };
+  });
+
 export const createFeedCardsRequest = ({
   filters,
   defaults,
@@ -84,6 +122,19 @@ export const getFeedCards = async ({
   return response.data;
 };
 
+export const getMyActivities = async ({
+  signal,
+}: {
+  signal?: AbortSignal;
+} = {}): Promise<FeedCardsResponse> => {
+  const response = await privateApi.get<FeedCardsResponse>(
+    "/api/v1/feed/my-activities",
+    { signal },
+  );
+
+  return response.data;
+};
+
 export const extractFeedCards = (payload: FeedCardsResponse): FeedItem[] => {
   const visited = new Set<unknown>();
 
@@ -139,5 +190,5 @@ export const extractFeedCards = (payload: FeedCardsResponse): FeedItem[] => {
     return [];
   };
 
-  return resolve(payload);
+  return withMockFeedPhotos(resolve(payload));
 };

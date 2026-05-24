@@ -1,8 +1,7 @@
 import type { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import { normalizeApiError } from "./errors";
 import {
-  clearAccessToken,
-  clearRefreshToken,
+  clearAuthTokens,
   getAccessToken,
   getRefreshToken,
   setAccessToken,
@@ -102,11 +101,10 @@ export const setupPrivateInterceptors = (
         }
 
         return privateApi(originalRequest);
-      } catch (refreshError) {
-        await clearAccessToken();
-        await clearRefreshToken();
+      } catch {
+        await clearAuthTokens();
         options?.onAuthExpired?.();
-        return Promise.reject(normalizeApiError(refreshError));
+        return Promise.reject(normalizeApiError(error));
       }
     },
   );

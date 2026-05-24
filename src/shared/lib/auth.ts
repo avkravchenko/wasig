@@ -23,3 +23,7 @@ export const getRefreshToken = async () => {
 export const clearRefreshToken = async () => {
   await AsyncStorage.removeItem("refreshToken");
 };
+
+export const clearAuthTokens = async () => {
+  await Promise.all([clearAccessToken(), clearRefreshToken()]);
+};

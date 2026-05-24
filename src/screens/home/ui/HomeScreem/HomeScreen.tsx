@@ -1,10 +1,10 @@
 import { StyleSheet, View } from "react-native";
-import FeedList from "@/widgets/feedList";
+import FeedHome from "@/widgets/feedHome";
 
 const HomeScreen = () => {
   return (
     <View style={styles.safeArea}>
-      <FeedList />
+      <FeedHome />
     </View>
   );
 };

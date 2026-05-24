@@ -20,6 +20,8 @@ import {
 } from "../model/types";
 import { ChatAvatar } from "./components/ChatAvatar";
 
+const KEYBOARD_COMPOSER_GAP = 4;
+
 type ChatConversationScreenProps = NativeStackScreenProps<
   ChatConversationRouteParams,
   typeof CHAT_CONVERSATION_ROUTE
@@ -65,6 +67,9 @@ const ChatConversationScreen = ({
     );
   }
 
+  const composerBottomPadding = Math.max(insets.bottom, 8);
+  const keyboardVerticalOffset = KEYBOARD_COMPOSER_GAP - composerBottomPadding;
+
   const handleSend = () => {
     const value = draft.trim();
 
@@ -89,7 +94,7 @@ const ChatConversationScreen = ({
     <KeyboardAvoidingView
       style={styles.root}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={0}
+      keyboardVerticalOffset={keyboardVerticalOffset}
     >
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Pressable
@@ -164,7 +169,7 @@ const ChatConversationScreen = ({
       <View
         style={[
           styles.composerWrap,
-          { paddingBottom: Math.max(insets.bottom, 8) },
+          { paddingBottom: composerBottomPadding },
         ]}
       >
         <View style={styles.composer}>

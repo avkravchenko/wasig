@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
   },
   sliderContainer: {
     width: "100%",
+    paddingHorizontal: 8,
   },
   slider: {
     width: "100%",

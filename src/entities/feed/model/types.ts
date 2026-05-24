@@ -22,6 +22,14 @@ export enum FeedTimeOfDay {
   NIGHT = "NIGHT",
 }
 
+export interface FeedPhoto {
+  id: string;
+  url: string;
+  thumbnailUrl: string;
+  position: number;
+  isMain: boolean;
+}
+
 export interface FeedItem {
   activityId: string;
   userId: string;
@@ -31,6 +39,7 @@ export interface FeedItem {
   isVerified: boolean;
   mainPhotoUrl: string | null;
   mainPhotoThumbnailUrl: string | null;
+  photos?: FeedPhoto[];
   activityTitle: string;
   activityDescription: string;
   activityType: string;

@@ -34,8 +34,14 @@ describe("CardBody", () => {
 
     expect(getByText("2 часа")).toBeTruthy();
     expect(getByText("4 км от вас")).toBeTruthy();
-    expect(getByText("Прогулка")).toBeTruthy();
-    expect(getByText("Парк и кофе")).toBeTruthy();
+    const title = getByText("Прогулка");
+    expect(title).toBeTruthy();
+    expect(title.props.numberOfLines).toBe(1);
+    expect(title.props.ellipsizeMode).toBe("tail");
+    const description = getByText("Парк и кофе");
+    expect(description).toBeTruthy();
+    expect(description.props.numberOfLines).toBe(2);
+    expect(description.props.ellipsizeMode).toBe("tail");
     expect(getByText("Иван,")).toBeTruthy();
     expect(getByText("25")).toBeTruthy();
     expect(getByText("Недавно")).toBeTruthy();

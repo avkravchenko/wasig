@@ -10,7 +10,10 @@ import { useEffect } from "react";
 import HomeTabs from "@/app/navigation/HomeTabs";
 import { useAuthStore } from "@/shared/lib/authStore";
 import { ChatConversationScreen } from "@/screens/chats";
-import { RootStackParamList } from "@/app/router/types";
+import type { RootStackParamList } from "@/app/router/types";
+import { MeetingRequestScreen } from "@/screens/meetings";
+import { ProfileScreen } from "@/screens/profile";
+import { SettingsScreen } from "@/screens/settings";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -88,11 +91,35 @@ function Navigation() {
               }}
             />
             <Stack.Screen
+              name={ROUTER_NAME_SPACES.MY_PROFILE.NAME}
+              component={ProfileScreen}
+              options={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "#F5F6F8" },
+              }}
+            />
+            <Stack.Screen
+              name={ROUTER_NAME_SPACES.SETTINGS.NAME}
+              component={SettingsScreen}
+              options={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "#F4F4FA" },
+              }}
+            />
+            <Stack.Screen
               name={ROUTER_NAME_SPACES.CHAT_CONVERSATION.NAME}
               component={ChatConversationScreen}
               options={{
                 headerShown: false,
                 contentStyle: { backgroundColor: "#FFFFFF" },
+              }}
+            />
+            <Stack.Screen
+              name={ROUTER_NAME_SPACES.MEETING_REQUEST.NAME}
+              component={MeetingRequestScreen}
+              options={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "#ECECF8" },
               }}
             />
           </>
