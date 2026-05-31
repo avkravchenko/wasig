@@ -1,1 +1,5 @@
-export { uploadPhotos } from "./uploadPhoto";
+export {
+  appendPhotoToFormData,
+  createPhotoFormData,
+  uploadPhotos,
+} from "./uploadPhoto";

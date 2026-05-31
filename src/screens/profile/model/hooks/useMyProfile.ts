@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getMyProfile } from "../../api/getMyProfile";
 
-const MY_PROFILE_QUERY_KEY = ["my-profile", "api-v1-users-me-profile"];
+export const MY_PROFILE_QUERY_KEY = ["my-profile", "api-v1-users-me-profile"];
 
 const useMyProfile = () => {
   const query = useQuery({

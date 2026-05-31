@@ -1,7 +1,8 @@
-import { Fragment } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -14,102 +15,60 @@ import { ROUTER_NAME_SPACES } from "@/app/router";
 import type { NavigationProp } from "@/app/router/types";
 import { normalizeApiError } from "@/shared/api/errors";
 import { Button } from "@/shared/ui";
-import PencilIcon from "../../../../assets/icons/pencil.svg";
+import useImagePicker from "@/shared/lib/useImagePicker";
 import MapMarkerIcon from "../../../../assets/icons/map-marker.svg";
+import useAddProfilePhoto from "../model/hooks/useAddProfilePhoto";
+import useDeleteProfilePhoto from "../model/hooks/useDeleteProfilePhoto";
 import useMyProfile from "../model/hooks/useMyProfile";
-import type { UserProfilePhoto } from "../model/types";
-
-const PHOTO_SLOTS_COUNT = 6;
-
-const MEETING_GOAL_LABELS: Record<string, string> = {
-  WALK: "Пойти гулять",
-  TALK: "Общение",
-  COFFEE: "Сходить в кафе",
-  SPORT: "Заниматься спортом",
-  CULTURE: "Выставка, концерт, театр и т.д.",
-  OTHER: "Другое",
-};
-
-const COMMUNICATION_STYLE_LABELS: Record<string, string> = {
-  LISTENER: "Больше слушаю",
-  TALKER: "Больше говорю",
-  BALANCED: "Баланс",
-};
-
-const GENDER_LABELS: Record<string, string> = {
-  male: "Мужской",
-  female: "Женский",
-  MALE: "Мужской",
-  FEMALE: "Женский",
-};
-
-const getTextValue = (value?: string | null, fallback = "Не указано") => {
-  const text = value?.trim();
-
-  return text ? text : fallback;
-};
-
-const getMappedValue = (
-  value: string | null | undefined,
-  labels: Record<string, string>,
-) => {
-  const text = getTextValue(value);
-
-  return labels[text] ?? text;
-};
-
-const getBirthDateLabel = (birthDate?: string | null) => {
-  const value = birthDate?.trim();
-
-  if (!value) {
-    return "Не указана";
-  }
-
-  const [year, month, day] = value.split("-");
-
-  if (year && month && day) {
-    return `${day}.${month}.${year}`;
-  }
-
-  return value;
-};
-
-const getLocationLabel = (city?: { name?: string; region?: string } | null) => {
-  if (!city?.name) {
-    return "Город не указан";
-  }
-
-  return city.region ? `${city.name}, ${city.region}` : city.name;
-};
-
-const getPhotoUri = (photo?: UserProfilePhoto) =>
-  photo?.thumbnailUrl || photo?.url || undefined;
-
-const getProfilePhotos = (photos: UserProfilePhoto[] = []) =>
-  [...photos].sort((left, right) => left.position - right.position);
-
-const getProfileErrorText = (error: unknown) => {
-  const apiError = normalizeApiError(error);
-
-  if (
-    apiError.status === 401 ||
-    apiError.status === 403 ||
-    apiError.message === "No refresh token"
-  ) {
-    return "Нет доступа к профилю. Войдите в аккаунт еще раз.";
-  }
-
-  return apiError.message;
-};
+import useProfilePhotoDrag from "../model/hooks/useProfilePhotoDrag";
+import useReorderProfilePhotos from "../model/hooks/useReorderProfilePhotos";
+import useSetMainProfilePhoto from "../model/hooks/useSetMainProfilePhoto";
+import {
+  getMainProfilePhoto,
+  getPhotoUri,
+  getProfilePhotos,
+} from "../model/lib/profilePhotos";
+import {
+  getBirthDateLabel,
+  getCommunicationStyleLabel,
+  getGenderLabel,
+  getLocationLabel,
+  getMeetingGoalLabel,
+  getProfileErrorText,
+  getTextValue,
+} from "../model/lib/profileLabels";
+import { PROFILE_PHOTO_SLOTS_COUNT } from "../model/lib/profilePhotoDrag";
+import ProfilePhotosGrid from "./ProfilePhotosGrid";
+import ProfileSection from "./ProfileSection";
+import VerifiedBadge from "./VerifiedBadge";
 
 const ProfileScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavigationProp>();
   const { profile, isLoading, isError, error, refetch } = useMyProfile();
-  const photoSlots = Array.from({ length: PHOTO_SLOTS_COUNT }, (_, index) => index);
+  const addPhotoMutation = useAddProfilePhoto();
+  const deletePhotoMutation = useDeleteProfilePhoto();
+  const reorderPhotosMutation = useReorderProfilePhotos();
+  const setMainPhotoMutation = useSetMainProfilePhoto();
+  const {
+    image,
+    loading: galleryLoading,
+    pickImage,
+    clearImage,
+  } = useImagePicker(["images"]);
+  const uploadingPhotoUriRef = useRef<string | null>(null);
   const photos = getProfilePhotos(profile?.photos);
-  const mainPhoto = photos.find((photo) => photo.isMain) ?? photos[0];
+  const mainPhoto = getMainProfilePhoto(photos);
   const mainPhotoUri = getPhotoUri(mainPhoto);
+  const deletingPhotoId = deletePhotoMutation.isPending
+    ? deletePhotoMutation.variables
+    : null;
+  const isPhotoActionPending =
+    addPhotoMutation.isPending ||
+    deletePhotoMutation.isPending ||
+    reorderPhotosMutation.isPending ||
+    setMainPhotoMutation.isPending;
+  const canAddPhoto = photos.length < PROFILE_PHOTO_SLOTS_COUNT;
   const profileName = getTextValue(profile?.name, "Имя не указано");
   const profileAge =
     typeof profile?.age === "number" && profile.age > 0
@@ -123,6 +82,109 @@ const ProfileScreen = () => {
     profile?.isProfileCompleted ? "Профиль заполнен" : "Профиль не заполнен",
     profile?.onboardingCompleted ? "Онбординг завершен" : "Онбординг не завершен",
   ];
+
+  const handlePhotoOrderChange = (
+    nextPhotoIds: string[],
+    nextMainPhotoId?: string,
+  ) => {
+    reorderPhotosMutation.mutate(
+      nextPhotoIds,
+      {
+        onError: (reorderError) => {
+          Alert.alert(
+            "Не удалось изменить порядок фото",
+            normalizeApiError(reorderError).message,
+          );
+        },
+        onSuccess: () => {
+          if (!nextMainPhotoId) {
+            return;
+          }
+
+          setMainPhotoMutation.mutate(nextMainPhotoId, {
+            onError: (setMainError) => {
+              Alert.alert(
+                "Не удалось выбрать главное фото",
+                normalizeApiError(setMainError).message,
+              );
+            },
+          });
+        },
+      },
+    );
+  };
+
+  const photoDrag = useProfilePhotoDrag({
+    disabled: isPhotoActionPending,
+    onOrderChange: handlePhotoOrderChange,
+    photos,
+  });
+
+  useEffect(() => {
+    if (image && photos.length >= PROFILE_PHOTO_SLOTS_COUNT) {
+      clearImage();
+      return;
+    }
+
+    if (
+      !image ||
+      addPhotoMutation.isPending ||
+      uploadingPhotoUriRef.current === image
+    ) {
+      return;
+    }
+
+    uploadingPhotoUriRef.current = image;
+    addPhotoMutation.mutate(
+      {
+        photoUri: image,
+        position: photos.length + 1,
+      },
+      {
+        onError: (addError) => {
+          Alert.alert(
+            "Не удалось добавить фото",
+            normalizeApiError(addError).message,
+          );
+        },
+        onSettled: () => {
+          uploadingPhotoUriRef.current = null;
+          clearImage();
+        },
+      },
+    );
+  }, [addPhotoMutation, clearImage, image, photos.length]);
+
+  const handleAddPhoto = () => {
+    if (!canAddPhoto || isPhotoActionPending || galleryLoading) {
+      return;
+    }
+
+    void pickImage();
+  };
+
+  const handleDeletePhoto = (photoId: string) => {
+    Alert.alert("Удалить фото?", "Фото исчезнет из профиля.", [
+      {
+        text: "Отмена",
+        style: "cancel",
+      },
+      {
+        text: "Удалить",
+        style: "destructive",
+        onPress: () => {
+          deletePhotoMutation.mutate(photoId, {
+            onError: (deleteError) => {
+              Alert.alert(
+                "Не удалось удалить фото",
+                normalizeApiError(deleteError).message,
+              );
+            },
+          });
+        },
+      },
+    ]);
+  };
 
   const renderHeader = () => (
     <View style={styles.header}>
@@ -206,6 +268,9 @@ const ProfileScreen = () => {
   return (
     <View style={styles.root}>
       <ScrollView
+        onScroll={photoDrag.updatePhotoGridLayout}
+        scrollEventThrottle={16}
+        scrollEnabled={!photoDrag.dragState}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.content,
@@ -245,37 +310,17 @@ const ProfileScreen = () => {
           <Text style={styles.heroDescription}>{expectations}</Text>
         </View>
 
-        <View style={styles.card}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Мои фото</Text>
-            <Text style={styles.sectionHint}>Добавьте до 6 фотографий</Text>
-          </View>
-          <View style={styles.photosGrid}>
-            {photoSlots.map((slot) => {
-              const photo = photos[slot];
-              const photoUri = getPhotoUri(photo);
-
-              return (
-                <View key={slot} style={styles.photoTileWrap}>
-                  <View style={styles.photoTile}>
-                    {photoUri ? (
-                      <Fragment>
-                        <Image source={{ uri: photoUri }} style={styles.photo} />
-                        {photo?.isMain ? (
-                          <View style={styles.primaryPhotoBadge}>
-                            <Text style={styles.primaryPhotoText}>Основное</Text>
-                          </View>
-                        ) : null}
-                      </Fragment>
-                    ) : (
-                      <Text style={styles.photoAddIcon}>+</Text>
-                    )}
-                  </View>
-                </View>
-              );
-            })}
-          </View>
-        </View>
+        <ProfilePhotosGrid
+          canAddPhoto={canAddPhoto}
+          deletingPhotoId={deletingPhotoId}
+          drag={photoDrag}
+          galleryLoading={galleryLoading}
+          isAddingPhoto={addPhotoMutation.isPending}
+          isPhotoActionPending={isPhotoActionPending}
+          onAddPhoto={handleAddPhoto}
+          onDeletePhoto={handleDeletePhoto}
+          photos={photos}
+        />
 
         <View style={styles.verificationCard}>
           <Text style={styles.verificationTitle}>Статус профиля</Text>
@@ -294,15 +339,12 @@ const ProfileScreen = () => {
 
         <ProfileSection
           title="Цель встречи"
-          value={getMappedValue(profile.meetingGoal, MEETING_GOAL_LABELS)}
+          value={getMeetingGoalLabel(profile.meetingGoal)}
           editable
         />
         <ProfileSection
           title="Стиль общения"
-          value={getMappedValue(
-            profile.communicationStyle,
-            COMMUNICATION_STYLE_LABELS,
-          )}
+          value={getCommunicationStyleLabel(profile.communicationStyle)}
           editable
         />
         <ProfileSection title="Ожидания" value={expectations} editable />
@@ -316,10 +358,7 @@ const ProfileScreen = () => {
           title="Дата рождения"
           value={getBirthDateLabel(profile.birthDate)}
         />
-        <ProfileSection
-          title="Пол"
-          value={getMappedValue(profile.gender, GENDER_LABELS)}
-        />
+        <ProfileSection title="Пол" value={getGenderLabel(profile.gender)} />
         <ProfileSection
           title="Телефон"
           value={getTextValue(profile.phoneNumber)}
@@ -339,62 +378,15 @@ const ProfileScreen = () => {
   );
 };
 
-const ProfileSection = ({
-  title,
-  value,
-  chips,
-  emptyText,
-  editable = false,
-}: {
-  title: string;
-  value?: string;
-  chips?: string[];
-  emptyText?: string;
-  editable?: boolean;
-}) => {
-  return (
-    <View style={styles.card}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>{title}</Text>
-        {editable ? (
-          <Pressable style={styles.editButton} hitSlop={10}>
-            <PencilIcon width={14} height={14} color="#3B3D4B" />
-          </Pressable>
-        ) : null}
-      </View>
-
-      {value ? <Text style={styles.sectionValue}>{value}</Text> : null}
-
-      {chips?.length ? (
-        <View style={styles.chipsWrap}>
-          {chips.map((chip) => (
-            <View key={`${title}-${chip}`} style={styles.chip}>
-              <Text style={styles.chipText}>{chip}</Text>
-            </View>
-          ))}
-        </View>
-      ) : emptyText ? (
-        <Text style={styles.sectionValue}>{emptyText}</Text>
-      ) : null}
-    </View>
-  );
-};
-
-const VerifiedBadge = () => {
-  return (
-    <View style={styles.verifiedBadge}>
-      <Text style={styles.verifiedIcon}>✓</Text>
-    </View>
-  );
-};
-
 const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: "#F5F6F8",
+    overflow: "visible",
   },
   content: {
     gap: 16,
+    overflow: "visible",
   },
   stateContent: {
     flexGrow: 1,
@@ -502,20 +494,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#30323E",
   },
-  verifiedBadge: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: "#4D4D56",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  verifiedIcon: {
-    fontSize: 12,
-    lineHeight: 12,
-    fontWeight: "700",
-    color: "#FFFFFF",
-  },
   locationChip: {
     alignSelf: "flex-start",
     flexDirection: "row",
@@ -536,76 +514,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     color: "#3E4055",
-  },
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 28,
-    padding: 20,
-    gap: 14,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  sectionTitle: {
-    flex: 1,
-    fontSize: 18,
-    lineHeight: 22,
-    fontWeight: "700",
-    color: "#30323E",
-  },
-  sectionHint: {
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "600",
-    color: "#7E8191",
-  },
-  photosGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginHorizontal: -5,
-    marginBottom: -10,
-  },
-  photoTileWrap: {
-    width: "33.333%",
-    paddingHorizontal: 5,
-    marginBottom: 10,
-  },
-  photoTile: {
-    width: "100%",
-    aspectRatio: 1,
-    borderRadius: 20,
-    overflow: "hidden",
-    backgroundColor: "#EEF0FA",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  photo: {
-    width: "100%",
-    height: "100%",
-  },
-  primaryPhotoBadge: {
-    position: "absolute",
-    top: 10,
-    left: 10,
-    borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.92)",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  primaryPhotoText: {
-    fontSize: 11,
-    lineHeight: 12,
-    fontWeight: "700",
-    color: "#3B3D4B",
-  },
-  photoAddIcon: {
-    fontSize: 34,
-    lineHeight: 34,
-    color: "#7E8191",
-    fontWeight: "300",
   },
   verificationCard: {
     borderRadius: 28,
@@ -630,9 +538,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 10,
   },
-  saveButtonWrap: {
-    paddingHorizontal: 16,
-  },
   providerButton: {
     minWidth: 58,
     alignItems: "center",
@@ -648,39 +553,8 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#30323E",
   },
-  sectionValue: {
-    borderRadius: 18,
-    backgroundColor: "#EEF0FA",
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    fontSize: 15,
-    lineHeight: 22,
-    color: "#3E4055",
-  },
-  chipsWrap: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  chip: {
-    borderRadius: 999,
-    backgroundColor: "#EEF0FA",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  chipText: {
-    fontSize: 14,
-    lineHeight: 16,
-    fontWeight: "600",
-    color: "#3B3D4B",
-  },
-  editButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 999,
-    backgroundColor: "#EEF0FA",
-    alignItems: "center",
-    justifyContent: "center",
+  saveButtonWrap: {
+    paddingHorizontal: 16,
   },
 });
 

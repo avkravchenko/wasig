@@ -19,6 +19,29 @@ const getFileMetaFromUri = (photoUri: string, index: number) => {
   return { type: "image/jpeg", name: `photo_${index}.jpg` };
 };
 
+export const appendPhotoToFormData = (
+  formData: FormData,
+  photoUri: string,
+  index = 0,
+) => {
+  const { type, name } = getFileMetaFromUri(photoUri, index);
+  const file = {
+    uri: photoUri,
+    type,
+    name,
+  };
+
+  formData.append("file", file as any);
+};
+
+export const createPhotoFormData = (photoUri: string) => {
+  const formData = new FormData();
+
+  appendPhotoToFormData(formData, photoUri);
+
+  return formData;
+};
+
 export const uploadPhotos = async ({
   photos,
   postFunction,
@@ -29,13 +52,7 @@ export const uploadPhotos = async ({
   const formData = new FormData();
 
   photos.forEach((photoUri, index) => {
-    const { type, name } = getFileMetaFromUri(photoUri, index);
-    const file = {
-      uri: photoUri,
-      type,
-      name,
-    };
-    formData.append("file", file as any);
+    appendPhotoToFormData(formData, photoUri, index);
   });
 
   return await postFunction(formData);

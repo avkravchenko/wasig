@@ -1,13 +1,19 @@
 import { useNavigation } from "@react-navigation/native";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import NotificationsIcon from "../../../../assets/icons/notifications-alt-fill.svg";
 import { ROUTER_NAME_SPACES } from "@/app/router";
 import { NavigationProp } from "@/app/router/types";
 import useMyActivities from "@/features/feed/model/hooks/useMyActivities";
 import { useFeedModeStore } from "@/features/feed/model/store";
+import useMyProfile from "@/screens/profile/model/hooks/useMyProfile";
+import {
+  getMainProfilePhoto,
+  getPhotoUri,
+} from "@/screens/profile/model/lib/profilePhotos";
 import { Button } from "@/shared/ui";
 
 const CREATE_ACTIVITY_HEADER_TITLE = "Создать\nактивность";
+const DEFAULT_AVATAR_INITIAL = "И";
 
 type FeedProfileHeaderProps = {
   onCreateActivityPress?: () => void;
@@ -20,7 +26,11 @@ const FeedProfileHeader = ({
   const mode = useFeedModeStore((state) => state.mode);
   const toggleMode = useFeedModeStore((state) => state.toggleMode);
   const { data } = useMyActivities();
+  const { profile } = useMyProfile();
   const firstMyActivity = data[0];
+  const mainPhotoUri = getPhotoUri(getMainProfilePhoto(profile?.photos));
+  const profileName = profile?.name?.trim();
+  const avatarInitial = profileName ? profileName[0] : DEFAULT_AVATAR_INITIAL;
   const activityTitle =
     firstMyActivity?.activityTitle?.trim() ||
     firstMyActivity?.activityDescription?.trim() ||
@@ -40,7 +50,15 @@ const FeedProfileHeader = ({
           onPress={() => navigation.navigate(ROUTER_NAME_SPACES.MY_PROFILE.NAME)}
           style={styles.avatar}
         >
-          <Text style={styles.avatarText}>И</Text>
+          {mainPhotoUri ? (
+            <Image
+              source={{ uri: mainPhotoUri }}
+              style={styles.avatarImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <Text style={styles.avatarText}>{avatarInitial}</Text>
+          )}
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -103,6 +121,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#30323E",
+    overflow: "hidden",
+  },
+  avatarImage: {
+    width: "100%",
+    height: "100%",
   },
   avatarText: {
     fontSize: 16,

@@ -1,5 +1,9 @@
 import { privateApi } from "@/shared/api/privateApi";
 import { normalizeApiError } from "@/shared/api/errors";
+import {
+  normalizeProfilePhoto,
+  normalizeProfilePhotoUrl,
+} from "../model/lib/profilePhotos";
 import type { MyProfile, UserProfilePhoto } from "../model/types";
 
 type MyProfileResponse = Omit<Partial<MyProfile>, "photos"> & {
@@ -66,22 +70,23 @@ const normalizePhotos = (
   return photos
     .map((photo, index): UserProfilePhoto | null => {
       if (typeof photo === "string") {
+        const photoUrl = normalizeProfilePhotoUrl(photo);
+
+        if (!photoUrl) {
+          return null;
+        }
+
         return {
           id: photo,
-          url: photo,
-          thumbnailUrl: photo,
+          url: photoUrl,
+          thumbnailUrl: photoUrl,
           position: index + 1,
           isMain: index === 0,
         };
       }
 
       if (photo && typeof photo.url === "string") {
-        return {
-          ...photo,
-          thumbnailUrl: photo.thumbnailUrl ?? photo.url,
-          position: photo.position ?? index + 1,
-          isMain: photo.isMain ?? index === 0,
-        };
+        return normalizeProfilePhoto(photo, index);
       }
 
       return null;

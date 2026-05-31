@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render } from "@testing-library/react-native";
+import { Image } from "react-native";
 import FeedProfileHeader from "./FeedProfileHeader";
 import useMyActivities from "@/features/feed/model/hooks/useMyActivities";
 import { useFeedModeStore } from "@/features/feed/model/store";
+import useMyProfile from "@/screens/profile/model/hooks/useMyProfile";
 import {
   FeedAvailability,
   FeedDuration,
@@ -21,6 +23,11 @@ jest.mock("@/features/feed/model/hooks/useMyActivities", () => ({
   default: jest.fn(),
 }));
 
+jest.mock("@/screens/profile/model/hooks/useMyProfile", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
 jest.mock("../../../../assets/icons/notifications-alt-fill.svg", () => {
   const { Text } = require("react-native");
 
@@ -32,6 +39,9 @@ jest.mock("../../../../assets/icons/notifications-alt-fill.svg", () => {
 
 const mockedUseMyActivities = useMyActivities as jest.MockedFunction<
   typeof useMyActivities
+>;
+const mockedUseMyProfile = useMyProfile as jest.MockedFunction<
+  typeof useMyProfile
 >;
 
 const activity: FeedItem = {
@@ -58,7 +68,9 @@ const activity: FeedItem = {
 describe("FeedProfileHeader", () => {
   beforeEach(() => {
     mockedUseMyActivities.mockReset();
+    mockedUseMyProfile.mockReset();
     mockedUseMyActivities.mockReturnValue({ data: [] } as any);
+    mockedUseMyProfile.mockReturnValue({ profile: null } as any);
     useFeedModeStore.setState({ mode: "feed" });
   });
 
@@ -75,6 +87,28 @@ describe("FeedProfileHeader", () => {
 
     expect(getByText("Мой кофе")).toBeTruthy();
     expect(getByText("Встретиться утром")).toBeTruthy();
+  });
+
+  it("shows main profile photo in avatar", () => {
+    mockedUseMyProfile.mockReturnValue({
+      profile: {
+        photos: [
+          {
+            id: "photo-1",
+            url: "https://example.com/photo.jpg",
+            thumbnailUrl: "https://example.com/thumb.jpg",
+            position: 1,
+            isMain: true,
+          },
+        ],
+      },
+    } as any);
+
+    const { UNSAFE_getByType } = render(<FeedProfileHeader />);
+
+    expect(UNSAFE_getByType(Image).props.source).toEqual({
+      uri: "https://example.com/thumb.jpg",
+    });
   });
 
   it("toggles feed mode from text container press", () => {
