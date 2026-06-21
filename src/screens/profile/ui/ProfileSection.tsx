@@ -6,6 +6,7 @@ type ProfileSectionProps = {
   chips?: string[];
   editable?: boolean;
   emptyText?: string;
+  onEdit?: () => void;
   title: string;
   value?: string;
 };
@@ -16,13 +17,19 @@ const ProfileSection = ({
   chips,
   emptyText,
   editable = false,
+  onEdit,
 }: ProfileSectionProps) => {
   return (
     <ProfileCard>
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>{title}</Text>
         {editable ? (
-          <Pressable style={styles.editButton} hitSlop={10}>
+          <Pressable
+            style={styles.editButton}
+            hitSlop={10}
+            accessibilityRole="button"
+            onPress={onEdit}
+          >
             <PencilIcon width={14} height={14} color="#3B3D4B" />
           </Pressable>
         ) : null}

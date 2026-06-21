@@ -25,3 +25,19 @@ export interface MyProfile {
   isProfileCompleted: boolean;
   onboardingCompleted: boolean;
 }
+
+export type ProfileEditableField =
+  | "name"
+  | "birthDate"
+  | "gender"
+  | "city"
+  | "meetingGoal"
+  | "communicationStyle"
+  | "expectations"
+  | "interests";
+
+export type ProfileInterestDraft = {
+  id: number | null;
+  name: string;
+  isCustom: boolean;
+};

@@ -1,6 +1,6 @@
 import { normalizeApiError } from "@/shared/api/errors";
 
-const MEETING_GOAL_LABELS: Record<string, string> = {
+export const MEETING_GOAL_LABELS: Record<string, string> = {
   WALK: "Пойти гулять",
   TALK: "Общение",
   COFFEE: "Сходить в кафе",
@@ -9,13 +9,13 @@ const MEETING_GOAL_LABELS: Record<string, string> = {
   OTHER: "Другое",
 };
 
-const COMMUNICATION_STYLE_LABELS: Record<string, string> = {
+export const COMMUNICATION_STYLE_LABELS: Record<string, string> = {
   LISTENER: "Больше слушаю",
   TALKER: "Больше говорю",
   BALANCED: "Баланс",
 };
 
-const GENDER_LABELS: Record<string, string> = {
+export const GENDER_LABELS: Record<string, string> = {
   male: "Мужской",
   female: "Женский",
   MALE: "Мужской",

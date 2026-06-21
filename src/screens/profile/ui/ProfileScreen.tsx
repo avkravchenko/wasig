@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   ActivityIndicator,
@@ -23,6 +23,9 @@ import useMyProfile from "../model/hooks/useMyProfile";
 import useProfilePhotoDrag from "../model/hooks/useProfilePhotoDrag";
 import useReorderProfilePhotos from "../model/hooks/useReorderProfilePhotos";
 import useSetMainProfilePhoto from "../model/hooks/useSetMainProfilePhoto";
+import useUpdateMyProfile, {
+  type ProfileUpdateInput,
+} from "../model/hooks/useUpdateMyProfile";
 import {
   getMainProfilePhoto,
   getPhotoUri,
@@ -38,6 +41,8 @@ import {
   getTextValue,
 } from "../model/lib/profileLabels";
 import { PROFILE_PHOTO_SLOTS_COUNT } from "../model/lib/profilePhotoDrag";
+import type { ProfileEditableField } from "../model/types";
+import ProfileEditModal from "./ProfileEditModal";
 import ProfilePhotosGrid from "./ProfilePhotosGrid";
 import ProfileSection from "./ProfileSection";
 import VerifiedBadge from "./VerifiedBadge";
@@ -45,11 +50,15 @@ import VerifiedBadge from "./VerifiedBadge";
 const ProfileScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavigationProp>();
+  const [editingField, setEditingField] = useState<ProfileEditableField | null>(
+    null,
+  );
   const { profile, isLoading, isError, error, refetch } = useMyProfile();
   const addPhotoMutation = useAddProfilePhoto();
   const deletePhotoMutation = useDeleteProfilePhoto();
   const reorderPhotosMutation = useReorderProfilePhotos();
   const setMainPhotoMutation = useSetMainProfilePhoto();
+  const updateProfileMutation = useUpdateMyProfile();
   const {
     image,
     loading: galleryLoading,
@@ -184,6 +193,31 @@ const ProfileScreen = () => {
         },
       },
     ]);
+  };
+
+  const handleEditField = (field: ProfileEditableField) => {
+    updateProfileMutation.reset();
+    setEditingField(field);
+  };
+
+  const handleCloseEditModal = () => {
+    if (!updateProfileMutation.isPending) {
+      setEditingField(null);
+    }
+  };
+
+  const handleSaveProfileField = (input: ProfileUpdateInput) => {
+    updateProfileMutation.mutate(input, {
+      onError: (updateError) => {
+        Alert.alert(
+          "Не удалось сохранить изменения",
+          normalizeApiError(updateError).message,
+        );
+      },
+      onSuccess: () => {
+        setEditingField(null);
+      },
+    });
   };
 
   const renderHeader = () => (
@@ -338,42 +372,67 @@ const ProfileScreen = () => {
         </View>
 
         <ProfileSection
+          title="Имя"
+          value={profileName}
+          editable
+          onEdit={() => handleEditField("name")}
+        />
+        <ProfileSection
+          title="Город"
+          value={getLocationLabel(profile.city)}
+          editable
+          onEdit={() => handleEditField("city")}
+        />
+        <ProfileSection
           title="Цель встречи"
           value={getMeetingGoalLabel(profile.meetingGoal)}
           editable
+          onEdit={() => handleEditField("meetingGoal")}
         />
         <ProfileSection
           title="Стиль общения"
           value={getCommunicationStyleLabel(profile.communicationStyle)}
           editable
+          onEdit={() => handleEditField("communicationStyle")}
         />
-        <ProfileSection title="Ожидания" value={expectations} editable />
+        <ProfileSection
+          title="Ожидания"
+          value={expectations}
+          editable
+          onEdit={() => handleEditField("expectations")}
+        />
         <ProfileSection
           title="Интересы"
           chips={profile.interests?.map((interest) => interest.name) ?? []}
           emptyText="Интересы не выбраны"
           editable
+          onEdit={() => handleEditField("interests")}
         />
         <ProfileSection
           title="Дата рождения"
           value={getBirthDateLabel(profile.birthDate)}
+          editable
+          onEdit={() => handleEditField("birthDate")}
         />
-        <ProfileSection title="Пол" value={getGenderLabel(profile.gender)} />
+        <ProfileSection
+          title="Пол"
+          value={getGenderLabel(profile.gender)}
+          editable
+          onEdit={() => handleEditField("gender")}
+        />
         <ProfileSection
           title="Телефон"
           value={getTextValue(profile.phoneNumber)}
         />
-
-        <View style={styles.saveButtonWrap}>
-          <Button
-            title="Сохранить"
-            type="secondary"
-            size="lg"
-            fullWidth
-            onPress={() => undefined}
-          />
-        </View>
       </ScrollView>
+      <ProfileEditModal
+        field={editingField}
+        isSaving={updateProfileMutation.isPending}
+        profile={profile}
+        visible={Boolean(editingField)}
+        onClose={handleCloseEditModal}
+        onSave={handleSaveProfileField}
+      />
     </View>
   );
 };
@@ -552,9 +611,6 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     fontWeight: "700",
     color: "#30323E",
-  },
-  saveButtonWrap: {
-    paddingHorizontal: 16,
   },
 });
 
